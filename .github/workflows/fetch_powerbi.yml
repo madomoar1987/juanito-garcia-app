@@ -2,20 +2,21 @@ name: JUANITO — Fetch Power BI Data
 
 on:
   schedule:
-    # OJO: la hora del cron NO es la hora a la que corre. GitHub ejecuta las
-    # corridas programadas cuando tiene capacidad, y en este repositorio el
-    # retraso medido es constante: un cron de las 12:00 UTC se ejecuto a las
-    # 15:13, 15:18, 15:27 y 16:43 UTC en cuatro dias habiles seguidos. Entre
-    # 3.2 y 4.7 horas tarde, sin fallar ninguno.
+    # Un solo disparo, a peticion del usuario (13/09/2026).
     #
-    # Por eso el disparo va adelantado: el objetivo es que el dato ESTE a las
-    # 7:30 de Lima, no que el cron suene a esa hora. Con el retraso medido,
-    # 07:30 UTC aterriza entre las 5:42 y las 7:12 de Lima.
+    # OJO: la hora del cron NO es la hora de ejecucion. GitHub corre las
+    # tareas programadas cuando tiene capacidad, y en este repositorio el
+    # retraso medido es de 3.2 a 4.7 horas (cuatro dias habiles seguidos, un
+    # cron de las 12:00 UTC ejecutado a las 15:13, 15:18, 15:27 y 16:43).
+    #
+    # Por eso el disparo va a las 07:30 UTC — las 2:30 de Lima. Con ese
+    # retraso el dato aterriza entre las 5:42 y las 7:12 de la manana, que es
+    # lo que se pidio: tenerlo listo a las 7.
+    #
+    # Al quedar un solo horario ya no hay reintento: si una corrida falla, el
+    # tablero se queda con el dato del dia anterior hasta la manana siguiente.
+    # El correo de fallo avisa igual, y siempre se puede lanzar a mano.
     - cron: '30 7 * * *'
-    # Dos respaldos por si un dia el retraso se pasa de lo medido o GitHub
-    # descarta la corrida. Correr de mas no cuesta nada; llegar tarde si.
-    - cron: '30 12 * * *'
-    - cron: '0 15 * * *'
   workflow_dispatch:  # permite correr manualmente
 
 jobs:
