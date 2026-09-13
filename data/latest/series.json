@@ -1154,5 +1154,12 @@
         6728469.824643016
       ]
     }
-  }
+  },
+  "diagnostico": [
+    {
+      "consulta": "captura:MARGEN VARIABLE POR UNIDAD DE NEGOCIO",
+      "http": 200,
+      "error": "29 filas pero ninguna serie con 3+ meses. eje=sí. Muestra: [{'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75[Año]': 2026, 'Calendario[Mes Corto]': 'ene', 'Calendario[MES]': 1, '[v__Margen_Contribución___]': 0.651040392507775, '[ColumnIndex]': 1}, {'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75[Año]': 2026, 'Calendario[Mes Corto]': 'ene', 'Calendario[MES]': 1, '[v__Margen_Contribución___]': 0.45376071560432185, '[ColumnIndex]': 2}]"
+    }
+  ]
 }
