@@ -1415,6 +1415,84 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
 .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes typingBounce { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-5px);opacity:1} }
+/* ═══ Avance del mes ═══════════════════════════════════════════════ */
+.av-cab { display:flex; flex-wrap:wrap; gap:18px; align-items:center; justify-content:space-between;
+  padding:16px 18px; background:var(--card2); border:1px solid var(--border);
+  border-radius:10px; margin-bottom:14px; }
+.av-mes { font-size:16px; font-weight:600; }
+.av-sub { font-size:13px; color:var(--text2); margin-top:3px; max-width:46ch; }
+.av-barra-mes { flex:1 1 260px; min-width:220px; height:26px; background:var(--bg3);
+  border:1px solid var(--border); border-radius:5px; position:relative; overflow:hidden; }
+.av-barra-mes-f { position:absolute; top:0; bottom:0; left:0; background:var(--text3); opacity:.35; }
+.av-barra-mes-t { position:absolute; top:0; bottom:0; width:2px; background:var(--yellow); }
+.av-barra-mes-l { position:absolute; top:50%; transform:translateY(-50%);
+  font-size:11px; color:var(--text2); font-variant-numeric:tabular-nums; }
+
+.av-tabla-caja { overflow-x:auto; border:1px solid var(--border); border-radius:10px;
+  background:var(--card); }
+.av-tabla { border-collapse:collapse; width:100%; min-width:760px; font-size:13px; }
+.av-tabla thead th { font-size:10px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--text3); font-weight:600; text-align:right; padding:10px 11px;
+  border-bottom:1px solid var(--border); white-space:nowrap; }
+.av-tabla thead th:first-child { text-align:left; }
+.av-tabla td { padding:10px 11px; border-bottom:1px solid var(--bg3); text-align:right;
+  font-variant-numeric:tabular-nums; vertical-align:middle; }
+.av-tabla td:first-child { text-align:left; }
+.av-tabla tbody tr:last-child td { border-bottom:none; }
+.av-rep { font-weight:600; }
+.av-rep small { display:block; font-weight:400; color:var(--text3); font-size:11px; margin-top:1px; }
+.av-num { font-weight:600; font-variant-numeric:tabular-nums; }
+.av-num small { display:block; font-weight:400; font-size:10px; }
+.av-vacio { color:var(--text3); font-size:12px; }
+
+.av-meta { display:inline-block; min-width:60px; padding:3px 8px; border-radius:5px;
+  border:1px dashed transparent; cursor:pointer; font-variant-numeric:tabular-nums; }
+.av-meta:hover { border-color:var(--border); background:var(--card2); }
+.av-meta-vacia { color:var(--yellow); border-color:var(--yellow);
+  background:var(--yellow-bg); font-weight:600; font-size:12px; }
+.av-meta-mia { position:relative; }
+.av-meta-mia::after { content:"•"; position:absolute; top:-2px; right:1px;
+  color:var(--yellow); font-weight:700; }
+
+.av-ritmo { display:inline-flex; align-items:center; gap:7px; justify-content:flex-end; }
+.av-barra { width:66px; height:8px; background:var(--bg3); border:1px solid var(--border);
+  border-radius:3px; position:relative; overflow:hidden; flex:0 0 auto; }
+.av-barra-f { position:absolute; top:0; bottom:0; left:0; }
+.av-barra-t { position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--yellow); }
+.av-falta { color:var(--yellow); font-size:12px; }
+
+.av-chispa { display:block; margin-left:auto; }
+.av-chispa path { fill:none; stroke:var(--text3); stroke-width:1.4;
+  stroke-linejoin:round; stroke-linecap:round; }
+.av-chispa circle { stroke:var(--card); stroke-width:1.5; }
+
+/* El triángulo codifica MEJORA, no dirección: si la merma sube, empeora. */
+.av-tri { display:inline-flex; align-items:center; gap:5px; font-size:12px;
+  font-weight:600; white-space:nowrap; }
+.av-tri i { width:0; height:0; flex:0 0 auto; }
+.t-mejor { color:var(--green); }
+.t-mejor i { border-left:5px solid transparent; border-right:5px solid transparent;
+  border-bottom:8px solid var(--green); }
+.t-peor { color:var(--red); }
+.t-peor i { border-left:5px solid transparent; border-right:5px solid transparent;
+  border-top:8px solid var(--red); }
+.t-igual { color:var(--yellow); }
+.t-igual i { border-top:5px solid transparent; border-bottom:5px solid transparent;
+  border-left:8px solid var(--yellow); }
+
+.av-ver { display:inline-block; padding:3px 9px; border-radius:5px; font-size:11.5px;
+  font-weight:600; white-space:nowrap; border:1px solid; }
+.av-bien { color:var(--green); background:var(--green-bg); border-color:var(--green); }
+.av-mal { color:var(--red); background:var(--red-bg); border-color:var(--red-border); }
+.av-na { color:var(--text3); background:transparent; border-color:var(--border); }
+
+.av-pie { margin-top:12px; font-size:12.5px; color:var(--text2); display:flex;
+  flex-wrap:wrap; gap:10px 16px; align-items:center; }
+.av-legal { flex-basis:100%; color:var(--text3); font-size:12px; }
+.av-btn { font-size:12px; padding:4px 10px; border-radius:5px; cursor:pointer;
+  border:1px solid var(--border); background:var(--card); color:var(--text); }
+.av-nota { padding:22px; color:var(--text2); font-size:14px; }
+
 .chat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .chat-chip { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent); border-radius: 20px; padding: 5px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; }
 .chat-chip:active { opacity: 0.7; }
@@ -1575,6 +1653,9 @@ let HITOS = null;
 let CASHFLOW = null;
 let HISTORICO = null;
 let SERIES = null;
+// Metas mensuales. Viven en data/metas.json —del repositorio, no del código—
+// para que cambiar una sea editar un archivo y no tocar Python.
+let METAS = null;
 let currentTab = 'home';
 let navHistory = [];
 const _E=[25,30,76,15,7,0,66,83,64,91,6,84,76,34,39,36,4,95,28,24,40,47,45,25,66,8,101,66,81,51,31,52,6,59,58,34,0,60,10,18,86,31,4,90,70,63,89,40,60,37,4,19,27,76,88,13,13,36,7,91,119,113,4,25,22,38,40,53,88,68,24,95,1,36,88,91,1,101,66,6,48,11,4,24,15,18,63,22,37,3,33,45,87,127,125,96,16,44,51,78,81,43,50,6,22,47,40,53];
@@ -1688,6 +1769,10 @@ async function loadData() {
     try {
       const rs = await fetch('data/latest/series.json?t=' + t);
       if (rs && rs.ok) SERIES = await rs.json();
+    } catch(e) {}
+    try {
+      const rm = await fetch('data/metas.json?t=' + t);
+      if (rm && rm.ok) METAS = await rm.json();
     } catch(e) {}
     renderAll();
     document.getElementById('loading-overlay').style.display = 'none';
@@ -2834,13 +2919,314 @@ function dxpRoadmapView() {
 }
 
 // ── Navegación interna del dashboard ───────────────────────────────────────
+// ═══ Avance del mes ═══════════════════════════════════════════════════════
+//
+// Responde una sola pregunta: ¿el ritmo alcanza para llegar a la meta?
+//
+// Se alimenta solo de series.json y data/metas.json. No necesita consultas
+// nuevas contra Power BI: las series ya llegan hasta el mes en curso desde
+// que build_periodos() dejó de cortar en el mes anterior.
+
+// Metas que el usuario editó y todavía no están publicadas en el repositorio.
+// La app las usa igual y las marca, para que se vea qué es oficial y qué no.
+const METAS_BORRADOR = 'juanito.metas.borrador';
+
+function metasBorrador() {
+  try { return JSON.parse(localStorage.getItem(METAS_BORRADOR) || '{}'); }
+  catch (e) { return {}; }
+}
+
+function guardarMetaBorrador(clave, valor) {
+  try {
+    const b = metasBorrador();
+    if (valor === null) delete b[clave]; else b[clave] = valor;
+    localStorage.setItem(METAS_BORRADOR, JSON.stringify(b));
+    return true;
+  } catch (e) { return false; }
+}
+
+// Días del mes en curso y cuánto se lleva recorrido: la vara del ritmo.
+function avanceDelMes() {
+  const per = mesParcial();
+  if (!per) return null;
+  const [a, m] = per.split('-').map(Number);
+  const dias = new Date(a, m, 0).getDate();
+  const hoy = new Date();
+  // Si el mes parcial no es el corriente (dato de ayer, fin de semana), el
+  // día que vale es el último del que hay dato, no el de hoy.
+  const dia = (hoy.getFullYear() === a && hoy.getMonth() + 1 === m)
+    ? hoy.getDate() : dias;
+  return { periodo: per, anio: a, mes: m, dias, dia, fraccion: dia / dias };
+}
+
+function serieDe(par) {
+  if (!par || !SERIES || !SERIES.datasets) return null;
+  const [ds, clave] = par;
+  const arr = SERIES.datasets[ds] && SERIES.datasets[ds][clave];
+  return Array.isArray(arr) ? arr : null;
+}
+
+// Valor del mes en curso y del último mes cerrado, de una serie.
+function valoresDe(ind) {
+  const per = periodos();
+  const arr = serieDe(ind.serie);
+  if (!arr) return null;
+  const idx = (p) => per.indexOf(p);
+  const iCurso = idx(mesParcial());
+  const iCerrado = idx(mesCerrado());
+  const prev = per[per.indexOf(mesCerrado()) - 1];
+  return {
+    curso:   iCurso   >= 0 ? arr[iCurso]   : null,
+    cerrado: iCerrado >= 0 ? arr[iCerrado] : null,
+    previo:  prev ? arr[idx(prev)] : null,
+    serie: arr,
+  };
+}
+
+// Escala: las series guardan los porcentajes como fracción (0.029 = 2.9%).
+function escalaMeta(ind, v) {
+  if (v == null) return null;
+  return (ind.unidad === 'pct' || ind.unidad === 'ratio') ? v * 100 : v;
+}
+
+function fmtMeta(ind, v) {
+  if (v == null) return null;
+  if (ind.unidad === 'pct')   return (v * 100).toFixed(v * 100 < 10 ? 2 : 1) + '%';
+  if (ind.unidad === 'ratio') return (v * 100).toFixed(0) + '%';
+  if (ind.unidad === 'dias')  return v.toFixed(0) + ' d';
+  if (ind.unidad === 'kg')    return (v / 1e6).toFixed(2) + 'M kg';
+  if (Math.abs(v) >= 1e6)     return 'S/' + (v / 1e6).toFixed(2) + 'M';
+  if (Math.abs(v) >= 1000)    return 'S/' + Math.round(v).toLocaleString('es-PE');
+  return 'S/' + v.toFixed(3);
+}
+
+// Distancia a la meta, con el signo que corresponde a cada indicador.
+function distanciaMeta(ind, valor, meta) {
+  if (valor == null || meta == null) return null;
+  const d = escalaMeta(ind, valor) - escalaMeta(ind, meta);
+  const bien = ind.direccion === 'menor' ? d <= 0 : d >= 0;
+  const u = (ind.unidad === 'pct' || ind.unidad === 'ratio') ? ' pp'
+          : (ind.unidad === 'dias' ? ' d' : '');
+  let txt;
+  if (ind.unidad === 'soles' || ind.unidad === 'kg') {
+    txt = (d >= 0 ? '+' : '−') + fmtMeta(ind, Math.abs(d));
+  } else {
+    txt = (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(Math.abs(d) < 10 ? 2 : 1) + u;
+  }
+  return { d, bien, txt };
+}
+
+// Comparación contra el mes cerrado anterior: mejora, empeora o igual.
+function triangulo(ind, act, ant) {
+  if (act == null || ant == null || !ant) return null;
+  const d = act - ant;
+  const rel = Math.abs(d / ant);
+  if (rel < 0.02) return { cls: 't-igual', txt: 'sin cambio' };
+  const mejora = ind.direccion === 'menor' ? d < 0 : d > 0;
+  const pct = (d / Math.abs(ant) * 100);
+  return {
+    cls: mejora ? 't-mejor' : 't-peor',
+    txt: (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(1) + '%',
+  };
+}
+
+// Línea de la serie: 13 meses, con el último punto del color del veredicto.
+function chispaSerie(arr, color) {
+  const v = (arr || []).filter(x => x != null).slice(-13).map(Math.abs);
+  if (v.length < 3) return '<span class="av-vacio">serie corta</span>';
+  const W = 86, H = 26, P = 3;
+  const lo = Math.min(...v), hi = Math.max(...v), r = (hi - lo) || 1;
+  const pts = v.map((x, i) => [P + i * (W - 2 * P) / (v.length - 1),
+                               H - P - (x - lo) / r * (H - 2 * P)]);
+  const d = pts.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ');
+  const f = pts[pts.length - 1];
+  return `<svg class="av-chispa" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"
+    role="img" aria-label="${v.length} meses"><path d="${d}"/>
+    <circle cx="${f[0].toFixed(1)}" cy="${f[1].toFixed(1)}" r="2.6" fill="${color}"/></svg>`;
+}
+
+// Editar una meta. Se guarda en el navegador y se marca como sin publicar:
+// la oficial es la de data/metas.json, que queda con historial en el
+// repositorio. Esto permite probar un número hoy sin esperar una publicación.
+function editarMeta(clave) {
+  const ind = (METAS?.indicadores || []).find(i => i.clave === clave);
+  if (!ind) return;
+  const borr = metasBorrador();
+  const actual = Object.prototype.hasOwnProperty.call(borr, clave) ? borr[clave] : ind.meta;
+  const pista = {
+    pct:   'en porcentaje, ej. 52 para 52%',
+    ratio: 'en porcentaje, ej. 100 para 100%',
+    dias:  'en días, ej. 90',
+    soles: 'en soles, ej. 500000',
+    kg:    'en kilos, ej. 1300000',
+  }[ind.unidad] || '';
+  const previo = actual == null ? '' :
+    ((ind.unidad === 'pct' || ind.unidad === 'ratio') ? (actual * 100) : actual);
+  const txt = prompt(`Meta de ${ind.label}\n(${pista})\n\n` +
+    `Deja vacío para quitarla. Conviene que baje: ` +
+    `${ind.direccion === 'menor' ? 'sí' : 'no'}.`, previo);
+  if (txt === null) return;
+  let v = null;
+  if (txt.trim() !== '') {
+    v = parseFloat(txt.replace(/[^0-9.,-]/g, '').replace(',', '.'));
+    if (isNaN(v)) { alert('No entendí ese número.'); return; }
+    if (ind.unidad === 'pct' || ind.unidad === 'ratio') v = v / 100;
+  }
+  guardarMetaBorrador(clave, v);
+  dxpTab('avance');
+}
+
+// Las metas sin publicar se ven solo en este equipo. Esto arma el texto que
+// hay que pegar en data/metas.json para que valgan para todos.
+function exportarMetas() {
+  const borr = metasBorrador();
+  const lineas = Object.entries(borr).map(([k, v]) => {
+    const ind = (METAS?.indicadores || []).find(i => i.clave === k);
+    return `  ${k}  →  ${v == null ? 'sin meta' : fmtMeta(ind || {unidad:'soles'}, v)}`;
+  }).join('\n');
+  alert('Metas que pusiste y aún no están publicadas:\n\n' + lineas +
+    '\n\nPara que las vea todo el mundo hay que grabarlas en data/metas.json ' +
+    'del repositorio. Pásale esta lista a quien publica y quedan con ' +
+    'historial de quién las cambió y cuándo.');
+}
+
+function dxpAvanceView() {
+  if (!METAS || !SERIES) return '<div class="av-nota">Cargando datos…</div>';
+  const mes = avanceDelMes();
+  if (!mes) return '<div class="av-nota">Todavía no hay datos del mes en curso. ' +
+    'Aparecen con la corrida de mañana a las 7 de la mañana.</div>';
+
+  const borr = metasBorrador();
+  const pct = (mes.fraccion * 100);
+  const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio',
+                 'agosto','setiembre','octubre','noviembre','diciembre'];
+
+  const filas = (METAS.indicadores || []).map(ind => {
+    const propia = Object.prototype.hasOwnProperty.call(borr, ind.clave);
+    const meta = propia ? borr[ind.clave] : ind.meta;
+    const val = valoresDe(ind);
+
+    // Sin serie mensual: se usa el KPI del reporte y se dice que es del día.
+    let curso = val ? val.curso : null, cerrado = val ? val.cerrado : null,
+        previo = val ? val.previo : null, serie = val ? val.serie : null;
+    let sinSerie = !val;
+    if (sinSerie) {
+      const rd = (DATA?.empresas?.PAUNO?.reportes || {})[ind.reporte] || {};
+      const k = (rd.kpis || []).find(x => x.label === ind.kpi);
+      curso = k ? localNum(k.valor) : null;
+      if (curso != null && ind.unidad === 'pct' && curso > 1) curso = curso / 100;
+    }
+
+    const dist = distanciaMeta(ind, curso, meta);
+    const tri  = triangulo(ind, cerrado, previo);
+    const col  = dist ? (dist.bien ? 'var(--green)' : 'var(--red)') : 'var(--text3)';
+
+    // Columna del centro: ritmo para lo que se acumula, distancia para tasas.
+    let centro, enRitmo = null;
+    if (meta == null) {
+      centro = '<span class="av-falta">necesita meta</span>';
+    } else if (ind.tipo === 'acumula' && curso != null) {
+      const logro = escalaMeta(ind, curso) / escalaMeta(ind, meta) * 100;
+      const ok = logro >= pct;
+      enRitmo = ok;
+      centro = `<span class="av-ritmo">
+        <b class="av-num" style="color:${ok ? 'var(--green)' : 'var(--red)'}">${logro.toFixed(0)}%</b>
+        <span class="av-barra"><span class="av-barra-f" style="width:${Math.min(logro,100)}%;
+          background:${ok ? 'var(--green)' : 'var(--red)'}"></span>
+          <span class="av-barra-t" style="left:${pct}%"></span></span></span>`;
+    } else if (dist) {
+      centro = `<span class="av-num" style="color:${col}">${dist.txt}</span>`;
+    } else {
+      centro = '<span class="av-vacio">sin dato del mes</span>';
+    }
+
+    let veredicto;
+    if (meta == null) {
+      veredicto = '<span class="av-ver av-na">Falta meta</span>';
+    } else if (enRitmo !== null) {
+      veredicto = `<span class="av-ver ${enRitmo ? 'av-bien' : 'av-mal'}">${
+        enRitmo ? 'En ritmo' : 'Atrasado'}</span>`;
+    } else if (dist) {
+      veredicto = `<span class="av-ver ${dist.bien ? 'av-bien' : 'av-mal'}">${
+        dist.bien ? 'En meta' : (ind.direccion === 'menor' ? 'Sobre meta' : 'Bajo meta')}</span>`;
+    } else {
+      veredicto = '<span class="av-ver av-na">Sin dato</span>';
+    }
+
+    const metaTxt = meta == null ? '+ poner meta' : fmtMeta(ind, meta);
+    const triHtml = tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>`
+                        : '<span class="av-vacio">—</span>';
+
+    return `<tr>
+      <td class="av-rep">${esc(ind.label)}
+        <small>${esc(DXP_NOMBRE[ind.reporte] || ind.reporte)}${
+          ind.nota ? ' · ' + esc(ind.nota) : ''}</small></td>
+      <td><span class="av-meta ${meta == null ? 'av-meta-vacia' : ''} ${propia ? 'av-meta-mia' : ''}"
+            onclick="editarMeta('${ind.clave}')"
+            title="${propia ? 'Meta puesta por ti, sin publicar' : 'Clic para cambiarla'}"
+            >${esc(metaTxt)}</span></td>
+      <td class="av-num">${curso == null ? '<span class="av-vacio">—</span>' : esc(fmtMeta(ind, curso))}${
+        sinSerie ? '<small class="av-vacio">del día</small>' : ''}</td>
+      <td>${centro}</td>
+      <td>${sinSerie ? '<span class="av-vacio">sin corte mensual</span>'
+                     : chispaSerie(serie, col)}</td>
+      <td>${triHtml}</td>
+      <td>${veredicto}</td>
+    </tr>`;
+  }).join('');
+
+  const nPropias = Object.keys(borr).length;
+  const sinMeta = (METAS.indicadores || []).filter(i =>
+    (Object.prototype.hasOwnProperty.call(borr, i.clave) ? borr[i.clave] : i.meta) == null).length;
+
+  return `
+  <div class="av-cab">
+    <div>
+      <div class="av-mes">${MESES[mes.mes - 1]} ${mes.anio} · día ${mes.dia} de ${mes.dias}</div>
+      <div class="av-sub">Transcurrió el ${pct.toFixed(0)}% del mes. Esa es la vara
+        contra la que se mide lo que se acumula.</div>
+    </div>
+    <div class="av-barra-mes" role="img" aria-label="${pct.toFixed(0)}% del mes transcurrido">
+      <span class="av-barra-mes-f" style="width:${pct}%"></span>
+      <span class="av-barra-mes-t" style="left:${pct}%"></span>
+      <span class="av-barra-mes-l" style="left:10px">1</span>
+      <span class="av-barra-mes-l" style="right:10px">${mes.dias}</span>
+    </div>
+  </div>
+
+  <div class="av-tabla-caja">
+    <table class="av-tabla">
+      <thead><tr>
+        <th>Indicador</th><th>Meta del mes</th><th>Va en</th>
+        <th>Ritmo / distancia</th><th>Tendencia 13 m</th>
+        <th>vs mes anterior</th><th>Lectura</th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+    </table>
+  </div>
+
+  <div class="av-pie">
+    ${sinMeta ? `<b>${sinMeta} indicador${sinMeta > 1 ? 'es' : ''} sin meta.</b>
+      Muestran el dato pero no disparan alerta: haz clic en «+ poner meta».` : ''}
+    ${nPropias ? `<span class="av-aviso-borr"><b>${nPropias} meta${nPropias > 1 ? 's' : ''}
+      sin publicar.</b> Solo las ves tú en este equipo.
+      <button class="av-btn" onclick="exportarMetas()">Ver cómo publicarlas</button></span>` : ''}
+    <div class="av-legal">El mes en curso va incompleto: no lo compares de frente
+      contra un mes cerrado. La columna «vs mes anterior» sí compara meses
+      completos, y el triángulo marca <b>mejora</b>, no dirección.</div>
+  </div>`;
+}
+
 function dxpTab(tab) {
   const root = document.getElementById('dxp-home'); if (!root) return;
   root.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   const v = root.querySelector('#dxp-view-' + tab); if (v) v.classList.add('active');
   root.querySelectorAll('.tt').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  if (tab === 'avance' && v) v.innerHTML = dxpAvanceView();
   const ctx = root.querySelector('#dxp-context');
-  if (ctx) ctx.textContent = tab === 'roadmap' ? 'Plan de Acción' : `Resumen · ${DXP_ORDEN.length} reportes`;
+  if (ctx) ctx.textContent = tab === 'roadmap' ? 'Plan de Acción'
+    : (tab === 'avance' ? 'Avance del mes en curso'
+    : `Resumen · ${DXP_ORDEN.length} reportes`);
   const sc = document.getElementById('screens-container'); if (sc) sc.scrollTop = 0;
 }
 function dxpOpen(tipo) {
@@ -2876,6 +3262,7 @@ function renderHome() {
 
     <div class="top-tabs">
       <button class="tt active" data-tab="resumen" onclick="dxpTab('resumen')">Resumen</button>
+      <button class="tt" data-tab="avance" onclick="dxpTab('avance')">Avance del mes</button>
       <button class="tt" data-tab="roadmap" onclick="dxpTab('roadmap')">Plan de Acción</button>
     </div>
 
@@ -2895,6 +3282,7 @@ function renderHome() {
       <div class="deck-footer"><span>PAUNO — Diagnóstico Ejecutivo · ${mesTitulo}</span><span class="conf">Confidencial · Uso interno</span><span>Resumen</span></div>
     </div>
 
+    <div class="view" id="dxp-view-avance"></div>
     <div class="view" id="dxp-view-roadmap">${dxpRoadmapView()}</div>
   </div>`;
 }

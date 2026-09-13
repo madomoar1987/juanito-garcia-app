@@ -1,0 +1,169 @@
+{
+  "_leeme": [
+    "Metas mensuales del tablero. Este archivo manda: la app lo lee y lo usa",
+    "para decidir si un indicador está bien o mal.",
+    "",
+    "Hasta ahora las metas vivían sueltas dentro del código de extracción, así",
+    "que cambiar una exigía tocar Python. Aquí están juntas, se ven de un",
+    "vistazo y quedan con historial de quién las cambió y cuándo.",
+    "",
+    "meta: null significa que todavía nadie fijó una. La app lo muestra como",
+    "'falta la meta' en vez de esconder la fila: un indicador sin vara no",
+    "dispara alertas, y eso es un punto ciego que conviene ver.",
+    "",
+    "direccion: 'mayor' = conviene que suba (margen, fill rate).",
+    "           'menor' = conviene que baje (merma, morosidad, días de pago).",
+    "tipo:      'acumula' = suma día a día, se mide contra el ritmo del mes.",
+    "           'tasa'    = ya viene promediado, se mide por distancia a la meta."
+  ],
+  "actualizado": "2026-09-13",
+  "indicadores": [
+    {
+      "clave": "facturacion",
+      "label": "Facturación",
+      "reporte": "margen_variable_pag2",
+      "serie": ["fill_rate", "Facturación"],
+      "meta": 7830000,
+      "direccion": "mayor",
+      "tipo": "acumula",
+      "unidad": "soles",
+      "origen": "presupuesto del mes en Power BI"
+    },
+    {
+      "clave": "produccion",
+      "label": "Producción",
+      "reporte": "margen_variable_pag2",
+      "serie": ["productividad", "Producción (kg)"],
+      "meta": null,
+      "direccion": "mayor",
+      "tipo": "acumula",
+      "unidad": "kg",
+      "origen": null
+    },
+    {
+      "clave": "compras",
+      "label": "Ratio consumo / compra",
+      "reporte": "compras",
+      "serie": ["compras", "% Ratio Consumo/Compra"],
+      "meta": 1.0,
+      "direccion": "mayor",
+      "tipo": "acumula",
+      "unidad": "ratio",
+      "origen": "sobre 100% jala inventario; por debajo, se está sobre-comprando"
+    },
+    {
+      "clave": "margen",
+      "label": "Margen variable",
+      "reporte": "margen_variable",
+      "serie": ["margen", "% Margen Variable"],
+      "meta": 0.52,
+      "direccion": "mayor",
+      "tipo": "tasa",
+      "unidad": "pct",
+      "origen": "gerencia"
+    },
+    {
+      "clave": "merma",
+      "label": "Merma total",
+      "reporte": "mermas",
+      "serie": ["mermas", "% Merma Total"],
+      "meta": 0.02,
+      "direccion": "menor",
+      "tipo": "tasa",
+      "unidad": "pct",
+      "origen": "gerencia"
+    },
+    {
+      "clave": "fill_rate",
+      "label": "Fill rate",
+      "reporte": "fill_rate",
+      "serie": ["fill_rate", "% Fill Rate mensual"],
+      "meta": 0.98,
+      "direccion": "mayor",
+      "tipo": "tasa",
+      "unidad": "pct",
+      "origen": "gerencia"
+    },
+    {
+      "clave": "morosidad",
+      "label": "Morosidad",
+      "reporte": "cuentas_por_cobrar",
+      "serie": ["cxc", "% Morosidad"],
+      "meta": 0.15,
+      "direccion": "menor",
+      "tipo": "tasa",
+      "unidad": "pct",
+      "origen": "gerencia"
+    },
+    {
+      "clave": "dias_cxp",
+      "label": "Días de pago a proveedores",
+      "reporte": "cuentas_por_pagar",
+      "serie": ["cxp", "Días CxP"],
+      "meta": 90,
+      "direccion": "menor",
+      "tipo": "tasa",
+      "unidad": "dias",
+      "origen": "gerencia"
+    },
+    {
+      "clave": "rotacion",
+      "label": "Días de rotación de inventario",
+      "reporte": "sop_inventario",
+      "serie": ["inventario", "Días de rotación"],
+      "meta": null,
+      "direccion": "menor",
+      "tipo": "tasa",
+      "unidad": "dias",
+      "origen": null
+    },
+    {
+      "clave": "mip_tn",
+      "label": "Costo de materiales por tonelada vendida",
+      "reporte": "consumo_materiales",
+      "serie": ["consumo", "MIP / TN Vendida"],
+      "meta": null,
+      "direccion": "menor",
+      "tipo": "tasa",
+      "unidad": "soles",
+      "origen": null
+    },
+    {
+      "clave": "planilla_kg",
+      "label": "Planilla por kilo producido",
+      "reporte": "productividad",
+      "serie": ["productividad", "Planilla / kg producido"],
+      "meta": null,
+      "direccion": "menor",
+      "tipo": "tasa",
+      "unidad": "soles",
+      "origen": null
+    },
+    {
+      "clave": "control_interno",
+      "label": "Cumplimiento de control interno",
+      "reporte": "control_interno",
+      "serie": null,
+      "kpi": "% Cumplimiento",
+      "meta": 0.85,
+      "direccion": "mayor",
+      "tipo": "tasa",
+      "unidad": "pct",
+      "origen": "gerencia",
+      "nota": "acumulado histórico: el reporte no guarda corte mensual"
+    },
+    {
+      "clave": "dead_stock",
+      "label": "Dead stock",
+      "reporte": "sop_inventario",
+      "serie": null,
+      "kpi": "Dead Stock",
+      "meta": 500000,
+      "direccion": "menor",
+      "tipo": "tasa",
+      "unidad": "soles",
+      "origen": "gerencia",
+      "nota": "saldo del día: el reporte no guarda corte mensual"
+    }
+  ]
+}
