@@ -193,7 +193,7 @@
             },
             {
               "label": "Días CxP",
-              "valor": "106d",
+              "valor": "107d",
               "meta": "<90d",
               "fuente": "reporte"
             }
@@ -343,30 +343,28 @@
         },
         "margen_variable": {
           "estado": "yellow",
-          "alerta": "Margen 44.0% — bajo meta 52%",
+          "alerta": "Margen 46.5% — bajo meta 52%",
           "kpis": [
             {
               "label": "Ventas mes",
-              "valor": "S/1.62M",
-              "fuente": "reporte",
-              "meta": "2026-09 parcial — mediana previa S/7.37M",
-              "estado": "yellow"
+              "valor": "S/7.69M",
+              "fuente": "reporte"
             },
             {
               "label": "Margen variable",
-              "valor": "44.0%",
+              "valor": "46.5%",
               "meta": "≥52%",
               "estado": "yellow",
               "fuente": "reporte"
             },
             {
               "label": "Precio/kg",
-              "valor": "S/6.16",
+              "valor": "S/5.93",
               "fuente": "reporte"
             },
             {
               "label": "Costo/kg",
-              "valor": "S/3.44",
+              "valor": "S/3.16",
               "fuente": "reporte"
             }
           ],
@@ -514,7 +512,7 @@
             },
             {
               "label": "Costo x TN Vendida",
-              "valor": "S/257.19",
+              "valor": "S/143.63",
               "validado": true,
               "fuente": "reporte"
             },
@@ -526,7 +524,7 @@
             },
             {
               "label": "Costo x TN Producida",
-              "valor": "S/115.80",
+              "valor": "S/151.64",
               "validado": true,
               "fuente": "reporte"
             }
@@ -539,7 +537,7 @@
           "kpis": [
             {
               "label": "Merma Total",
-              "valor": "2.6%",
+              "valor": "2.9%",
               "meta": "<2%",
               "estado": "red",
               "fuente": "reporte"
@@ -1257,17 +1255,17 @@
             },
             {
               "label": "Orden de Venta",
-              "valor": "S/3.03M",
+              "valor": "S/6.79M",
               "fuente": "reporte"
             },
             {
               "label": "Facturación",
-              "valor": "S/2.41M",
+              "valor": "S/6.09M",
               "fuente": "reporte"
             },
             {
               "label": "Venta Perdida",
-              "valor": "S/620,000",
+              "valor": "S/700,000",
               "estado": "red",
               "fuente": "reporte",
               "meta": "orden de venta − facturación"
@@ -1361,7 +1359,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "red",
+          "estado": "yellow",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
@@ -1552,7 +1550,7 @@
     }
   ],
   "validacion": {
-    "cuadran": 11,
+    "cuadran": 23,
     "no_cuadran": [
       {
         "prueba": "CxP: total vs suma de tramos",
@@ -1560,13 +1558,6 @@
         "esperado": 10439217.0,
         "diferencia_pct": 35.7,
         "detalle": "8 tramos"
-      },
-      {
-        "prueba": "Fill rate: % vs facturación / orden de venta",
-        "publicado": 88.4,
-        "esperado": 79.538,
-        "diferencia_pct": 10.0,
-        "detalle": "2,410,000 / 3,030,000"
       },
       {
         "prueba": "Productividad: planilla por kg vendido",
@@ -1577,9 +1568,9 @@
       },
       {
         "prueba": "Consumo: costo por tonelada vendida",
-        "publicado": 257.19,
+        "publicado": 143.63,
         "esperado": 87.1605,
-        "diferencia_pct": 66.1,
+        "diferencia_pct": 39.3,
         "detalle": "1,460,000 / 16,751 TN"
       },
       {
@@ -1598,66 +1589,10 @@
       },
       {
         "prueba": "Ventas del mes: Margen vs Fill Rate",
-        "publicado": 1620000.0,
-        "esperado": 2410000.0,
-        "diferencia_pct": 32.8,
+        "publicado": 7690000.0,
+        "esperado": 6090000.0,
+        "diferencia_pct": 20.8,
         "detalle": "facturación del mismo mes por dos caminos"
-      },
-      {
-        "prueba": "Merma Total: tarjeta vs serie de 2026-08",
-        "publicado": 2.6,
-        "esperado": 2.93,
-        "diferencia_pct": 11.3,
-        "detalle": "mermas · mermas/% Merma Total"
-      },
-      {
-        "prueba": "Margen variable: tarjeta vs serie de 2026-08",
-        "publicado": 44.0,
-        "esperado": 46.4525,
-        "diferencia_pct": 5.3,
-        "detalle": "margen_variable · margen/% Margen Variable"
-      },
-      {
-        "prueba": "Ventas mes: tarjeta vs serie de 2026-08",
-        "publicado": 1620000.0,
-        "esperado": 7689608.92,
-        "diferencia_pct": 78.9,
-        "detalle": "margen_variable · margen/Ventas (S/.)"
-      },
-      {
-        "prueba": "Precio/kg: tarjeta vs serie de 2026-08",
-        "publicado": 6.16,
-        "esperado": 5.9301,
-        "diferencia_pct": 3.7,
-        "detalle": "margen_variable · margen/Precio x Kilo"
-      },
-      {
-        "prueba": "Costo/kg: tarjeta vs serie de 2026-08",
-        "publicado": 3.44,
-        "esperado": 3.1587,
-        "diferencia_pct": 8.2,
-        "detalle": "margen_variable · margen/Costo x Kilo"
-      },
-      {
-        "prueba": "Facturación: tarjeta vs serie de 2026-08",
-        "publicado": 2410000.0,
-        "esperado": 6087673.86,
-        "diferencia_pct": 60.4,
-        "detalle": "fill_rate · fill_rate/Facturación"
-      },
-      {
-        "prueba": "Orden de Venta: tarjeta vs serie de 2026-08",
-        "publicado": 3030000.0,
-        "esperado": 6789556.78,
-        "diferencia_pct": 55.4,
-        "detalle": "fill_rate · fill_rate/Orden de Venta"
-      },
-      {
-        "prueba": "Costo x TN Vendida: tarjeta vs serie de 2026-08",
-        "publicado": 257.19,
-        "esperado": 143.6304,
-        "diferencia_pct": 44.2,
-        "detalle": "consumo_materiales · consumo/MIP / TN Vendida"
       },
       {
         "prueba": "Venta Neta (KG): período desconocido",
@@ -1665,27 +1600,6 @@
         "esperado": 1306341.682,
         "diferencia_pct": 80.8,
         "detalle": "mes 1,306,342 · año 9,845,191 · total 15,275,344"
-      },
-      {
-        "prueba": "Ventas mes: período desconocido",
-        "publicado": 1620000.0,
-        "esperado": 7689608.92,
-        "diferencia_pct": 78.9,
-        "detalle": "mes 7,689,609 · año 56,821,451 · total 95,825,906"
-      },
-      {
-        "prueba": "Facturación: período desconocido",
-        "publicado": 2410000.0,
-        "esperado": 6087673.86,
-        "diferencia_pct": 60.4,
-        "detalle": "mes 6,087,674 · año 43,959,581 · total 73,094,260"
-      },
-      {
-        "prueba": "Orden de Venta: período desconocido",
-        "publicado": 3030000.0,
-        "esperado": 6789556.78,
-        "diferencia_pct": 55.4,
-        "detalle": "mes 6,789,557 · año 58,652,676 · total 98,156,957"
       }
     ],
     "sin_datos": []
