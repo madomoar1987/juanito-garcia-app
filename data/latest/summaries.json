@@ -516,7 +516,7 @@
               "label": "Costo x TN Vendida",
               "valor": "S/144",
               "validado": true,
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "Producción Neta (KG) · acumulado 2026",
@@ -998,7 +998,7 @@
               "valor": "69.32%",
               "meta": "85%",
               "estado": "red",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "Puntos de Control evaluados",
@@ -1009,20 +1009,20 @@
               "label": "Satisfactorio",
               "valor": "139",
               "estado": "green",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "Con Observaciones",
               "valor": "64",
               "estado": "yellow",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "Crítico",
               "valor": "108",
               "meta": "0",
               "estado": "red",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "% Puntos en estado Crítico",
@@ -1034,26 +1034,26 @@
             {
               "label": "Total Planes de Acción",
               "valor": "93",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "Planes de Acción Abiertos",
               "valor": "1",
               "estado": "yellow",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "Planes de Acción Cerrados",
               "valor": "62",
               "estado": "green",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "Planes de Acción Atrasados",
               "valor": "29",
               "meta": "0",
               "estado": "red",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "% Avance Planes de Acción",
@@ -1064,17 +1064,17 @@
             {
               "label": "Puntos Ejecutados",
               "valor": "314",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "Calificación",
               "valor": "653",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             },
             {
               "label": "Puntos Totales",
               "valor": "942",
-              "fuente": "sondeo"
+              "fuente": "reporte"
             }
           ],
           "por_area": [
@@ -1363,7 +1363,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "red",
+          "estado": "yellow",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
@@ -1457,13 +1457,13 @@
     "avance": 0.6295519287006067
   },
   "verificacion": {
-    "verificados": 49,
+    "verificados": 61,
     "total": 63
   },
   "cobertura": {
-    "kpis_del_reporte": 49,
+    "kpis_del_reporte": 61,
     "kpis_totales": 63,
-    "pct": 77.8
+    "pct": 96.8
   },
   "diagnostico": [
     {
@@ -1596,6 +1596,6 @@
   "validacion_tarjetas": {
     "iguales": 13,
     "distintas": [],
-    "sin_correspondencia": 43
+    "sin_correspondencia": 52
   }
 }
