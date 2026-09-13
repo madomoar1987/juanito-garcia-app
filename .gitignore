@@ -6,3 +6,5 @@ capturas/*.json
 
 # Credenciales locales: NUNCA se suben al repositorio.
 .env
+
+.DS_Store

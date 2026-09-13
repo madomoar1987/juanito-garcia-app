@@ -165,6 +165,11 @@ def hoy_lima():
             - datetime.timedelta(hours=5)).date()
 
 
+# Mes en curso, en formato "AAAA-MM". Lo usa _ultimo() para no confundir un
+# mes a medias con un cierre.
+PERIODO_PARCIAL = None
+
+
 def build_periodos():
     """Lista de (anio, mes) desde Ene-2025 hasta el mes EN CURSO.
 
@@ -174,8 +179,10 @@ def build_periodos():
     llevamos 12 dias de setiembre es informacion — siempre que quede claro
     que no se compara de igual a igual contra un mes cerrado.
     """
+    global PERIODO_PARCIAL
     hoy = hoy_lima()
     fin_anio, fin_mes = hoy.year, hoy.month
+    PERIODO_PARCIAL = f"{fin_anio:04d}-{fin_mes:02d}"
     out, a, m = [], INICIO_ANIO, INICIO_MES
     while (a, m) <= (fin_anio, fin_mes):
         out.append((a, m))
@@ -2126,8 +2133,19 @@ RECONCILIAR = [
 ]
 
 
-def _ultimo(serie, periodos):
-    for i in range(len(serie) - 1, -1, -1):
+def _ultimo(serie, periodos, saltar_parcial=True):
+    """Último valor de la serie. Por defecto ignora el mes en curso.
+
+    Desde que las series llegan hasta el mes en curso, tomar "el último"
+    significaba tomar un mes a medias: el tablero titulado "Agosto" pasó a
+    mostrar el margen de trece días de setiembre (44.0% en vez de 46.5%) y las
+    ventas del mes en S/1.62M en vez de S/7.69M. Las tarjetas son del último
+    mes CERRADO; el mes en curso tiene su propia pestaña.
+    """
+    ini = len(serie) - 1
+    if saltar_parcial and periodos and ini < len(periodos) and periodos[ini] == PERIODO_PARCIAL:
+        ini -= 1
+    for i in range(ini, -1, -1):
         if serie[i] is not None:
             return serie[i], (periodos[i] if i < len(periodos) else None)
     return None, None
