@@ -1,15 +1,15 @@
 {
-  "fecha": "09/09/2026",
-  "fecha_actualizacion": "2026-09-09",
+  "fecha": "13/09/2026",
+  "fecha_actualizacion": "2026-09-13",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "yellow"
   },
   "semaforo_razon": {
-    "PAUNO": "Morosidad 18.0% — sobre meta"
+    "PAUNO": "Morosidad 17.8% — sobre meta"
   },
-  "holding_ventas": "S/8.03M",
-  "holding_mora": "18.0%",
+  "holding_ventas": "S/8.25M",
+  "holding_mora": "17.8%",
   "agenda_ceo": {
     "decidir_hoy": [],
     "escalar_semana": [],
@@ -20,68 +20,68 @@
       "reportes": {
         "cuentas_por_cobrar": {
           "estado": "yellow",
-          "alerta": "Morosidad 18.0% — sobre meta",
+          "alerta": "Morosidad 17.8% — sobre meta",
           "kpis": [
             {
               "label": "Morosidad",
-              "valor": "18.0%",
+              "valor": "17.8%",
               "meta": "15%",
               "estado": "yellow",
               "fuente": "reporte"
             },
             {
               "label": "CxC por vencer",
-              "valor": "S/3.91M",
+              "valor": "S/3.51M",
               "meta": "aging confirmado",
               "fuente": "reporte"
             },
             {
               "label": "CxC Total",
-              "valor": "S/4.77M",
+              "valor": "S/4.27M",
               "fuente": "reporte"
             },
             {
               "label": "CxC Vencido",
-              "valor": "S/855,680",
-              "meta": "18.0% de cartera",
+              "valor": "S/761,563",
+              "meta": "17.8% de cartera",
               "estado": "yellow",
               "fuente": "reporte"
             },
             {
               "label": "Clientes",
-              "valor": "213",
+              "valor": "216",
               "fuente": "reporte"
             },
             {
               "label": "Ventas del mes",
-              "valor": "S/694,909",
+              "valor": "S/1.60M",
               "fuente": "reporte"
             }
           ],
           "tramos": [
             {
               "label": "Por Vencer",
-              "valor": "S/3.91M",
+              "valor": "S/3.51M",
               "estado": "green",
-              "pct": 82.0
+              "pct": 82.2
             },
             {
               "label": "0 a 15 días",
-              "valor": "S/185,139",
+              "valor": "S/177,204",
               "estado": "yellow",
-              "pct": 3.9
+              "pct": 4.1
             },
             {
               "label": "16 a 30 días",
-              "valor": "S/294,189",
+              "valor": "S/243,373",
               "estado": "yellow",
-              "pct": 6.2
+              "pct": 5.7
             },
             {
               "label": "Más de 30 días",
-              "valor": "S/376,351",
+              "valor": "S/340,986",
               "estado": "red",
-              "pct": 7.9
+              "pct": 8.0
             }
           ],
           "responsables": [
@@ -89,104 +89,104 @@
               "responsable": "VICTOR ASCENCIO",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
-              "total": "S/490,468",
-              "vencido": "S/264,903"
+              "total": "S/471,361",
+              "vencido": "S/224,694"
             },
             {
               "responsable": "CARLOS MIRANDA",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
-              "total": "S/924,265",
-              "vencido": "S/232,795"
-            },
-            {
-              "responsable": "MORI COLLAZOS MARTIN",
-              "nivel": "jefe",
-              "canal": "CANAL TRADICIONAL",
-              "total": "S/139,029",
-              "vencido": "S/97,135"
+              "total": "S/838,160",
+              "vencido": "S/202,412"
             },
             {
               "responsable": "JOSELYN ASTORAY",
               "nivel": "jefe",
               "canal": "HORECA",
-              "total": "S/340,393",
-              "vencido": "S/90,449"
+              "total": "S/376,955",
+              "vencido": "S/103,776"
+            },
+            {
+              "responsable": "MORI COLLAZOS MARTIN",
+              "nivel": "jefe",
+              "canal": "CANAL TRADICIONAL",
+              "total": "S/135,672",
+              "vencido": "S/92,771"
             },
             {
               "responsable": "GIOVANI O'BRIEN",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
-              "total": "S/199,644",
-              "vencido": "S/68,441"
-            },
-            {
-              "responsable": "YAQUELINE VALDIVIA",
-              "nivel": "jefe",
-              "canal": "CANAL TRADICIONAL",
-              "total": "S/203,795",
-              "vencido": "S/55,495"
+              "total": "S/188,610",
+              "vencido": "S/57,406"
             },
             {
               "responsable": "JUAN CHAVEZ",
               "nivel": "jefe",
               "canal": "CANAL MODERNO",
-              "total": "S/54,026",
+              "total": "S/52,423",
               "vencido": "S/45,741"
+            },
+            {
+              "responsable": "YAQUELINE VALDIVIA",
+              "nivel": "jefe",
+              "canal": "CANAL TRADICIONAL",
+              "total": "S/254,673",
+              "vencido": "S/26,019"
             },
             {
               "responsable": "JUAN CANCHARIS",
               "nivel": "jefe",
               "canal": "CANAL MODERNO",
-              "total": "S/2.01M",
-              "vencido": "S/8,751"
+              "total": "S/1.64M",
+              "vencido": "S/16,745"
             },
             {
               "responsable": "FABRICA",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
-              "total": "S/55,102",
-              "vencido": "S/4,993"
+              "total": "S/52,398",
+              "vencido": "S/5,024"
             },
             {
               "responsable": "OCTAVIO ESPINOZA",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
-              "total": "S/353,268",
+              "total": "S/262,894",
               "vencido": "S/-13,025"
             }
           ]
         },
         "cuentas_por_pagar": {
           "estado": "yellow",
-          "alerta": "Refinanciado S/6.93M — gestionar",
+          "alerta": "Refinanciado S/6.45M — gestionar",
           "kpis": [
             {
               "label": "CxP Total",
-              "valor": "S/17.11M",
+              "valor": "S/16.23M",
               "fuente": "reporte"
             },
             {
               "label": "Refinanciado",
-              "valor": "S/6.93M",
+              "valor": "S/6.45M",
               "estado": "yellow",
               "fuente": "reporte"
             },
             {
               "label": "# Proveedores",
-              "valor": "138",
+              "valor": "187",
               "fuente": "reporte"
             },
             {
               "label": "CxP Vencido",
-              "valor": "S/3.56M",
-              "meta": "35.0% de la deuda viva",
+              "valor": "S/3.15M",
+              "meta": "32.2% de la deuda viva",
               "estado": "red",
               "fuente": "reporte"
             },
             {
               "label": "Deuda top 15 proveedores",
-              "valor": "S/12.32M",
+              "valor": "S/11.87M",
               "meta": "concentración",
               "fuente": "reporte"
             },
@@ -200,50 +200,50 @@
           "tramos": [
             {
               "label": "Vigente",
-              "valor": "S/6.62M",
-              "pct": 65.0,
+              "valor": "S/6.63M",
+              "pct": 67.8,
               "estado": "green"
             },
             {
               "label": "16 a 30 días",
-              "valor": "S/1.08M",
-              "pct": 10.6,
+              "valor": "S/946,332",
+              "pct": 9.7,
               "estado": "yellow"
             },
             {
               "label": "31 a 45 días",
-              "valor": "S/635,777",
-              "pct": 6.2,
+              "valor": "S/732,124",
+              "pct": 7.5,
               "estado": "red"
             },
             {
               "label": "0 a 7 días",
-              "valor": "S/584,999",
-              "pct": 5.7,
+              "valor": "S/653,541",
+              "pct": 6.7,
               "estado": "yellow"
             },
             {
               "label": "8 a 15 días",
-              "valor": "S/509,794",
-              "pct": 5.0,
+              "valor": "S/552,769",
+              "pct": 5.7,
               "estado": "yellow"
             },
             {
               "label": "61 a 90 días",
-              "valor": "S/270,456",
-              "pct": 2.7,
+              "valor": "S/370,702",
+              "pct": 3.8,
               "estado": "red"
             },
             {
               "label": "46 a 60 días",
-              "valor": "S/244,666",
-              "pct": 2.4,
+              "valor": "S/222,785",
+              "pct": 2.3,
               "estado": "red"
             },
             {
               "label": "Más de 91 días",
-              "valor": "S/232,477",
-              "pct": 2.3,
+              "valor": "S/-332,626",
+              "pct": -3.4,
               "estado": "red"
             }
           ],
@@ -251,92 +251,92 @@
             {
               "nombre": "E & M S.R.L.",
               "categoria": "LECHE DESCREMADA",
-              "monto": "S/5.19M",
-              "pct": 42.1
+              "monto": "S/5.03M",
+              "pct": 42.4
             },
             {
               "nombre": "DIVERPLAST S.A.C.",
               "categoria": "BOTELLAS",
-              "monto": "S/1.03M",
-              "pct": 8.4
+              "monto": "S/962,434",
+              "pct": 8.1
             },
             {
               "nombre": "SAN MIGUEL INDUSTRIAS PET S.A.",
               "categoria": "SOBRECOPAS, VASOS Y TAPAS",
-              "monto": "S/730,618",
-              "pct": 5.9
+              "monto": "S/751,998",
+              "pct": 6.3
             },
             {
               "nombre": "CORPORACION DE ALIMENTOS TIERRA BENDITA SOCIEDAD ANONIMA CERRADA",
               "categoria": "GRANOLA",
-              "monto": "S/725,209",
-              "pct": 5.9
+              "monto": "S/720,560",
+              "pct": 6.1
             },
             {
               "nombre": "INTERLOOM S.A.C.",
               "categoria": "AZUCAR BLANCA",
               "monto": "S/674,296",
-              "pct": 5.5
+              "pct": 5.7
             },
             {
               "nombre": "SOCIEDAD GANADERA EL SEQUION S A",
               "categoria": "LECHE FRESCA",
               "monto": "S/638,391",
-              "pct": 5.2
-            },
-            {
-              "nombre": "GEKA CORP S.A.C",
-              "categoria": "ENVASES BALDES",
-              "monto": "S/505,203",
-              "pct": 4.1
+              "pct": 5.4
             },
             {
               "nombre": "CHR. HANSEN PERU S.A.",
               "categoria": "CULTIVO CASEI",
-              "monto": "S/480,224",
-              "pct": 3.9
+              "monto": "S/511,691",
+              "pct": 4.3
             },
             {
               "nombre": "TRUPAL S.A.",
               "categoria": "CAJA CORRUGADA",
               "monto": "S/430,987",
-              "pct": 3.5
+              "pct": 3.6
             },
             {
-              "nombre": "PROLABELS S.A.",
-              "categoria": "ETIQUETAS",
-              "monto": "S/354,241",
-              "pct": 2.9
+              "nombre": "GEKA CORP S.A.C",
+              "categoria": "ENVASES BALDES",
+              "monto": "S/352,268",
+              "pct": 3.0
             },
             {
               "nombre": "QUIMERCO S.A.S. SUCURSAL DEL PERU",
               "categoria": "ESPESANTE",
-              "monto": "S/343,177",
+              "monto": "S/336,319",
               "pct": 2.8
             },
             {
               "nombre": "ICATOM S.A.",
               "categoria": "PASTA DE TOMATE",
               "monto": "S/326,283",
+              "pct": 2.7
+            },
+            {
+              "nombre": "PROLABELS S.A.",
+              "categoria": "ETIQUETAS",
+              "monto": "S/312,491",
               "pct": 2.6
             },
             {
               "nombre": "INDUSTRIAS ALIMENTARIAS S.A.C.",
               "categoria": "PULPA DE FRUTAS",
-              "monto": "S/320,436",
-              "pct": 2.6
+              "monto": "S/290,121",
+              "pct": 2.4
             },
             {
               "nombre": "TRANSPORTES E INVERSIONES YAURI S.A.C.",
               "categoria": "OT TRANSPORTE",
-              "monto": "S/313,166",
-              "pct": 2.5
+              "monto": "S/274,329",
+              "pct": 2.3
             },
             {
               "nombre": "PAPELERA DEL SUR S A",
               "categoria": "CAJAS",
               "monto": "S/256,008",
-              "pct": 2.1
+              "pct": 2.2
             }
           ]
         },
@@ -468,23 +468,23 @@
           "por_uen": [
             {
               "uen": "B&D",
-              "margen": "65.4%",
-              "precio_kg": "S/5.87",
+              "margen": "65.3%",
+              "precio_kg": "S/5.86",
               "costo_kg": "S/2.03",
               "estado": "green"
             },
             {
               "uen": "MAQUILA",
-              "margen": "39.9%",
-              "precio_kg": "S/4.72",
+              "margen": "40.0%",
+              "precio_kg": "S/4.73",
               "costo_kg": "S/2.84",
               "estado": "red"
             },
             {
               "uen": "TIGO",
-              "margen": "51.3%",
-              "precio_kg": "S/12.25",
-              "costo_kg": "S/5.96",
+              "margen": "51.4%",
+              "precio_kg": "S/12.35",
+              "costo_kg": "S/6.00",
               "estado": "yellow"
             }
           ]
@@ -502,7 +502,7 @@
             },
             {
               "label": "Venta Neta (KG)",
-              "valor": "16,641,650 KG",
+              "valor": "16,750,700 KG",
               "validado": true,
               "fuente": "reporte"
             },
@@ -514,7 +514,7 @@
             },
             {
               "label": "Producción Neta (KG)",
-              "valor": "9,993,326 kg",
+              "valor": "10,207,465 kg",
               "validado": true,
               "fuente": "reporte"
             },
@@ -529,210 +529,14 @@
         },
         "mermas": {
           "estado": "red",
-          "alerta": "Merma 2.9% — sobre meta 2%",
+          "alerta": "Merma 4.87% — sobre meta 2%",
           "kpis": [
             {
               "label": "Merma Total",
-              "valor": "2.9%",
-              "meta": "<2%",
+              "valor": "4.87%",
+              "meta": "2%",
               "estado": "red",
               "fuente": "reporte"
-            }
-          ],
-          "por_sku": [
-            {
-              "sku": "E001410",
-              "almacen": "Lacteos Producción",
-              "estandar": 97476.0,
-              "consumido": 129636.0,
-              "exceso": 32160.0,
-              "pct": "33.0%"
-            },
-            {
-              "sku": "E001567",
-              "almacen": "Lacteos Producción",
-              "estandar": 0.0,
-              "consumido": 19776.0,
-              "exceso": 19776.0,
-              "pct": null
-            },
-            {
-              "sku": "I000177",
-              "almacen": "Lacteos Producción",
-              "estandar": 213911.6,
-              "consumido": 233203.5,
-              "exceso": 19291.9,
-              "pct": "9.0%"
-            },
-            {
-              "sku": "E001523",
-              "almacen": "Lacteos Producción",
-              "estandar": 0.0,
-              "consumido": 15966.0,
-              "exceso": 15966.0,
-              "pct": null
-            },
-            {
-              "sku": "INT122",
-              "almacen": "Lacteos Producción",
-              "estandar": 225570.3,
-              "consumido": 237714.8,
-              "exceso": 12144.5,
-              "pct": "5.4%"
-            },
-            {
-              "sku": "E001841",
-              "almacen": "Lacteos Producción",
-              "estandar": 69368.0,
-              "consumido": 81466.0,
-              "exceso": 12098.0,
-              "pct": "17.4%"
-            },
-            {
-              "sku": "INT121",
-              "almacen": "Lacteos Producción",
-              "estandar": 125272.3,
-              "consumido": 136415.2,
-              "exceso": 11142.9,
-              "pct": "8.9%"
-            },
-            {
-              "sku": "INT123",
-              "almacen": "Lacteos Producción",
-              "estandar": 0.0,
-              "consumido": 10307.6,
-              "exceso": 10307.6,
-              "pct": null
-            },
-            {
-              "sku": "E001840",
-              "almacen": "Lacteos Producción",
-              "estandar": 230638.0,
-              "consumido": 239357.0,
-              "exceso": 8719.0,
-              "pct": "3.8%"
-            },
-            {
-              "sku": "E001544",
-              "almacen": "Lacteos Producción",
-              "estandar": 0.0,
-              "consumido": 7403.0,
-              "exceso": 7403.0,
-              "pct": null
-            },
-            {
-              "sku": "E001837",
-              "almacen": "Lacteos Producción",
-              "estandar": 53360.0,
-              "consumido": 59898.0,
-              "exceso": 6538.0,
-              "pct": "12.3%"
-            },
-            {
-              "sku": "INT0075",
-              "almacen": "Lacteos Producción",
-              "estandar": 19778.1,
-              "consumido": 24994.3,
-              "exceso": 5216.2,
-              "pct": "26.4%"
-            },
-            {
-              "sku": "E001846",
-              "almacen": "Lacteos Producción",
-              "estandar": 55254.0,
-              "consumido": 59984.0,
-              "exceso": 4730.0,
-              "pct": "8.6%"
-            },
-            {
-              "sku": "PP00441",
-              "almacen": "Lacteos Producción",
-              "estandar": 119256.0,
-              "consumido": 122761.0,
-              "exceso": 3505.0,
-              "pct": "2.9%"
-            },
-            {
-              "sku": "INT0074",
-              "almacen": "Lacteos Producción",
-              "estandar": 39340.8,
-              "consumido": 42638.9,
-              "exceso": 3298.1,
-              "pct": "8.4%"
-            },
-            {
-              "sku": "INT0008",
-              "almacen": "Lacteos Producción",
-              "estandar": 45494.2,
-              "consumido": 48654.4,
-              "exceso": 3160.2,
-              "pct": "6.9%"
-            },
-            {
-              "sku": "PP00357",
-              "almacen": "Lacteos Producción",
-              "estandar": 0.0,
-              "consumido": 3027.0,
-              "exceso": 3027.0,
-              "pct": null
-            },
-            {
-              "sku": "MQP00007",
-              "almacen": "Lacteos Producción",
-              "estandar": 0.0,
-              "consumido": 2954.0,
-              "exceso": 2954.0,
-              "pct": null
-            },
-            {
-              "sku": "E001991",
-              "almacen": "Lacteos Producción",
-              "estandar": 0.0,
-              "consumido": 2920.0,
-              "exceso": 2920.0,
-              "pct": null
-            },
-            {
-              "sku": "E001412",
-              "almacen": "Lacteos Producción",
-              "estandar": 164357.6,
-              "consumido": 167266.7,
-              "exceso": 2909.1,
-              "pct": "1.8%"
-            }
-          ],
-          "por_uen": [
-            {
-              "uen": "B&D",
-              "merma": "1.49%",
-              "estado": "green"
-            },
-            {
-              "uen": "TIGO",
-              "merma": "4.30%",
-              "estado": "red"
-            },
-            {
-              "uen": "MAQUILA",
-              "merma": "2.93%",
-              "estado": "yellow"
-            }
-          ],
-          "por_planta": [
-            {
-              "planta": "ATE",
-              "merma": "3.11%",
-              "estado": "red"
-            },
-            {
-              "planta": "PACHACAMAC",
-              "merma": "1.81%",
-              "estado": "green"
-            },
-            {
-              "planta": "TERCEROS",
-              "merma": "0.68%",
-              "estado": "green"
             }
           ]
         },
@@ -742,34 +546,34 @@
           "kpis": [
             {
               "label": "Stock PP (Punto de Pedido)",
-              "valor": "4,621,323",
+              "valor": "4,107,720",
               "fuente": "reporte"
             },
             {
               "label": "Stock Valorizado",
-              "valor": "S/7.19M",
+              "valor": "S/7.09M",
               "fuente": "reporte"
             },
             {
               "label": "Consumo Prom 3M",
-              "valor": "13,773,440",
+              "valor": "13,714,985",
               "fuente": "reporte"
             },
             {
               "label": "Consumo Prom 6M",
-              "valor": "13,821,711",
+              "valor": "13,827,313",
               "fuente": "reporte"
             },
             {
               "label": "Materiales en quiebre",
-              "valor": "23",
+              "valor": "27",
               "meta": "explosión de materiales",
               "estado": "red",
               "fuente": "reporte"
             },
             {
               "label": "Ítems con necesidad de compra",
-              "valor": "427",
+              "valor": "443",
               "fuente": "reporte"
             }
           ],
@@ -777,208 +581,208 @@
             {
               "producto": "LECHE FRESCA",
               "categoria": "Lácteos base y derivados",
-              "faltante": "96,086",
-              "stock": "13,850",
-              "lead_time": null
-            },
-            {
-              "producto": "BOTELLA 1.7KG (GALONERA)",
-              "categoria": "Envases rígidos (botellas, frascos, potes, vasos)",
-              "faltante": "46,585",
-              "stock": "79,088",
-              "lead_time": null
-            },
-            {
-              "producto": "AZUCAR BLANCA",
-              "categoria": "Azúcares y edulcorantes",
-              "faltante": "19,722",
-              "stock": "9,094",
-              "lead_time": null
-            },
-            {
-              "producto": "LECHE DESCREMADA EN POLVO LH",
-              "categoria": "Lácteos base y derivados",
-              "faltante": "13,472",
-              "stock": "14,534",
-              "lead_time": null
-            },
-            {
-              "producto": "ETIQ TIGOMIX BOLITAS (OJITOS)",
-              "categoria": "Etiquetas",
-              "faltante": "5,000",
+              "faltante": "67,852",
               "stock": "0",
               "lead_time": null
             },
             {
-              "producto": "POTE CRISTAL 1 LT C/TAPA BLANCA (BASA)",
-              "categoria": "Envases rígidos (botellas, frascos, potes, vasos)",
-              "faltante": "3,766",
-              "stock": "8,160",
+              "producto": "DOYPACK VALIDA PASTA DE TOMATE 100GR",
+              "categoria": "Envases flexibles (doypacks, bolsas, láminas)",
+              "faltante": "60,800",
+              "stock": "-0",
+              "lead_time": null
+            },
+            {
+              "producto": "AZUCAR RUBIA",
+              "categoria": "Azúcares y edulcorantes",
+              "faltante": "7,022",
+              "stock": "3,050",
               "lead_time": null
             },
             {
               "producto": "SEPARADOR DE CARTON 27.6 CM X 17.2 CM",
               "categoria": "Cajas y embalaje secundario",
-              "faltante": "3,159",
-              "stock": "2,100",
+              "faltante": "4,309",
+              "stock": "200",
               "lead_time": null
             },
             {
-              "producto": "ETIQ PRE LIGHT NATURAL 1K (CURVO)(DESUSO 2909)",
-              "categoria": "Etiquetas",
-              "faltante": "2,600",
-              "stock": "7,700",
+              "producto": "DOYPACK B&D CREMA DE AJI 95GR",
+              "categoria": "Envases flexibles (doypacks, bolsas, láminas)",
+              "faltante": "2,980",
+              "stock": "0",
               "lead_time": null
             },
             {
-              "producto": "SUERO DE LECHE EN POLVO",
+              "producto": "LECHE DESCREMADA EN POLVO LH",
               "categoria": "Lácteos base y derivados",
-              "faltante": "1,098",
-              "stock": "1,030",
+              "faltante": "2,471",
+              "stock": "14,944",
               "lead_time": null
             },
             {
-              "producto": "CAJA CORRUGADA GRANOLA (375X280X92MM)",
+              "producto": "ACEITE DE SOYA",
+              "categoria": "Aceites, grasas y proteínas vegetales",
+              "faltante": "1,313",
+              "stock": "1,840",
+              "lead_time": null
+            },
+            {
+              "producto": "CAJA CORRUGADA DOYPACK 1KG (270X220X275MM)",
               "categoria": "Cajas y embalaje secundario",
-              "faltante": "694",
-              "stock": "4,800",
+              "faltante": "550",
+              "stock": "0",
+              "lead_time": null
+            },
+            {
+              "producto": "ETIQ B&D MOSTAZA 220G ND",
+              "categoria": "Etiquetas",
+              "faltante": "424",
+              "stock": "3,200",
+              "lead_time": null
+            },
+            {
+              "producto": "AJI AMARILLO FRESCO",
+              "categoria": "Ingredientes frescos y vegetales",
+              "faltante": "236",
+              "stock": "-0",
               "lead_time": null
             },
             {
               "producto": "ALMIDON MAXIGEL 617 ( TATE & LYLE )",
               "categoria": "Almidones y espesantes",
-              "faltante": "432",
-              "stock": "3,349",
+              "faltante": "221",
+              "stock": "1,803",
               "lead_time": null
             },
             {
-              "producto": "CULTIVO FD DVS YF L 903 X 200U",
-              "categoria": "Cultivos y fermentos",
-              "faltante": "141",
-              "stock": "70",
+              "producto": "CHANCACA",
+              "categoria": "Azúcares y edulcorantes",
+              "faltante": "166",
+              "stock": "0",
               "lead_time": null
             }
           ],
           "necesidad_compra": [
             {
               "momento": "Comprar-( Oct 2026)",
-              "items": 185
+              "items": 196
             },
             {
               "momento": "Comprar-( Nov 2026)",
-              "items": 162
+              "items": 159
             },
             {
               "momento": "Comprar-( Set 2026)",
-              "items": 76
+              "items": 82
             },
             {
               "momento": "Revisar-( Set 2026)",
-              "items": 4
+              "items": 6
             }
           ]
         },
         "sop_inventario": {
           "estado": "red",
-          "alerta": "Dead Stock 18.7% del inventario",
+          "alerta": "Dead Stock 18.6% del inventario",
           "kpis": [
             {
               "label": "Inventario Total",
-              "valor": "S/6.63M",
+              "valor": "S/6.83M",
               "fuente": "reporte"
             },
             {
               "label": "Dead Stock",
-              "valor": "S/1.24M",
+              "valor": "S/1.27M",
               "meta": "<S/500K",
               "estado": "red",
               "fuente": "reporte"
             },
             {
               "label": "% Dead Stock",
-              "valor": "18.7%",
+              "valor": "18.6%",
               "meta": "<5%",
               "estado": "red",
               "fuente": "reporte"
             },
             {
               "label": "Working Stock",
-              "valor": "S/4.30M",
+              "valor": "S/4.44M",
               "fuente": "reporte"
             },
             {
               "label": "Exceso 1 (2-5 meses)",
-              "valor": "S/672,326",
+              "valor": "S/698,412",
               "fuente": "reporte"
             },
             {
               "label": "Exceso 2 (5-12 meses)",
-              "valor": "S/414,966",
+              "valor": "S/415,067",
               "fuente": "reporte"
             }
           ],
           "dead_por_categoria": [
             {
               "categoria": "ENVASES Y EMBALAJES",
-              "valor": "S/919,385",
-              "pct": 74.3
+              "valor": "S/938,277",
+              "pct": 73.9
             },
             {
               "categoria": "PROD. EN PROCESO",
-              "valor": "S/99,742",
-              "pct": 8.1
+              "valor": "S/100,075",
+              "pct": 7.9
             },
             {
               "categoria": "MATERIA PRIMA",
-              "valor": "S/99,127",
-              "pct": 8.0
+              "valor": "S/90,753",
+              "pct": 7.1
             },
             {
               "categoria": "SUMINISTROS",
-              "valor": "S/53,699",
-              "pct": 4.3
+              "valor": "S/55,425",
+              "pct": 4.4
             },
             {
               "categoria": "REPUESTOS",
-              "valor": "S/30,975",
+              "valor": "S/32,175",
               "pct": 2.5
             },
             {
               "categoria": "PT SALSAS",
-              "valor": "S/15,346",
-              "pct": 1.2
+              "valor": "S/30,658",
+              "pct": 2.4
             }
           ],
           "working_por_categoria": [
             {
               "categoria": "ENVASES Y EMBALAJES",
-              "valor": "S/1.87M",
-              "pct": 43.5
+              "valor": "S/1.78M",
+              "pct": 40.0
             },
             {
               "categoria": "MATERIA PRIMA",
-              "valor": "S/1.25M",
-              "pct": 29.1
-            },
-            {
-              "categoria": "PT SALSAS",
-              "valor": "S/436,445",
-              "pct": 10.1
+              "valor": "S/1.33M",
+              "pct": 30.0
             },
             {
               "categoria": "PT YOGURTS",
-              "valor": "S/358,232",
-              "pct": 8.3
+              "valor": "S/482,152",
+              "pct": 10.9
+            },
+            {
+              "categoria": "PT SALSAS",
+              "valor": "S/464,775",
+              "pct": 10.5
             },
             {
               "categoria": "PROD. EN PROCESO",
-              "valor": "S/220,567",
+              "valor": "S/228,530",
               "pct": 5.1
             },
             {
               "categoria": "SUMINISTROS",
-              "valor": "S/70,613",
-              "pct": 1.6
+              "valor": "S/73,886",
+              "pct": 1.7
             }
           ]
         },
@@ -1221,12 +1025,12 @@
             },
             {
               "label": "Producción Total (KG)",
-              "valor": "9,629,256 kg",
+              "valor": "9,621,234 kg",
               "fuente": "reporte"
             },
             {
               "label": "Venta Neta (KG)",
-              "valor": "6,794,756 kg",
+              "valor": "6,786,752 kg",
               "fuente": "reporte"
             },
             {
@@ -1353,7 +1157,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "red",
+          "estado": "yellow",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
@@ -1382,34 +1186,34 @@
             },
             {
               "label": "Pendiente de facturar",
-              "valor": "S/427,643",
+              "valor": "S/647,640",
               "fuente": "reporte"
             }
           ],
           "cumplimiento_produccion": [
             {
               "categoria": "MERCADERIAS SALSAS PACKS",
-              "programado": "3,923,463",
-              "producido": "2,916,190",
-              "pct": 74.3
+              "programado": "3,982,763",
+              "producido": "2,939,126",
+              "pct": 73.8
             },
             {
               "categoria": "PT DERIVADOS LACTEOS",
-              "programado": "100,067",
+              "programado": "101,357",
               "producido": "62,996",
-              "pct": 63.0
+              "pct": 62.2
             },
             {
               "categoria": "PT SALSAS",
-              "programado": "9,797,066",
-              "producido": "5,452,553",
-              "pct": 55.7
+              "programado": "10,091,418",
+              "producido": "5,535,599",
+              "pct": 54.9
             },
             {
               "categoria": "PT YOGURTS",
-              "programado": "14,419,118",
-              "producido": "11,367,577",
-              "pct": 78.8
+              "programado": "14,628,604",
+              "producido": "11,503,051",
+              "pct": 78.6
             }
           ],
           "por_canal": [
@@ -1417,21 +1221,21 @@
               "canal": "MODERNO",
               "ppto": "S/5.87M",
               "facturado": "S/14.13M",
-              "pendiente": "S/363,179",
+              "pendiente": "S/584,222",
               "avance": 240.8
             },
             {
               "canal": "TRADICIONAL",
               "ppto": "S/1.69M",
               "facturado": "S/3.88M",
-              "pendiente": "S/32,402",
+              "pendiente": "S/34,808",
               "avance": 229.4
             },
             {
               "canal": "HORECA",
               "ppto": "S/270,000",
               "facturado": "S/737,029",
-              "pendiente": "S/32,062",
+              "pendiente": "S/28,609",
               "avance": 273.0
             }
           ]
@@ -1449,5 +1253,52 @@
   "verificacion": {
     "verificados": 63,
     "total": 63
-  }
+  },
+  "diagnostico": [
+    {
+      "consulta": "captura:Matriz#32dc719b5e1f",
+      "http": 404,
+      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
+    },
+    {
+      "consulta": "captura:Matriz#32dc719b5e1f",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (20, 16) Column '<oii>MES</oii>' in table '<oii>Calendario</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]}}}"
+    },
+    {
+      "consulta": "captura:Matriz#32dc719b5e1f",
+      "http": 200,
+      "error": "ninguna tabla del resultado contiene las columnas ['[sku]', '[almacen_referencia]', '[SumSTD_CANT]', '[SumCANT_REAL]', '[SumDIF_CANT]', '[v__Merma__Texto_]']. Devueltas: []"
+    },
+    {
+      "consulta": "merma-uen-B&D",
+      "http": 404,
+      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
+    },
+    {
+      "consulta": "merma-uen-TIGO",
+      "http": 404,
+      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
+    },
+    {
+      "consulta": "merma-uen-MAQUILA",
+      "http": 404,
+      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
+    },
+    {
+      "consulta": "merma-planta-ATE",
+      "http": 404,
+      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
+    },
+    {
+      "consulta": "merma-planta-PACHACAMAC",
+      "http": 404,
+      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
+    },
+    {
+      "consulta": "merma-planta-TERCEROS",
+      "http": 404,
+      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
+    }
+  ]
 }

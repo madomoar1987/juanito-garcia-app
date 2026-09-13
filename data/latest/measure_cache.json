@@ -34,7 +34,8 @@
     "Peso total KG": null,
     "Ratio costo / kg": null,
     "Producción (KG) Odoo": null,
-    "Costo x ton producida": null
+    "Costo x ton producida": null,
+    "Consumo": null
   },
   "fill_rate": {
     "% FILLRATE": null,
@@ -48,8 +49,7 @@
     "Venta Perdida": null
   },
   "mermas": {
-    "% Merma Total": null,
-    "Merma": null
+    "% Merma Total": null
   },
   "planificacion": {
     "% Avance": null
