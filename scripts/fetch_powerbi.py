@@ -3532,7 +3532,10 @@ def main():
                     v = valor_tarjeta_por_hash(token, ws_id, ids["consumo"], h, etiqueta)
                     destino = DESTINO_CONSUMO.get(etiqueta)
                     if v is not None and destino:
-                        scanned.setdefault("consumo", {})[destino] = v
+                        # guardar_del_reporte, no setdefault: sin la constancia
+                        # estas cinco cifras se contaban como del sondeo aunque
+                        # salen de la tarjeta del reporte.
+                        guardar_del_reporte(scanned, "consumo", destino, v)
                         LEIDOS_DE_TARJETA.append(["consumo_materiales", etiqueta])
                         print(f"    ✓ Consumo [{etiqueta}] desde la tarjeta = {v:,.2f}")
                     else:
