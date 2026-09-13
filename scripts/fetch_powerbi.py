@@ -814,6 +814,70 @@ WORKSPACES = {
     "PAUNO": "461932ad-b5ec-4fd6-aa97-f1fc7bdc5169",
 }
 
+# Identificadores de REPORTE, los que se ven en la barra de direcciones de
+# Power BI (.../reports/<id>/...). A diferencia del dataset, no cambian cuando
+# alguien vuelve a publicar el informe — y cuando cambia el dataset, el
+# extractor se queda apuntando a algo que ya no existe: entre el 9 y el 13 de
+# setiembre las consultas de mermas devolvieron PowerBIEntityNotFound mientras
+# los otros diez reportes respondian normal. Con esto el dataset se resuelve
+# solo en cada corrida.
+REPORT_IDS = {
+    "PAUNO": {
+        "mermas": "3fa688de-f4ad-4e58-878b-d2d816275ff3",  # 4. Reporte de mermas
+    }
+}
+
+
+def dataset_de_reporte(token, ws, report_id, label):
+    """Dataset que alimenta a un reporte. None si no se puede averiguar."""
+    try:
+        r = requests.get(f"{PBI_BASE}/groups/{ws}/reports/{report_id}",
+                         headers={"Authorization": f"Bearer {token}"}, timeout=30)
+        if r.status_code != 200:
+            DIAGNOSTICO.append({"consulta": f"reporte:{label}", "http": r.status_code,
+                                "error": r.text[:300]})
+            return None
+        return r.json().get("datasetId")
+    except Exception as e:
+        DIAGNOSTICO.append({"consulta": f"reporte:{label}", "http": 0,
+                            "error": repr(e)[:200]})
+        return None
+
+
+# Los identificadores ya corregidos, para el codigo que corre fuera del bucle
+# por empresa y no tiene `ids` a mano. Sin esto, esas partes seguirian usando
+# el dataset viejo y el fallo volveria por una puerta lateral.
+DATASETS_RESUELTOS = {}
+
+
+def datasets_de(empresa):
+    """Identificadores vigentes: los resueltos si los hay, si no los fijos."""
+    return DATASETS_RESUELTOS.get(empresa) or DATASET_IDS.get(empresa, {})
+
+
+def resolver_datasets(token, ws, empresa, ids):
+    """Corrige los identificadores de dataset que quedaron obsoletos.
+
+    Se deja constancia del cambio: si un reporte se republica cada semana,
+    conviene verlo en el diagnóstico y no descubrirlo cuando el dato falla.
+    """
+    for clave, report_id in (REPORT_IDS.get(empresa) or {}).items():
+        real = dataset_de_reporte(token, ws, report_id, clave)
+        if not real:
+            continue
+        if ids.get(clave) != real:
+            print(f"    · {clave}: el dataset cambió — {ids.get(clave)} → {real}")
+            DIAGNOSTICO.append({
+                "consulta": f"dataset_actualizado:{clave}", "http": 200,
+                "error": (f"el reporte {report_id} ahora usa el dataset {real}; "
+                          f"el configurado era {ids.get(clave)}")})
+            ids[clave] = real
+        else:
+            print(f"    · {clave}: dataset confirmado {real}")
+    DATASETS_RESUELTOS[empresa] = ids
+    return ids
+
+
 # IDs confirmados por discover_all_datasets() en ejecución anterior
 DATASET_IDS = {
     "PAUNO": {
@@ -3270,7 +3334,10 @@ def main():
 
     for empresa, ws_id in WORKSPACES.items():
         print(f"\n[{empresa}]")
-        ids = DATASET_IDS.get(empresa, {})
+        ids = dict(DATASET_IDS.get(empresa, {}))
+        # Antes de consultar nada: confirmar que los datasets siguen siendo
+        # los que dice la configuración.
+        ids = resolver_datasets(token, ws_id, empresa, ids)
         empresa_data = {"reportes": {}}
 
         # Cargar medidas descubiertas (fuente de verdad del discover workflow)
@@ -3495,7 +3562,7 @@ def main():
             scanned.setdefault("inventario", {}).update(scanned["planificacion"])
 
         # ── CxC: aging real (tramos de antigüedad) desde 'DATA_FACTURACION'
-        cxc_ds_id = DATASET_IDS.get(empresa, {}).get("cxc")
+        cxc_ds_id = ids.get("cxc")
         if cxc_ds_id:
             try:
                 aging = dax_cxc_aging(token, ws_id, cxc_ds_id)
@@ -3602,7 +3669,7 @@ def main():
             summary["semaforo_razon"][empresa] = "Sin datos CxC"
 
         # ── CxP: top 15 proveedores por deuda pendiente
-        cxp_ds_id = DATASET_IDS.get(empresa, {}).get("cxp")
+        cxp_ds_id = ids.get("cxp")
         if cxp_ds_id:
             try:
                 aging_cxp = dax_cxp_aging(token, ws_id, cxp_ds_id)
@@ -3653,7 +3720,7 @@ def main():
 
         # ── Margen
         if scanned.get("margen"):
-            margen_ds_id_total = DATASET_IDS.get(empresa, {}).get("margen")
+            margen_ds_id_total = ids.get("margen")
             if margen_ds_id_total:
                 # Sobrescribe Precio x Kilo / Costo x Kilo con el filtro exacto de
                 # 12 condiciones confirmado con Copiar consulta (2026-09-04) — el
@@ -3682,7 +3749,7 @@ def main():
             # bloque anterior que adivinaba nombres de tabla ("Maestro Productos",
             # "Productos", "DimProducto") y nunca encontraba dato — la tabla real
             # es 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1].
-            margen_ds_id = DATASET_IDS.get(empresa, {}).get("margen")
+            margen_ds_id = ids.get("margen")
             if margen_ds_id:
                 uen_data = []
                 for uen in ["B&D", "MAQUILA", "TIGO"]:
@@ -3724,7 +3791,8 @@ def main():
             # ── Mermas por UEN — filtro exacto confirmado con Copiar consulta (2026-09-04)
             # Reemplaza el bloque anterior que adivinaba tabla/columna ("Maestro Productos",
             # "UEN", "Unidad Negocio"...) y nunca encontraba dato real.
-            mermas_ds_id = DATASET_IDS.get(empresa, {}).get("mermas")
+            # De `ids`, no de DATASET_IDS: `ids` ya trae el dataset corregido.
+            mermas_ds_id = ids.get("mermas")
             if mermas_ds_id:
                 # (medida en 'Tabla Mermas', filtro extra propio de la tarjeta o None)
                 UEN_MERMA_CONFIG = [
@@ -3881,7 +3949,7 @@ def main():
 
         # ── Inventario — filtro exacto confirmado con Copiar consulta (2026-09-04)
         # sobre el reporte '6. Rotación de inventario' (página RI Clasificación).
-        inv_ds_id = DATASET_IDS.get(empresa, {}).get("inventario")
+        inv_ds_id = ids.get("inventario")
         if inv_ds_id:
             cob_total = dax_inventario_kardex(token, ws_id, inv_ds_id, "Días Rotación", PREV_YEAR, PREV_MONTH)
             cob_mp    = dax_inventario_kardex(token, ws_id, inv_ds_id, "Días Rotación MP", PREV_YEAR, PREV_MONTH)
@@ -3927,7 +3995,7 @@ def main():
         # ── Control Interno — filtro exacto confirmado con Copiar consulta (2026-09-04)
         # sobre '8. Reporte de auditoria' (Dashboard de Control Interno): solo
         # Empresa="Pauno", sin filtro de fecha (acumulado histórico total).
-        control_ds_id = DATASET_IDS.get(empresa, {}).get("control_ds")
+        control_ds_id = ids.get("control_ds")
         if control_ds_id:
             satisf_v = dax_control_interno(token, ws_id, control_ds_id, "Satisfactorio")
             obs_v    = dax_control_interno(token, ws_id, control_ds_id, "Con Observaciones")
@@ -4118,7 +4186,7 @@ def main():
 
     # Los KPIs de tarjeta del propio reporte mandan sobre los del sondeo.
     try:
-        ids_p = DATASET_IDS.get("PAUNO", {})
+        ids_p = datasets_de("PAUNO")
         candidatos = {
             "cuentas_por_cobrar": [ids_p.get("cxc")],
             "control_interno":    [ids_p.get("control_ds")],
@@ -4159,7 +4227,7 @@ def main():
     # Sus 14 KPIs venían del sondeo y nunca se habían contrastado; estas dos
     # tablas del reporte 8 dicen además QUIÉN y DÓNDE, que es lo accionable.
     try:
-        ids_ci = [DATASET_IDS.get("PAUNO", {}).get("control_ds")]
+        ids_ci = [datasets_de("PAUNO").get("control_ds")]
         reps_ci = (summary.get("empresas", {}).get("PAUNO", {}) or {}).get("reportes", {})
         ci = reps_ci.get("control_interno")
         if ci is not None:
