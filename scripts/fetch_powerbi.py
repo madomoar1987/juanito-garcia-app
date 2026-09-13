@@ -3781,6 +3781,28 @@ def main():
                     empresa_data["reportes"]["mermas"]["por_planta"] = planta_merma
                     print(f"  Mermas Planta: {planta_merma}")
 
+                # Si NINGUNA consulta por segmento devolvió valor, el reporte
+                # de Power BI cambió y lo único que queda es lo que el sondeo
+                # genérico haya encontrado suelto — que no es la merma del
+                # mes. El 13 de setiembre eso publicó "Merma Total 4.87%", una
+                # cifra vieja y equivocada, presentada como si fuera de hoy.
+                # Un dato ausente se nota; uno incorrecto se usa para decidir.
+                if not uen_merma and not planta_merma:
+                    rep = empresa_data["reportes"]["mermas"]
+                    rep["kpis"] = [{"label": "Merma Total", "valor": "sin dato",
+                                    "estado": "red",
+                                    "meta": "el reporte de Power BI no responde"}]
+                    rep["alerta"] = ("Mermas sin dato: las consultas por UEN y por planta "
+                                     "fallan contra Power BI. Revisar el reporte 4.")
+                    rep["estado"] = "red"
+                    for clave in ("por_uen", "por_planta", "por_sku"):
+                        rep.pop(clave, None)
+                    print("  ✗ Mermas: ningún segmento respondió — se publica 'sin dato'")
+                    DIAGNOSTICO.append({
+                        "consulta": "mermas_sin_segmentos", "http": 0,
+                        "error": ("ninguna consulta por UEN ni por planta devolvió valor; "
+                                  "se oculta el KPI para no mostrar una cifra obsoleta")})
+
         # ── Compras: los KPIs de stock salen de la tabla ANALISIS DE
         # MATERIALES sumando sus filas, que es lo que hace la fila Total del
         # visual. Antes venían del sondeo, sin los filtros del reporte.
