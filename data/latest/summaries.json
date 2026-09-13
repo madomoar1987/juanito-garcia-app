@@ -514,9 +514,9 @@
             },
             {
               "label": "Costo x TN Vendida",
-              "valor": "S/143.63",
+              "valor": "S/144",
               "validado": true,
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "Producción Neta (KG) · acumulado 2026",
@@ -527,7 +527,7 @@
             },
             {
               "label": "Costo x TN Producida",
-              "valor": "S/151.64",
+              "valor": "S/143",
               "validado": true,
               "fuente": "reporte"
             }
@@ -1363,7 +1363,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "yellow",
+          "estado": "red",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
@@ -1558,6 +1558,28 @@
       "razon": "la medida del reporte [%Av vs PPTO AL DIA] compara contra el presupuesto proporcional al día y devuelve 0"
     }
   ],
+  "kpis_de_tarjeta": [
+    [
+      "consumo_materiales",
+      "Costo Total"
+    ],
+    [
+      "consumo_materiales",
+      "Venta Neta (KG)"
+    ],
+    [
+      "consumo_materiales",
+      "Costo x TN Vendida"
+    ],
+    [
+      "consumo_materiales",
+      "Producción Neta (KG)"
+    ],
+    [
+      "consumo_materiales",
+      "Costo x TN Producida"
+    ]
+  ],
   "validacion": {
     "cuadran": 24,
     "no_cuadran": [
@@ -1572,19 +1594,8 @@
     "sin_datos": []
   },
   "validacion_tarjetas": {
-    "iguales": 12,
-    "distintas": [
-      {
-        "kpi": "Costo x TN Producida",
-        "reporte": "consumo_materiales",
-        "en_powerbi": [
-          143.46
-        ],
-        "suma_powerbi": null,
-        "en_juanito": 151.64,
-        "diferencia_pct": 5.4
-      }
-    ],
+    "iguales": 13,
+    "distintas": [],
     "sin_correspondencia": 43
   }
 }
