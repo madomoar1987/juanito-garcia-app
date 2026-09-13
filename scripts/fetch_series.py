@@ -1896,16 +1896,37 @@ def serie_desde_captura(token, ds_id, periodos, visual, col_dim, col_medida,
     # fecha por un [ColumnIndex] y publican el eje —los períodos en orden— en
     # la PRIMERA tabla del resultado. Sin reconstruir esa correspondencia el
     # cuerpo no tiene fechas y no se puede armar ninguna serie.
-    eje = []
+    # SUBSTITUTEWITHINDEX cambia una de las dos dimensiones por un
+    # [ColumnIndex] y publica sus valores en la PRIMERA tabla. Cuál de las dos
+    # depende de cómo esté armado el visual:
+    #
+    #   · La merma por planta indexa los MESES: cada fila es una planta.
+    #   · El margen por unidad de negocio indexa las UNIDADES: cada fila es un
+    #     mes y trae sus columnas de fecha completas.
+    #
+    # Distinguirlas es simple: si la fila ya trae el año, lo indexado no son
+    # los meses. Asumir siempre lo primero hacía que el margen por UEN
+    # devolviera 29 filas y ninguna serie.
+    eje, eje_es_dim = [], False
     if filas and any(k.endswith("[ColumnIndex]") for k in filas[0]):
+        eje_es_dim = busca(filas[0], "[Año]") is not None
         for f in (tablas[0] if len(tablas) > 1 else []):
-            a, m = busca(f, "[Año]"), busca(f, "[NroMes]")
+            if eje_es_dim:
+                # El eje son los valores de la dimensión (B&D, TIGO, MAQUILA).
+                v = busca(f, f"[{col_dim}]") if col_dim else None
+                if v is None:
+                    v = next((x for k, x in f.items()
+                              if not k.endswith("[ColumnIndex]")
+                              and isinstance(x, str)), None)
+                eje.append(v)
+                continue
+            a_, m = busca(f, "[Año]"), busca(f, "[NroMes]")
             if m is None:
                 corto = busca(f, "[Mes]")
                 if isinstance(corto, str):
                     m = MESES_CORTOS.get(corto.strip().lower()[:3])
             try:
-                eje.append((int(a), int(m)))
+                eje.append((int(a_), int(m)))
             except (TypeError, ValueError):
                 eje.append(None)
         if not eje:
@@ -1918,9 +1939,26 @@ def serie_desde_captura(token, ds_id, periodos, visual, col_dim, col_medida,
         # línea en el tiempo), así que todas las filas van al mismo grupo.
         dim = busca(f, f"[{col_dim}]") if col_dim else ""
         val = busca(f, f"[{col_medida}]")
-        if eje:
-            idx = busca(f, "[ColumnIndex]")
-            per = eje[int(idx)] if isinstance(idx, (int, float)) and 0 <= idx < len(eje) else None
+        idx = busca(f, "[ColumnIndex]")
+        en_rango = isinstance(idx, (int, float)) and 0 <= int(idx) < len(eje)
+        if eje and eje_es_dim:
+            # La dimensión viene del eje; el período, de la propia fila.
+            dim = eje[int(idx)] if en_rango else None
+            anio, mes = busca(f, "[Año]"), busca(f, "[NroMes]")
+            if mes is None:
+                mes = busca(f, "[MES]")
+            if mes is None:
+                corto = busca(f, "[Mes Corto]") or busca(f, "[Mes]")
+                if isinstance(corto, str):
+                    mes = MESES_CORTOS.get(corto.strip().lower()[:3])
+            per = None
+            if anio is not None and mes is not None:
+                try:
+                    per = (int(anio), int(mes))
+                except (TypeError, ValueError):
+                    per = None
+        elif eje:
+            per = eje[int(idx)] if en_rango else None
         else:
             anio, mes = busca(f, "[Año]"), busca(f, "[NroMes]")
             if mes is None:
