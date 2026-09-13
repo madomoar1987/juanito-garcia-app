@@ -54,6 +54,18 @@ jobs:
         run: python scripts/fetch_series.py
         continue-on-error: true
 
+      # Se cruzan las cifras entre si ANTES de publicar: un total contra la
+      # suma de sus partes, un ratio contra sus operandos, la misma magnitud
+      # medida en dos reportes. Lo que no cuadra queda anotado dentro de los
+      # datos, para que la app lo muestre junto a la cifra en vez de dejarlo
+      # en un registro que nadie abre.
+      #
+      # No corta la corrida. Congelar el tablero por un descuadre ya costo
+      # cuatro dias en setiembre, y un dato con una advertencia visible sirve
+      # mas que ningun dato.
+      - name: Validar coherencia de las cifras
+        run: python scripts/validar_datos.py --anotar
+
       - name: Commit & push JSON files
         run: |
           git config user.name  "JUANITO Bot"

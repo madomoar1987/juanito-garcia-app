@@ -53,11 +53,26 @@ def revisar(datos, hoy):
     vacios = [f"{r}/{k}" for r, k in esperados if not (reportes.get(r, {}) or {}).get(k)]
     lineas.append(f"desgloses con datos: {len(esperados) - len(vacios)}/{len(esperados)}")
 
+    # Contradicciones entre cifras del propio Power BI. No impiden publicar
+    # —ya están publicadas y marcadas— pero sí tienen que llegar por correo:
+    # un total que no es la suma de sus partes es un dato en el que alguien
+    # va a apoyar una decisión.
+    val = datos.get("validacion") or {}
+    descuadres = val.get("no_cuadran") or []
+    lineas.append(f"coherencia: {val.get('cuadran', '?')} cuadran · "
+                  f"{len(descuadres)} no cuadran")
+    for x in descuadres[:8]:
+        lineas.append(f"  ✗ {x['prueba']}: publicado {x['publicado']:,} · "
+                      f"esperado {x['esperado']:,} ({x['diferencia_pct']}%)")
+
     if fecha != hoy:
         return (f"el dato quedó con fecha {fecha}, no {hoy}: la corrida terminó "
                 "sin actualizar nada"), lineas
     if vacios:
         return f"desgloses vacíos: {', '.join(vacios)}", lineas
+    if descuadres:
+        return (f"{len(descuadres)} cifras no cuadran entre sí: "
+                + "; ".join(x["prueba"] for x in descuadres[:4])), lineas
     return None, lineas
 
 
