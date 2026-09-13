@@ -179,6 +179,49 @@ def main():
                  kpi(mg, "Ventas mes"), kpi(fr, "Facturación"),
                  "facturación del mismo mes por dos caminos")
 
+    # ── La tarjeta contra la serie mensual ──────────────────────────────
+    # Son dos consultas distintas al mismo reporte: la tarjeta del mes y el
+    # gráfico mensual. Tienen que dar lo mismo para el mes cerrado. Si no, una
+    # de las dos trae otro filtro.
+    print("\nLa tarjeta del mes contra el gráfico mensual (dos consultas)")
+    ser = {}
+    rutas = ruta.parent / "series.json"
+    if rutas.exists():
+        try:
+            ser = json.loads(rutas.read_text(encoding="utf-8"))
+        except Exception:
+            ser = {}
+    per = ser.get("periodos") or []
+    parcial = ser.get("parcial")
+    cerrado = next((x for x in reversed(per) if x != parcial), None)
+    if cerrado:
+        i = per.index(cerrado)
+        PARES = [
+            ("mermas", "Merma Total", ("mermas", "% Merma Total"), True),
+            ("margen_variable", "Margen variable", ("margen", "% Margen Variable"), True),
+            ("margen_variable", "Ventas mes", ("margen", "Ventas (S/.)"), False),
+            ("margen_variable", "Precio/kg", ("margen", "Precio x Kilo"), False),
+            ("margen_variable", "Costo/kg", ("margen", "Costo x Kilo"), False),
+            ("cuentas_por_cobrar", "Morosidad", ("cxc", "% Morosidad"), True),
+            ("cuentas_por_pagar", "Días CxP", ("cxp", "Días CxP"), False),
+            ("fill_rate", "Facturación", ("fill_rate", "Facturación"), False),
+            ("fill_rate", "Orden de Venta", ("fill_rate", "Orden de Venta"), False),
+            ("consumo_materiales", "Costo x TN Vendida", ("consumo", "MIP / TN Vendida"), False),
+            ("productividad", "Planilla S/. / KG Producido",
+             ("productividad", "Planilla / kg producido"), False),
+        ]
+        for rep_k, etiqueta, (ds, sk), es_pct in PARES:
+            arr = (ser.get("datasets", {}).get(ds) or {}).get(sk)
+            if not arr or i >= len(arr) or arr[i] is None:
+                inf.saltados.append(f"{etiqueta}: sin serie para {cerrado}")
+                continue
+            v_serie = arr[i] * 100 if es_pct else abs(arr[i])
+            inf.comparar(f"{etiqueta}: tarjeta vs serie de {cerrado}",
+                         kpi(rp.get(rep_k, {}), etiqueta), v_serie,
+                         f"{rep_k} · {ds}/{sk}", tol=0.03)
+    else:
+        inf.saltados.append("no hay series.json para cruzar")
+
     # ── Un total no puede superar a la mayor de sus partes ──────────────
     print("\nUn promedio no puede salirse del rango de sus partes")
     for tipo, clave, campo, etiqueta in [

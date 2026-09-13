@@ -3,3 +3,6 @@
 # y se regeneran desde Power BI. El catálogo derivado sí se versiona.
 capturas/*.json
 !capturas/catalogo.json
+
+# Credenciales locales: NUNCA se suben al repositorio.
+.env
