@@ -192,7 +192,7 @@
             },
             {
               "label": "Días CxP",
-              "valor": "107d",
+              "valor": "106d",
               "meta": "<90d",
               "fuente": "reporte"
             }
@@ -206,43 +206,43 @@
             },
             {
               "label": "16 a 30 días",
-              "valor": "S/946,332",
+              "valor": "S/949,621",
               "pct": 9.7,
               "estado": "yellow"
             },
             {
               "label": "31 a 45 días",
-              "valor": "S/732,124",
-              "pct": 7.5,
+              "valor": "S/754,621",
+              "pct": 7.7,
               "estado": "red"
             },
             {
               "label": "0 a 7 días",
-              "valor": "S/653,541",
-              "pct": 6.7,
+              "valor": "S/634,183",
+              "pct": 6.5,
               "estado": "yellow"
             },
             {
               "label": "8 a 15 días",
-              "valor": "S/552,769",
-              "pct": 5.7,
+              "valor": "S/525,692",
+              "pct": 5.4,
               "estado": "yellow"
             },
             {
               "label": "61 a 90 días",
-              "valor": "S/370,702",
-              "pct": 3.8,
+              "valor": "S/381,023",
+              "pct": 3.9,
               "estado": "red"
             },
             {
               "label": "46 a 60 días",
-              "valor": "S/222,785",
-              "pct": 2.3,
+              "valor": "S/232,282",
+              "pct": 2.4,
               "estado": "red"
             },
             {
               "label": "Más de 91 días",
-              "valor": "S/-332,626",
+              "valor": "S/-331,795",
               "pct": -3.4,
               "estado": "red"
             }
@@ -342,28 +342,30 @@
         },
         "margen_variable": {
           "estado": "yellow",
-          "alerta": "Margen 46.5% — bajo meta 52%",
+          "alerta": "Margen 44.0% — bajo meta 52%",
           "kpis": [
             {
               "label": "Ventas mes",
-              "valor": "S/7.69M",
-              "fuente": "reporte"
+              "valor": "S/1.62M",
+              "fuente": "reporte",
+              "meta": "2026-09 parcial — mediana previa S/7.37M",
+              "estado": "yellow"
             },
             {
               "label": "Margen variable",
-              "valor": "46.5%",
+              "valor": "44.0%",
               "meta": "≥52%",
               "estado": "yellow",
               "fuente": "reporte"
             },
             {
               "label": "Precio/kg",
-              "valor": "S/5.93",
+              "valor": "S/6.16",
               "fuente": "reporte"
             },
             {
               "label": "Costo/kg",
-              "valor": "S/3.16",
+              "valor": "S/3.44",
               "fuente": "reporte"
             }
           ],
@@ -471,21 +473,24 @@
               "margen": "65.3%",
               "precio_kg": "S/5.86",
               "costo_kg": "S/2.03",
-              "estado": "green"
+              "estado": "green",
+              "fuente": "calculado"
             },
             {
               "uen": "MAQUILA",
               "margen": "40.0%",
               "precio_kg": "S/4.73",
               "costo_kg": "S/2.84",
-              "estado": "red"
+              "estado": "red",
+              "fuente": "calculado"
             },
             {
               "uen": "TIGO",
               "margen": "51.4%",
               "precio_kg": "S/12.35",
               "costo_kg": "S/6.00",
-              "estado": "yellow"
+              "estado": "yellow",
+              "fuente": "calculado"
             }
           ]
         },
@@ -508,7 +513,7 @@
             },
             {
               "label": "Costo x TN Vendida",
-              "valor": "S/143.63",
+              "valor": "S/257.19",
               "validado": true,
               "fuente": "reporte"
             },
@@ -520,7 +525,7 @@
             },
             {
               "label": "Costo x TN Producida",
-              "valor": "S/151.64",
+              "valor": "S/115.80",
               "validado": true,
               "fuente": "reporte"
             }
@@ -529,11 +534,11 @@
         },
         "mermas": {
           "estado": "red",
-          "alerta": "Merma sin total confiable. Peor UEN y peor planta: 4.27%.",
+          "alerta": null,
           "kpis": [
             {
               "label": "Merma Total",
-              "valor": "2.9%",
+              "valor": "2.6%",
               "meta": "<2%",
               "estado": "red",
               "fuente": "reporte"
@@ -880,11 +885,11 @@
         },
         "sop_inventario": {
           "estado": "red",
-          "alerta": "Dead Stock 18.6% del inventario",
+          "alerta": "Dead Stock 18.8% del inventario",
           "kpis": [
             {
               "label": "Inventario Total",
-              "valor": "S/6.83M",
+              "valor": "S/6.76M",
               "fuente": "reporte"
             },
             {
@@ -896,14 +901,14 @@
             },
             {
               "label": "% Dead Stock",
-              "valor": "18.6%",
+              "valor": "18.8%",
               "meta": "<5%",
               "estado": "red",
               "fuente": "reporte"
             },
             {
               "label": "Working Stock",
-              "valor": "S/4.44M",
+              "valor": "S/4.38M",
               "fuente": "reporte"
             },
             {
@@ -953,27 +958,27 @@
             {
               "categoria": "ENVASES Y EMBALAJES",
               "valor": "S/1.78M",
-              "pct": 40.0
+              "pct": 40.5
             },
             {
               "categoria": "MATERIA PRIMA",
               "valor": "S/1.33M",
-              "pct": 30.0
+              "pct": 30.3
             },
             {
               "categoria": "PT YOGURTS",
-              "valor": "S/482,152",
-              "pct": 10.9
+              "valor": "S/462,474",
+              "pct": 10.6
             },
             {
               "categoria": "PT SALSAS",
-              "valor": "S/464,775",
-              "pct": 10.5
+              "valor": "S/431,179",
+              "pct": 9.8
             },
             {
               "categoria": "PROD. EN PROCESO",
-              "valor": "S/228,530",
-              "pct": 5.1
+              "valor": "S/228,257",
+              "pct": 5.2
             },
             {
               "categoria": "SUMINISTROS",
@@ -1249,17 +1254,17 @@
             },
             {
               "label": "Orden de Venta",
-              "valor": "S/6.79M",
+              "valor": "S/3.03M",
               "fuente": "reporte"
             },
             {
               "label": "Facturación",
-              "valor": "S/6.09M",
+              "valor": "S/2.41M",
               "fuente": "reporte"
             },
             {
               "label": "Venta Perdida",
-              "valor": "S/700,000",
+              "valor": "S/620,000",
               "estado": "red",
               "fuente": "reporte",
               "meta": "orden de venta − facturación"
@@ -1390,8 +1395,8 @@
             {
               "categoria": "MERCADERIAS SALSAS PACKS",
               "programado": "3,982,763",
-              "producido": "2,939,126",
-              "pct": 73.8
+              "producido": "2,942,214",
+              "pct": 73.9
             },
             {
               "categoria": "PT DERIVADOS LACTEOS",
@@ -1402,13 +1407,13 @@
             {
               "categoria": "PT SALSAS",
               "programado": "10,091,418",
-              "producido": "5,535,599",
+              "producido": "5,535,623",
               "pct": 54.9
             },
             {
               "categoria": "PT YOGURTS",
               "programado": "14,628,604",
-              "producido": "11,503,051",
+              "producido": "11,504,697",
               "pct": 78.6
             }
           ],
@@ -1456,5 +1461,146 @@
       "http": 200,
       "error": "Merma Total = 4.87% es mayor que el peor segmento (4.27%); un total no puede superar a sus partes. Se publica sin dato."
     }
-  ]
+  ],
+  "derivados": [
+    {
+      "reporte": "cuentas_por_cobrar",
+      "desglose": "tramos",
+      "campo": "pct",
+      "formula": "valor del tramo / cartera total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "cuentas_por_pagar",
+      "desglose": "tramos",
+      "campo": "pct",
+      "formula": "valor del tramo / suma de tramos × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "cuentas_por_pagar",
+      "desglose": "proveedores_criticos",
+      "campo": "pct",
+      "formula": "deuda del proveedor / deuda del top 15 × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. Ojo: el denominador es el top 15, no la deuda total de la empresa."
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "por_cliente",
+      "campo": "pct_venta",
+      "formula": "venta del cliente / venta total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "por_uen",
+      "campo": "margen",
+      "formula": "(precio_kg − costo_kg) / precio_kg",
+      "razon": "el reporte tiene su propia medida de margen por unidad de negocio y pondera por producto; este cálculo promedia. En agosto el reporte marcaba B&D 62.30% y esto da 65.3%. Falta capturar la consulta del visual MARGEN VARIABLE POR UNIDAD DE NEGOCIO del reporte 3."
+    },
+    {
+      "reporte": "sop_inventario",
+      "desglose": "dead_por_categoria",
+      "campo": "pct",
+      "formula": "saldo de la categoría / saldo total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "sop_inventario",
+      "desglose": "working_por_categoria",
+      "campo": "pct",
+      "formula": "saldo de la categoría / saldo total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "sop_inventario",
+      "desglose": "dead_por_categoria",
+      "campo": "pct",
+      "formula": "saldo de la categoría / saldo total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "sop_inventario",
+      "desglose": "working_por_categoria",
+      "campo": "pct",
+      "formula": "saldo de la categoría / saldo total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "fill_rate",
+      "desglose": "por_marca",
+      "campo": "pct",
+      "formula": "pedidos de la marca / pedidos totales × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "margen_variable_pag2",
+      "desglose": "cumplimiento_produccion",
+      "campo": "pct",
+      "formula": "producido / programado × 100",
+      "razon": "el reporte muestra las dos cantidades pero no el porcentaje por categoría"
+    },
+    {
+      "reporte": "margen_variable_pag2",
+      "desglose": "por_canal",
+      "campo": "avance",
+      "formula": "facturado / ppto × 100",
+      "razon": "la medida del reporte [%Av vs PPTO AL DIA] compara contra el presupuesto proporcional al día y devuelve 0"
+    }
+  ],
+  "validacion": {
+    "cuadran": 9,
+    "no_cuadran": [
+      {
+        "prueba": "CxP: total vs suma de tramos",
+        "publicado": 16230000.0,
+        "esperado": 10439217.0,
+        "diferencia_pct": 35.7,
+        "detalle": "8 tramos"
+      },
+      {
+        "prueba": "Fill rate: % vs facturación / orden de venta",
+        "publicado": 88.4,
+        "esperado": 79.538,
+        "diferencia_pct": 10.0,
+        "detalle": "2,410,000 / 3,030,000"
+      },
+      {
+        "prueba": "Productividad: planilla por kg vendido",
+        "publicado": 0.5,
+        "esperado": 0.7529,
+        "diferencia_pct": 33.6,
+        "detalle": "5,110,000 / 6,786,752 kg"
+      },
+      {
+        "prueba": "Consumo: costo por tonelada vendida",
+        "publicado": 257.19,
+        "esperado": 87.1605,
+        "diferencia_pct": 66.1,
+        "detalle": "1,460,000 / 16,751 TN"
+      },
+      {
+        "prueba": "Kilos vendidos: Consumo vs Productividad",
+        "publicado": 16750700.0,
+        "esperado": 6786752.0,
+        "diferencia_pct": 59.5,
+        "detalle": "los dos reportes dicen 'Venta Neta (KG)'"
+      },
+      {
+        "prueba": "Kilos producidos: Consumo vs Productividad",
+        "publicado": 10207465.0,
+        "esperado": 9621234.0,
+        "diferencia_pct": 5.7,
+        "detalle": "producción del mismo mes"
+      },
+      {
+        "prueba": "Ventas del mes: Margen vs Fill Rate",
+        "publicado": 1620000.0,
+        "esperado": 2410000.0,
+        "diferencia_pct": 32.8,
+        "detalle": "facturación del mismo mes por dos caminos"
+      }
+    ],
+    "sin_datos": []
+  }
 }
