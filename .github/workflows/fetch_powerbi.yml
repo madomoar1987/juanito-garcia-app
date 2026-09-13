@@ -53,12 +53,6 @@ jobs:
         run: python scripts/fetch_series.py
         continue-on-error: true
 
-      # Un heredoc de Python dentro de un `run:` indentado hereda la
-      # indentación del YAML y revienta antes de ejecutar nada; por eso la
-      # comprobación vive en su propio archivo, donde además se puede probar.
-      - name: Verificar que el dato publicado es de hoy
-        run: python scripts/verificar_publicado.py
-
       - name: Commit & push JSON files
         run: |
           git config user.name  "JUANITO Bot"
@@ -83,3 +77,14 @@ jobs:
           done
           echo "no se pudo publicar tras 3 intentos"
           exit 1
+
+      # OJO con el orden: este paso va DESPUÉS de publicar, nunca antes.
+      # Puesto antes, cualquier hueco abortaba la corrida sin publicar nada, y
+      # como el dato viejo seguía en su sitio, la corrida siguiente fallaba
+      # por lo mismo. Así se congeló el tablero del 10 al 13 de setiembre.
+      #
+      # Ahora el dato fresco se publica siempre, y si algo salió incompleto el
+      # job igual termina en rojo y GitHub manda el correo — que es para lo
+      # que servía el canario. Avisar no requiere retener el dato.
+      - name: Avisar si el dato publicado salió incompleto
+        run: python scripts/verificar_publicado.py
