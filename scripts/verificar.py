@@ -20,6 +20,8 @@ Uso:  python3 scripts/verificar.py
 
 import importlib.util
 import os
+import ast
+import collections
 import re
 import sys
 
@@ -261,6 +263,28 @@ def test_derivados_declarados(src):
             f"{len(declarados)} cifra(s) declaradas como calculadas")
 
 
+def test_sin_nombres_repetidos(src, archivo):
+    """Ninguna función puede estar definida dos veces en el mismo archivo.
+
+    Python no avisa: la segunda definición pisa a la primera en silencio. En
+    fetch_powerbi.py había dos valor_de_tarjeta() con firmas distintas, y las
+    cinco lecturas de Consumo morían con "takes 4 positional arguments but 5
+    were given". Como cada una va en su propio try, el fallo no se veía en
+    ningún sitio salvo en el diagnóstico del JSON publicado.
+
+    En un archivo de más de cuatro mil líneas esto no se detecta leyendo.
+    """
+    print(f"\n7. Nombres repetidos en {archivo}")
+    tree = ast.parse(src)
+    nombres = collections.Counter(
+        n.name for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)))
+    repes = {k: v for k, v in nombres.items() if v > 1}
+    revisar(not repes,
+            f"{len(nombres)} funciones, "
+            + ("ninguna repetida" if not repes
+               else f"REPETIDAS: {', '.join(f'{k} (×{v})' for k, v in repes.items())}"))
+
+
 def main():
     src_pbi = leer("scripts", "fetch_powerbi.py")
     src_ser = leer("scripts", "fetch_series.py")
@@ -269,6 +293,8 @@ def main():
     test_claves_internas(src_pbi)
     test_orden_carga_build(src_pbi)
     test_derivados_declarados(src_pbi)
+    test_sin_nombres_repetidos(src_pbi, 'fetch_powerbi.py')
+    test_sin_nombres_repetidos(leer('scripts', 'fetch_series.py'), 'fetch_series.py')
     test_funciones_usadas(src_pbi, "dax_", "fetch_powerbi.py")
     test_funciones_usadas(src_ser, "serie_", "fetch_series.py")
     salidas = test_construccion(cargar_fetch_powerbi())

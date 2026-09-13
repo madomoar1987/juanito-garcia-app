@@ -233,8 +233,16 @@ TARJETAS_KPI = {
 }
 
 
-def valor_de_tarjeta(token, ws, dataset_id, hash_visual, label):
-    """Ejecuta la consulta capturada de una tarjeta y devuelve su número."""
+def valor_tarjeta_por_hash(token, ws, dataset_id, hash_visual, label):
+    """Ejecuta la consulta capturada de una tarjeta y devuelve su número.
+
+    El nombre lleva 'por_hash' porque ya existe valor_de_tarjeta(), que busca
+    por título de visual entre varios datasets. Al llamarse igual, esta
+    quedaba pisada por aquella y las cinco lecturas de Consumo morían con
+    "takes 4 positional arguments but 5 were given" — silenciosas, porque cada
+    una va en su propio try. Dos nombres iguales en un archivo de 4.400 líneas
+    no se ven leyendo; se ven cuando algo falla.
+    """
     entrada = next((q for q in _catalogo_por_hash().get(hash_visual, [])), None)
     if not entrada:
         DIAGNOSTICO.append({"consulta": f"tarjeta:{label}", "http": 0,
@@ -3475,7 +3483,7 @@ def main():
                 if grupo != "consumo":
                     continue
                 try:
-                    v = valor_de_tarjeta(token, ws_id, ids["consumo"], h, etiqueta)
+                    v = valor_tarjeta_por_hash(token, ws_id, ids["consumo"], h, etiqueta)
                     destino = DESTINO_CONSUMO.get(etiqueta)
                     if v is not None and destino:
                         scanned.setdefault("consumo", {})[destino] = v
