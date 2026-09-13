@@ -30,7 +30,11 @@ def num(v):
     if isinstance(v, (int, float)):
         return float(v)
     t = str(v).strip().replace("−", "-")
-    neg = t.startswith("-")
+    # El signo va después del símbolo de moneda: "S/-331,795". Buscarlo solo
+    # al principio convertía un tramo negativo en positivo y desplazaba la
+    # suma del aging en el doble de ese tramo.
+    primer_digito = next((i for i, ch in enumerate(t) if ch.isdigit()), len(t))
+    neg = "-" in t[:primer_digito]
     # Primero se quitan las unidades escritas ("KG", "TN", "d", "%"), si no
     # "9,621,234 kg" se leía como 9.6 billones: la k de kg pasaba por "miles".
     t = re.sub(r"(?i)\s*(kg|tn|ton|un|d|días|dias)\b.*$", "", t)
@@ -71,8 +75,12 @@ class Informe:
 
 
 def kpi(rep, etiqueta):
+    """Valor de un KPI. Ignora el sufijo de período que se le añade al nombre
+    ("Planilla Total · acumulado 2026"), para que las comprobaciones sigan
+    encontrándolo después de corregir la etiqueta."""
     for k in (rep or {}).get("kpis", []):
-        if k.get("label") == etiqueta:
+        lbl = k.get("label") or ""
+        if lbl == etiqueta or lbl.split(" · ")[0] == etiqueta:
             return num(k.get("valor"))
     return None
 
@@ -204,10 +212,14 @@ def main():
     cxp = rp.get("cuentas_por_pagar", {})
     tcxp = cxp.get("tramos") or []
     if tcxp:
-        inf.comparar("CxP: total vs suma de tramos",
+        # El aging NO incluye la deuda refinanciada: son los vencimientos
+        # corrientes. Total = tramos + refinanciado, y cuadra al peso
+        # (9,775,627 + 6,450,000 = 16,225,627 = S/16.23M).
+        inf.comparar("CxP: total vs tramos + refinanciado",
                      kpi(cxp, "CxP Total"),
-                     sum(num(t.get("valor")) or 0 for t in tcxp),
-                     f"{len(tcxp)} tramos")
+                     sum(num(t.get("valor")) or 0 for t in tcxp)
+                     + (kpi(cxp, "Refinanciado") or 0),
+                     f"{len(tcxp)} tramos del aging más la deuda refinanciada")
 
     inv = rp.get("sop_inventario", {})
     partes = [kpi(inv, x) for x in ("Dead Stock", "Working Stock",
@@ -256,32 +268,35 @@ def main():
                      kpi(pr, "Planilla S/. / KG Producido"),
                      kpi(pr, "Planilla Total") / prod_kg,
                      f"{kpi(pr, 'Planilla Total'):,.0f} / {prod_kg:,.0f} kg")
-    vend_kg = kpi(pr, "Venta Neta (KG)")
-    if vend_kg:
-        inf.comparar("Productividad: planilla por kg vendido",
-                     kpi(pr, "Planilla S/. / KG Vendido"),
-                     kpi(pr, "Planilla Total") / vend_kg,
-                     f"{kpi(pr, 'Planilla Total'):,.0f} / {vend_kg:,.0f} kg")
+    # "Planilla por kg vendido" es una medida del reporte con sus propios
+    # filtros. Dividir la planilla del año entre unos kilos que solo cuentan
+    # la planta ATE no reproduce esa medida: comparaba peras con manzanas y
+    # marcaba un 34% de descuadre que no existía.
+    print("  (planilla por kg vendido: medida propia del reporte, "
+          "no se reconstruye dividiendo dos tarjetas)")
 
     co = rp.get("consumo_materiales", {})
-    vn = kpi(co, "Venta Neta (KG)")
-    if vn:
-        inf.comparar("Consumo: costo por tonelada vendida",
-                     kpi(co, "Costo x TN Vendida"),
-                     abs(kpi(co, "Costo Total")) / (vn / 1000),
-                     f"{abs(kpi(co, 'Costo Total')):,.0f} / {vn/1000:,.0f} TN")
+    # Igual que arriba: [Ratio costo / kg] es una medida del reporte con siete
+    # filtros propios. La división cruda de dos tarjetas da otra cosa.
+    print("  (costo por tonelada: medida propia del reporte, igual que arriba)")
 
     # ── La misma magnitud medida en dos reportes ────────────────────────
     print("\nLa misma magnitud, medida en dos reportes distintos")
-    inf.comparar("Kilos vendidos: Consumo vs Productividad",
-                 kpi(co, "Venta Neta (KG)"), kpi(pr, "Venta Neta (KG)"),
-                 "los dos reportes dicen 'Venta Neta (KG)'")
-    inf.comparar("Kilos producidos: Consumo vs Productividad",
-                 kpi(co, "Producción Neta (KG)"), kpi(pr, "Producción Total (KG)"),
-                 "producción del mismo mes")
+    # Los kilos de Consumo y los de Productividad NO son comparables, y ya se
+    # sabe por qué: las consultas capturadas muestran que la de Productividad
+    # filtra Planta = "ATE" y la de Consumo no. Todas las plantas contra una.
+    # Compararlos producía un descuadre del 59% que no era un error sino otro
+    # alcance, y un aviso que no se puede resolver deja de mirarse.
+    print("  (kilos de Consumo vs Productividad: no se comparan — "
+          "Productividad filtra solo planta ATE)")
+    # Este sí queda como aviso: los dos son del mismo mes y difieren un 21%.
+    # Lo más probable es que Fill Rate siga solo a los clientes con acuerdo de
+    # nivel de servicio —su desglose lista ocho grupos— y Margen facture a
+    # todos. Mientras no esté confirmado, se avisa.
     inf.comparar("Ventas del mes: Margen vs Fill Rate",
                  kpi(mg, "Ventas mes"), kpi(fr, "Facturación"),
-                 "facturación del mismo mes por dos caminos")
+                 "mismo mes, dos reportes: Fill Rate podría cubrir menos clientes")
+
 
     # ── La tarjeta contra la serie mensual ──────────────────────────────
     # Son dos consultas distintas al mismo reporte: la tarjeta del mes y el

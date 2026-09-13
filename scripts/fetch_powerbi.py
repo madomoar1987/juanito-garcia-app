@@ -1127,6 +1127,41 @@ PART = ("participación sobre el total, calculada sumando las filas del propio "
         "reporte. No puede contradecirlo: es una proporción de sus cifras.")
 
 
+# Período real de cada KPI, leído de los filtros de la consulta capturada.
+# Las tarjetas de Consumo y Productividad filtran por 'Calendario'[Año] y NO
+# por [MES]: son acumulados del año, no del mes. Estaban publicadas junto a
+# cifras de agosto sin decirlo, y eso hacía comparar un mes contra ocho.
+#
+# La de Productividad filtra además 'Tabla_Almacen_Planta'[Planta] = "ATE".
+# Por eso los kilos vendidos salían 16.75M en un reporte y 6.79M en el otro:
+# todas las plantas contra una sola. No era un error, era otro alcance.
+PERIODO_KPI = {
+    ("consumo_materiales", "Venta Neta (KG)"):
+        ("acumulado 2026", "la consulta filtra solo por año, sin mes"),
+    ("consumo_materiales", "Producción Neta (KG)"):
+        ("acumulado 2026", "la consulta filtra solo por año, sin mes"),
+    ("consumo_materiales", "Costo Total"):
+        ("acumulado 2026", "la consulta filtra solo por año, sin mes"),
+    ("productividad", "Venta Neta (KG)"):
+        ("acumulado 2026 · solo planta ATE",
+         "la consulta filtra por año y por Planta = ATE"),
+}
+
+
+def etiquetar_periodos(summary):
+    """Pone el período en el nombre del KPI cuando no es del mes."""
+    for edatos in (summary.get("empresas") or {}).values():
+        for tipo, rep in (edatos.get("reportes") or {}).items():
+            for k in rep.get("kpis", []):
+                par = PERIODO_KPI.get((tipo, k.get("label")))
+                if not par:
+                    continue
+                sufijo, razon = par
+                k["label"] = f"{k['label']} · {sufijo}"
+                k["nota_periodo"] = razon
+                print(f"    · período: {tipo}/{k['label']}")
+
+
 def anotar_derivado(reporte, desglose, campo, formula, razon):
     DERIVADOS.append({"reporte": reporte, "desglose": desglose, "campo": campo,
                       "formula": formula, "razon": razon})
@@ -4388,6 +4423,7 @@ def main():
         print(f"  ✗ marcar origen: {e}")
 
     if DIAGNOSTICO:
+        etiquetar_periodos(summary)
         summary["diagnostico"] = DIAGNOSTICO
         # La lista de cifras calculadas viaja con los datos: quien mire la app
         # puede saber cuáles son derivadas sin leer el código.
