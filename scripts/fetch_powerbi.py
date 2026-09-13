@@ -3460,23 +3460,32 @@ def main():
         # el reporte: Venta Neta (KG) publicaba 16.75M contra los 10.18M de la
         # tarjeta, y al corregir la columna dio 1.31M — el problema eran los
         # filtros, no la columna. Con el DAX literal no hay nada que acertar.
+        # Cada tarjeta va en su propio try: un fallo leyendo una cifra no
+        # puede tumbar la extracción entera. La corrida 99 murió aquí y se
+        # perdieron los once reportes por culpa de un solo KPI.
+        DESTINO_CONSUMO = {
+            "Costo Total": "Costo total validado",
+            "Venta Neta (KG)": "Peso total KG",
+            "Costo x TN Vendida": "Ratio costo / kg",
+            "Producción Neta (KG)": "Producción (KG) Odoo",
+            "Costo x TN Producida": "Costo x ton producida",
+        }
         if "consumo" in ids:
             for (grupo, etiqueta), h in TARJETAS_KPI.items():
                 if grupo != "consumo":
                     continue
-                v = valor_de_tarjeta(token, ws_id, ids["consumo"], h, etiqueta)
-                destino = {
-                    "Costo Total": "Costo total validado",
-                    "Venta Neta (KG)": "Peso total KG",
-                    "Costo x TN Vendida": "Ratio costo / kg",
-                    "Producción Neta (KG)": "Producción (KG) Odoo",
-                    "Costo x TN Producida": "Costo x ton producida",
-                }[etiqueta]
-                if v is not None:
-                    scanned.setdefault("consumo", {})[destino] = v
-                    print(f"    ✓ Consumo [{etiqueta}] desde la tarjeta = {v:,.2f}")
-                else:
-                    print(f"    ✗ Consumo [{etiqueta}] — la tarjeta no devolvió valor")
+                try:
+                    v = valor_de_tarjeta(token, ws_id, ids["consumo"], h, etiqueta)
+                    destino = DESTINO_CONSUMO.get(etiqueta)
+                    if v is not None and destino:
+                        scanned.setdefault("consumo", {})[destino] = v
+                        print(f"    ✓ Consumo [{etiqueta}] desde la tarjeta = {v:,.2f}")
+                    else:
+                        print(f"    ✗ Consumo [{etiqueta}] — la tarjeta no devolvió valor")
+                except Exception as e:
+                    print(f"    ✗ Consumo [{etiqueta}]: {e}")
+                    DIAGNOSTICO.append({"consulta": f"tarjeta:{etiqueta}", "http": 0,
+                                        "error": repr(e)[:300]})
 
         # ── Consumo: SUM directo desde tablas del dataset consumo
         if "consumo" in ids:
@@ -4356,7 +4365,15 @@ def main():
     # Origen de cada cifra: del reporte o del sondeo genérico.
     try:
         reps_m = (summary.get("empresas", {}).get("PAUNO", {}) or {}).get("reportes", {})
-        ver, tot = marcar_origen(reps_m, scanned)
+        try:
+            ver, tot = marcar_origen(reps_m, scanned)
+        except Exception as e:
+            # Clasificar el origen de las cifras es informativo: si falla, no
+            # debe llevarse por delante una extracción que ya funcionó.
+            print(f"  ✗ marcar_origen: {e}")
+            DIAGNOSTICO.append({"consulta": "marcar_origen", "http": 0,
+                                "error": repr(e)[:300]})
+            ver = tot = 0
         summary["verificacion"] = {"verificados": ver, "total": tot}
         print(f"\n  Origen de los KPIs: {ver}/{tot} desde el reporte "
               f"({ver / tot * 100:.0f}%)" if tot else "")
