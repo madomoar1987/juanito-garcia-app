@@ -3145,7 +3145,11 @@ function dxpAvanceView() {
     }
 
     let veredicto;
-    if (meta == null) {
+    if (curso == null) {
+      // Un indicador sin dato del mes no está ni bien ni mal: falta el dato.
+      // Decir "falta meta" ahí confunde dos carencias distintas.
+      veredicto = '<span class="av-ver av-na">Sin dato del mes</span>';
+    } else if (meta == null) {
       veredicto = '<span class="av-ver av-na">Falta meta</span>';
     } else if (enRitmo !== null) {
       veredicto = `<span class="av-ver ${enRitmo ? 'av-bien' : 'av-mal'}">${
@@ -3169,7 +3173,12 @@ function dxpAvanceView() {
             onclick="editarMeta('${ind.clave}')"
             title="${propia ? 'Meta puesta por ti, sin publicar' : 'Clic para cambiarla'}"
             >${esc(metaTxt)}</span></td>
-      <td class="av-num">${curso == null ? '<span class="av-vacio">—</span>' : esc(fmtMeta(ind, curso))}${
+      <td class="av-num">${
+        curso != null ? esc(fmtMeta(ind, curso))
+        : (cerrado != null
+           ? `<span class="av-vacio">aún sin dato<br>${esc(fmtMeta(ind, cerrado))} en ${
+               esc(mesCerrado() || '')}</span>`
+           : '<span class="av-vacio">aún sin dato</span>')}${
         sinSerie ? '<small class="av-vacio">del día</small>' : ''}</td>
       <td>${centro}</td>
       <td>${sinSerie ? '<span class="av-vacio">sin corte mensual</span>'
