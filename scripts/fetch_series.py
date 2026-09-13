@@ -2199,6 +2199,16 @@ def reconciliar_kpis(resultado, periodos_str):
                 if anterior and rep.get("alerta") and anterior in rep["alerta"]:
                     rep["alerta"] = rep["alerta"].replace(anterior, texto)
                     print(f"      · alerta de {tipo} actualizada a {texto}")
+                # Y si el extractor habia marcado el KPI como no publicable,
+                # esa nota ya no aplica: la serie capturada trae el valor bueno.
+                # Sin esto la tarjeta mostraba "2.9%" con un "sin total
+                # confiable" debajo — el dato correcto desmentido por su
+                # propio pie de foto.
+                elif "sin total confiable" in (rep.get("alerta") or ""):
+                    rep["alerta"] = None
+                    print(f"      · aviso de 'sin total confiable' retirado en {tipo}")
+                if actual.get("meta", "").startswith("el total del reporte no cuadra"):
+                    actual["meta"] = meta or (periodo or "")
                 actual["valor"] = texto
                 actual["fuente"] = "reporte"
                 if aviso:
