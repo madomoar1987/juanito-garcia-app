@@ -2712,6 +2712,9 @@ function dxpStats() {
   // Datasets cuya serie existe pero es plana (medida sin filtro de fecha)
   s.dsPlanaLista = Object.keys(ds).filter(n => !Object.values(ds[n] || {}).some(dxpSerieOk));
   s.dsSinEsquema = Object.keys((SERIES && SERIES.sin_serie) || {}).length;
+  // Nombres legibles de los reportes sin historia mensual: decir "Control
+  // Interno y Avance vs Presupuesto" es accionable; decir "2 datasets" no.
+  s.dsSinSerieNombres = s.repSinSerie.map(t => DXP_NOMBRE[t] || t);
 
   // YoY de ventas (acumulado comparable)
   if (vt && ps.length) {
@@ -2774,16 +2777,29 @@ function dxpExecSummary(s) {
     </div>`;
 }
 
-// ── Bloque: aviso de calidad de dato ───────────────────────────────────────
+// ── Bloque: qué reportes no tienen historia mensual ────────────────────────
+//
+// Antes esto era un recuadro rojo con jerga de programador —nombres de
+// archivos, "medida sin filtro de fecha", tareas pendientes del pipeline— en
+// la primera pantalla que ve el gerente. Decía la verdad y no servía de nada:
+// no hay ninguna decisión que tomar con eso, y el rojo hacía pensar que algo
+// estaba roto.
+//
+// No es un fallo: esos dos reportes son acumulados históricos en Power BI y
+// no guardan corte por mes. Es un límite del origen, no del tablero.
 function dxpNoteBanner(s) {
-  if (!s.dsTot) return '';
+  if (!s.dsTot || s.dsConf >= s.dsTot) return '';
+  const faltan = Math.max(0, s.dsTot - s.dsConf);
+  const nombres = (s.dsSinSerieNombres || []).join(' y ');
   return `
-    <div class="note-banner crit">
-      <span class="tag">HALLAZGO DE CALIDAD DE DATO — YA CORREGIDO EN EL PIPELINE</span>
-      <span>Solo <b>${s.dsConf} de ${s.dsTot} reportes</b> tienen serie mensual utilizable. ${s.dsPlanaLista.length?`Los datasets <b>${s.dsPlanaLista.join(', ')}</b> devuelven el mismo valor repetido mes a mes (medida sin filtro de fecha)`:''}${s.dsPlanaLista.length&&s.dsSinEsquema?' y ':''}${s.dsSinEsquema?`${s.dsSinEsquema} datasets no exponen columna de fecha`:''}.
-      <code>fetch_series.py</code> ahora detecta esto automáticamente (valores distintos vs meses con dato) y las excluye de
-      <code>series.json</code>, y el dashboard vuelve a verificarlo en el navegador antes de dibujar cualquier gráfico: los reportes sin serie válida muestran el motivo en vez de una tendencia falsa.
-      Pendiente: repetir Copiar consulta en vivo sobre los descartados para conseguir la fórmula real (la detección automática identifica el síntoma, no reemplaza la corrección de origen).</span>
+    <div class="note-banner">
+      <span class="tag">SIN COMPARATIVO MENSUAL</span>
+      <span>${nombres
+        ? `<b>${nombres}</b> no tienen`
+        : `<b>${faltan}</b> de los ${s.dsTot} reportes no tienen`} historia por mes:
+      en Power BI son acumulados y no guardan el corte de cada mes. Se muestran
+      igual, con su cifra del día, pero sin tendencia ni comparación contra el
+      mes anterior. Los otros <b>${s.dsConf}</b> sí la tienen.</span>
     </div>`;
 }
 
@@ -2854,10 +2870,10 @@ function dxpCards(s) {
     margen_variable: () => `Margen implícito <b>${dxpPct(s.mgAct,2)}</b> — ${s.mgEsMin?'mínimo histórico':'dentro'} de ${s.mgN} meses`,
     cuentas_por_cobrar: () => `CxC por vencer <b>${s.cxcVencer||'—'}</b> · aging en 4 tramos + serie mensual`,
     cuentas_por_pagar: () => `<b>${dxpPct(s.refPct)}</b> refinanciado (${s.refinanciado||'—'}) · ${s.proveedores||'—'} proveedores`,
-    consumo_materiales: () => `Costo x TN Producida/Vendida — validados por Copiar consulta`,
-    compras: () => `Consumo Prom 3M/6M casi plano — <b>a validar</b> si es bug`,
-    sop_inventario: () => `Composición Dead Stock <b>no incluida</b> en esta corrida`,
-    productividad: () => `Sin meta formal definida · sin serie histórica`,
+    consumo_materiales: () => `Costo por tonelada, producida y vendida · acumulado del año`,
+    compras: () => `Ratio consumo/compra · sobre 100% jala inventario`,
+    sop_inventario: () => `Dead stock por categoría · seis categorías`,
+    productividad: () => `Planilla por kilo · <b>falta definir la meta</b>`,
     margen_variable_pag2: () => `Avance por canal desde la tabla del reporte 11 — el visual no filtra año`,
   };
   const cards = DXP_ORDEN.map((t,i) => {
@@ -3268,7 +3284,7 @@ function renderHome() {
         <h1>PAUNO — ${mesTitulo}</h1>
       </div>
       <div class="meta-block">
-        Fuente: Power BI (DAX, Copiar consulta)<br>
+        Fuente: Power BI · validado contra las tarjetas del reporte<br>
         <span id="dxp-context">Resumen · ${DXP_ORDEN.length} reportes</span>
       </div>
     </div>
@@ -4112,9 +4128,8 @@ function renderMcKinseyArea(empresa, tipo) {
   const yoyBlock = (valorActual, valorYoY, labelMetrica, fmt, motivoPendiente) => {
     if (valorYoY === null || valorYoY === undefined) {
       return `<div style="padding:8px;background:rgba(234,179,8,.06);border-left:3px solid var(--yellow);border-radius:4px;font-size:11px;color:var(--sub)">
-        ${motivoPendiente || `Comparativo ${yearYoY} vs 2026 pendiente — el descubrimiento automático de la tabla
-        de fecha de este dataset falló. Se necesita capturar el filtro DAX real con Analizador de rendimiento ›
-        Copiar consulta (mismo método que ya cerró Productividad y Consumo de Materiales).`}
+        ${motivoPendiente || `Sin comparativo contra ${yearYoY}: este reporte no guarda el corte
+        por mes en Power BI, así que no hay con qué comparar el mismo mes del año pasado.`}
       </div>`;
     }
     const delta = valorActual !== null ? ((valorActual - valorYoY) / Math.abs(valorYoY || 1)) * 100 : null;
@@ -4166,7 +4181,7 @@ function renderMcKinseyArea(empresa, tipo) {
           ${ov && fac ? ` Para llegar a la meta faltarían <strong>${rec}</strong> de facturación adicional sobre el acumulado actual.` : ''}
         </div>` + (() => {
           // Desglose por marca del mes en curso — filtro FIL_MES_ACTUAL del
-          // visual "SOLES NO ATENDIDOS POR GRUPO" (Copiar consulta 2026-09-06)
+          // visual "SOLES NO ATENDIDOS POR GRUPO" (la consulta del reporte 2026-09-06)
           const pg = rp.fill_rate?.por_grupo || [];
           const pm = rp.fill_rate?.por_marca || [];
           const cVar = s => s === 'red' ? 'var(--red)' : s === 'yellow' ? 'var(--yellow)' : 'var(--green)';
@@ -4221,11 +4236,9 @@ function renderMcKinseyArea(empresa, tipo) {
         II: yoyBlock(mora, yoy.morosidad != null ? yoy.morosidad * 100 : null, 'Morosidad CxC', v => v.toFixed(1)+'%',
           `La <b>tarjeta</b> de Morosidad es <code>EVALUATE ROW("v", 'DATA_FACTURACION'[% MOROSIDAD])</code>
           — un escalar sin filtro de fecha, así que por sí sola no da comparativo. El
-          <b>gráfico</b>, en cambio, usa otra medida: <code>'DATA_FACTURACION'[% MOROSIDAD x mes]</code>,
-          cortada por <code>[Año]</code> y <code>'Calendario (FACT)'[Mes Numero]</code>
-          (confirmado con Copiar consulta, 2026-09-06). Esa serie mensual ya está incorporada — mira el
-          panel de tendencia. Si aquí no ves el YoY es porque el histórico aún no cubre el mismo mes del
-          año anterior.`),
+          <b>gráfico</b> usa otra medida distinta, la morosidad de cada mes cerrado. Las dos son
+          correctas y miden cosas distintas: una es la foto de hoy y la otra el cierre del mes.
+          La serie mensual está en el panel de tendencia.`),
         III: (() => {
           const tr = rp.cuentas_por_cobrar?.tramos || [];
           if (!tr.length) return pvenc ? `<div style="padding:12px;background:var(--red-soft);border:1px solid var(--border);border-radius:8px;text-align:center">
@@ -4248,9 +4261,8 @@ function renderMcKinseyArea(empresa, tipo) {
           <div style="font-size:11px;color:var(--sub);padding:8px;background:var(--surface2);border-radius:6px;line-height:1.5">
             Cartera pendiente total <strong>${fmtM(tot)}</strong>, de la cual <strong>${fmtM(venc)}</strong>
             (${(venc / tot * 100).toFixed(1)}%) ya está vencida. Fuente:
-            <code>SUM('DATA_FACTURACION'[Total_fact])</code> agrupado por <code>[O_SEGMENTO]</code>
-            con filtro <code>[CXC]="Pendiente"</code> — patrón confirmado con Copiar consulta (2026-09-06)
-            sobre la tarjeta "MAS DE 30 DIAS".
+            el mismo corte por tramos que usa la matriz de antigüedad del reporte,
+            contando solo la deuda pendiente.
           </div>`;
         })(),
         IV: [
@@ -4298,7 +4310,7 @@ function renderMcKinseyArea(empresa, tipo) {
           {label:'Deuda directa', valSoles: cxp - ref, color:'var(--red)'},
         ]) + `<div style="font-size:11px;color:var(--sub);margin-top:8px">Refinanciado = deuda renegociada con proveedores (riesgo de relación comercial).</div>` + (() => {
           // Top 15 proveedores por deuda pendiente — visual "TOP 15"
-          // (Copiar consulta 2026-09-06)
+          // (la consulta del reporte 2026-09-06)
           // Tramos de vigencia de la deuda (visual de tarjetas del reporte)
           const tr = rp.cuentas_por_pagar?.tramos || [];
           const cV = s => s === 'red' ? 'var(--red)' : s === 'yellow' ? 'var(--yellow)' : 'var(--green)';
@@ -4428,9 +4440,8 @@ function renderMcKinseyArea(empresa, tipo) {
           }
           if (!porUEN.length && !porPlanta.length) {
             html += `<div style="font-size:10px;color:var(--sub);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
-              Desglose por UEN (B&D/TIGO/MAQUILA) y por planta (Ate/Pachacámac/Terceros) no confirmado todavía —
-              requeriría el mismo procedimiento de Copiar consulta ya usado en Margen, aplicado a este reporte
-              de mermas específicamente (es un reporte distinto, con su propio filtro).
+              El desglose por unidad de negocio y por planta viene del propio reporte de mermas,
+              con sus filtros. Abajo también está abierto por SKU.
             </div>`;
           }
           html += `</div>`;
@@ -4458,7 +4469,7 @@ function renderMcKinseyArea(empresa, tipo) {
         II: yoyBlock(stockN, yoy.stock ?? null, 'Stock Total', v => fmtM(v)),
         III: (() => {
           // Dead stock por categoría — matriz "CLASIFICACION DE INVENTARIO"
-          // de '11. Reporte de Planificaciones' (Copiar consulta 2026-09-06)
+          // de '11. Reporte de Planificaciones' (la consulta del reporte 2026-09-06)
           const dc = rp.sop_inventario?.dead_por_categoria || [];
           if (!dc.length) return `<div style="padding:12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--sub);line-height:1.5">
             La clasificación del inventario (Working / Exceso / Dead) proviene de
@@ -4486,15 +4497,12 @@ function renderMcKinseyArea(empresa, tipo) {
             </div>`).join('')}`;
           })()}
           <div style="font-size:11px;color:var(--sub);padding:8px;background:var(--surface2);border-radius:6px;line-height:1.5;margin-top:8px">
-            Fuente: <code>SUM('SALDO ACTUAL'[Saldo Soles])</code> por
-            <code>[Clasificación ALC Meses]</code> y categoría de producto — matriz
-            "CLASIFICACION DE INVENTARIO" del reporte 11 (Copiar consulta, 2026-09-06).
-            Las etiquetas "1. Working" y "4. Dead" están confirmadas con las consultas
-            de sus propios gráficos.
+            Sale de la matriz "Clasificación de inventario" del reporte, que reparte el
+            saldo por meses de alcance. Las categorías sano y muerto son las del propio reporte.
           </div>`;
         })(),
         IV: [
-          {palanca:'Confirmar medidas de rotación', impacto:'Hoy no hay base para saber si el stock está sano o inmovilizado', accion:'Repetir Copiar consulta sobre las tarjetas de Días Inventario, Dead Stock y % Dead Stock del reporte real de Power BI.', prioridad:'ALTA', col:'var(--red)'},
+          {palanca:'Confirmar medidas de rotación', impacto:'Hoy no hay base para saber si el stock está sano o inmovilizado', accion:'Volver a capturar la consulta sobre las tarjetas de Días Inventario, Dead Stock y % Dead Stock del reporte real de Power BI.', prioridad:'ALTA', col:'var(--red)'},
           {palanca:'Alinear stock a demanda prevista', impacto:'Mejorar Fill Rate sin sobrestockear', accion:'S&OP semanal cruzando forecast de ventas con inventario disponible. Detectar gaps antes de que generen venta perdida.', prioridad:'MEDIA', col:'var(--yellow)'},
         ],
         V: ['Días de cobertura por SKU', '% Dead Stock (sin movimiento >30 días)', 'Stock por planta / almacén', 'Histórico de inventario mensual 2025'],
@@ -4581,8 +4589,8 @@ function renderMcKinseyArea(empresa, tipo) {
             Medidas del dataset aún no descubiertas por el scraper.
           </div>` : '')}
           <div style="font-size:10px;color:var(--sub);margin-top:8px;padding:6px;background:rgba(22,163,74,.08);border-left:3px solid #16a34a;border-radius:4px">
-            <strong>✓ 5 de 5 KPIs validados 1:1</strong> con Analizador de rendimiento › Copiar consulta
-            (2026-09-03/04) — cada medida ejecuta el filtro DAX exacto capturado del visual real en Power BI.
+            <strong>✓ Las cinco cifras salen de la tarjeta del reporte</strong> — se ejecuta la misma
+            consulta que Power BI usa para pintarlas en pantalla, y se comparan en cada corrida.
           </div>
           <div style="font-size:10px;color:var(--sub);margin-top:6px;padding:6px;background:rgba(0,0,0,.04);border-radius:6px">
             Costo Total y Producción Neta (KG) filtran por el año en curso (Calendario[Año]) — corregido
@@ -4599,7 +4607,7 @@ function renderMcKinseyArea(empresa, tipo) {
           evidencia de una dimensión de planta filtrable en las medidas leídas.
         </div>`,
         IV: [
-          {palanca:'Capturar comparativo YoY', impacto:'Permitiría ver tendencia año contra año en los 5 KPIs', accion:'Repetir Copiar consulta con 2025 seleccionado en vez de 2026, para tener el punto de comparación.', prioridad:'MEDIA', col:'var(--yellow)'},
+          {palanca:'Capturar comparativo YoY', impacto:'Permitiría ver tendencia año contra año en los 5 KPIs', accion:'Volver a capturar la consulta con 2025 seleccionado en vez de 2026, para tener el punto de comparación.', prioridad:'MEDIA', col:'var(--yellow)'},
           {palanca:'Exponer dimensión de planta', impacto:'Permitiría comparar Ate vs Pachacámac', accion:'Pedir a BI que exponga PLANTA POR CECOS como dimensión filtrable para poder desglosar estos 5 KPIs por planta.', prioridad:'BAJA', col:'var(--accent)'},
         ],
         V: ['Comparativo YoY para los 5 KPIs', 'Desglose por planta (Ate/Pachacámac)', 'Serie histórica mensual'],
@@ -4631,7 +4639,7 @@ function renderMcKinseyArea(empresa, tipo) {
           ${planKgVend  ? rowKpi('Planilla / KG Vendido', planKgVend, null, 'var(--text)') : ''}
           <div style="font-size:10px;color:var(--sub);margin-top:8px;padding:6px;background:rgba(0,0,0,.04);border-radius:6px">
             Filtrado con el contexto exacto del reporte "13. Productividad por Funcionario" (Calendario[Año]
-            + clasificación contable de gasto de personal), confirmado con Analizador de rendimiento › Copiar consulta.
+            + clasificación contable de gasto de personal), confirmado con la consulta del propio reporte.
           </div>
         </div>`,
         II: `<div style="font-size:11px;color:var(--text,var(--text));line-height:1.6;padding:10px;background:var(--surface);border-radius:8px;border:1px solid var(--border)">
@@ -4654,12 +4662,12 @@ function renderMcKinseyArea(empresa, tipo) {
             : ' La diferencia es significativa — vale la pena revisar si un área concentra más horas-hombre que la otra.'}` : ''}
           <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:10px;color:var(--sub)">
             Desglose por planta (Ate / Pachacámac) disponible en Power BI pero no capturado todavía —
-            requeriría repetir Copiar consulta con el filtro de planta activo.
+            requeriría volver a capturar la consulta con el filtro de planta activo.
           </div>
         </div>`,
         IV: [
-          {palanca: gapPct != null && gapPct >= 3 ? 'Revisar nivel de inventario de producto terminado' : 'Confirmar Venta Neta con su propia consulta', impacto: gapPct != null && gapPct >= 3 ? `Se está vendiendo ${gapPct.toFixed(1)}% más de lo producido — el stock se reduce` : 'Hoy usa el mismo filtro de Producción — no capturado por separado', accion: gapPct != null && gapPct >= 3 ? 'Confirmar con Compras/S&OP si el destockeo es planeado o si hay riesgo de quiebre en los próximos meses.' : 'Repetir Copiar consulta sobre la tarjeta Venta Neta específicamente si se necesita mayor precisión.', prioridad: gapPct != null && gapPct >= 3 ? 'MEDIA' : 'BAJA', col: gapPct != null && gapPct >= 3 ? 'var(--yellow)' : 'var(--sub)'},
-          {palanca:'Desglose por planta', impacto:'Comparar eficiencia Ate vs Pachacámac', accion:'Capturar Copiar consulta con el filtro de planta activo para cada una de las 5 medidas.', prioridad:'MEDIA', col:'var(--yellow)'},
+          {palanca: gapPct != null && gapPct >= 3 ? 'Revisar nivel de inventario de producto terminado' : 'Confirmar Venta Neta con su propia consulta', impacto: gapPct != null && gapPct >= 3 ? `Se está vendiendo ${gapPct.toFixed(1)}% más de lo producido — el stock se reduce` : 'Hoy usa el mismo filtro de Producción — no capturado por separado', accion: gapPct != null && gapPct >= 3 ? 'Confirmar con Compras/S&OP si el destockeo es planeado o si hay riesgo de quiebre en los próximos meses.' : 'Volver a capturar la consulta sobre la tarjeta Venta Neta específicamente si se necesita mayor precisión.', prioridad: gapPct != null && gapPct >= 3 ? 'MEDIA' : 'BAJA', col: gapPct != null && gapPct >= 3 ? 'var(--yellow)' : 'var(--sub)'},
+          {palanca:'Desglose por planta', impacto:'Comparar eficiencia Ate vs Pachacámac', accion:'Capturar la consulta del reporte con el filtro de planta activo para cada una de las 5 medidas.', prioridad:'MEDIA', col:'var(--yellow)'},
         ],
         V: ['Desglose por planta (Ate/Pachacámac)', 'Serie histórica mensual', 'Comparativo YoY'],
         chatMsg: `Analiza la Productividad por Funcionario de ${empresa}: Planilla Total ${planTotal||'—'}, Planilla/KG Producido ${planKgProd||'—'}, Planilla/KG Vendido ${planKgVend||'—'}, Producción Total ${prodTotal||'—'} KG. ¿Cómo interpretas la eficiencia de mano de obra y qué acciones recomiendas?`
@@ -4706,13 +4714,13 @@ function renderMcKinseyArea(empresa, tipo) {
           <div style="font-size:11px;color:var(--text,var(--text));line-height:1.6;margin-top:8px;padding:10px;background:var(--surface);border-radius:8px;border:1px solid var(--border)">
             ${(satisfN!=null || obsN!=null || critN!=null)
               ? `Acumulado histórico total de PAUNO (sin filtro de fecha — el selector de mes del dashboard no afecta estas tarjetas,
-                 confirmado con Copiar consulta). ${critN ? `<strong>${critN} puntos de control</strong> están en estado Crítico` : 'Sin puntos críticos registrados'}.`
+                 tomado del propio reporte). ${critN ? `<strong>${critN} puntos de control</strong> están en estado Crítico` : 'Sin puntos críticos registrados'}.`
               : 'Sin dato disponible.'}
           </div>
         </div>`,
         II: `<div style="padding:12px;background:var(--surface);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--sub)">
           % Cumplimiento ${cumplV||'—'} es la medida real del modelo (tarjeta "Resultado Acumulado"), confirmada con
-          Copiar consulta — no es un cálculo derivado. Meta del dashboard: 85%.
+          la consulta del reporte — no es un cálculo derivado. Meta del dashboard: 85%.
         </div>`,
         III: `<div style="padding:12px;background:var(--surface);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--sub)">
           Sin histórico mensual disponible para estas medidas (son acumulado total, no por mes) — no hay base
@@ -4831,7 +4839,7 @@ function renderVentasMcKinsey(empresa) {
         ${row2('Avance vs Presupuesto', avanceV||'—', 'meta 100%', col)}
         ${row2('Presupuesto implícito mensual', ppto ? fmtM(ppto) : '—', '(= real ÷ avance)', 'var(--sub)')}
         ${row2('Brecha absoluta', gap ? fmtM(gap) : '—', 'faltante vs plan', 'var(--red)')}
-        ${!margenV ? `<div class="mck-nd" style="margin-top:8px">Margen Variable sin dato en este corte. La serie mensual sí existe: proviene de <code>'Medidas Julito'[% Margen Contribución. %]</code> con los 11 filtros del visual "MARGEN VARIABLE PAUNO" (confirmado con Copiar consulta, 2026-09-06) — mira el panel de tendencia.</div>` : ''}
+        ${!margenV ? `<div class="mck-nd" style="margin-top:8px">Margen Variable sin dato en este corte. La serie mensual sí existe: proviene de <code>'Medidas Julito'[% Margen Contribución. %]</code> con los 11 filtros del visual "MARGEN VARIABLE PAUNO" (tomado del propio reporte) — mira el panel de tendencia.</div>` : ''}
       </div>
     </div>
   `)}
@@ -4902,7 +4910,7 @@ function renderVentasMcKinsey(empresa) {
       <div style="font-size:11px;color:var(--sub);padding:8px;background:rgba(234,179,8,.06);border-left:3px solid var(--yellow);border-radius:4px">
         Desglose por UEN (B&D, MAQUILA, TIGO) pendiente. El descubrimiento automático de filtros no
         encuentra la combinación correcta — se necesita capturar el filtro DAX real con Analizador de
-        rendimiento › Copiar consulta sobre una tarjeta de margen filtrada por UEN en Power BI Service
+        rendimiento › la consulta del reporte sobre una tarjeta de margen filtrada por UEN en Power BI Service
         (mismo método que ya cerró Productividad y Consumo de Materiales). Correr el workflow de nuevo
         no resuelve esto por sí solo.
       </div>`);
@@ -5085,7 +5093,7 @@ const DXP_SERIE_CFG = {
   productividad:        { ds:'productividad', medida:'Planilla / kg producido', extra:'Kg vendidos por sol de planilla', label:'Planilla / kg producido (S/)', label2:'Kg vendidos por S/ de planilla', pct:false },
 };
 const DXP_SIN_SERIE_MOTIVO = {
-  control_interno:    'Las tarjetas de este dashboard son un <b>acumulado histórico total</b>: no responden al selector de mes (confirmado con Copiar consulta). No existe serie mensual que graficar.',
+  control_interno:    'Las tarjetas de este dashboard son un <b>acumulado histórico total</b>: no responden al selector de mes (tomado del propio reporte). No existe serie mensual que graficar.',
 };
 
 // Palancas y vacíos por reporte, cuantificados con las cifras reales de `s`.
@@ -5162,7 +5170,7 @@ function dxpPalancas(tipo, s) {
         `Consumo Prom 3M ${Number(parseVal(s.kv('compras','Consumo Prom 3M'))).toLocaleString('es-PE')} vs 6M ${Number(parseVal(s.kv('compras','Consumo Prom 6M'))).toLocaleString('es-PE')}`,
         'La regla ya está definida (>100% jala inventario, <100% sobre-compra) pero no se muestra.'),
       P('Validar si la serie plana es un bug','media','Variación mes a mes casi nula',
-        'Confirmar con Copiar consulta si es demanda estable real o la medida ignora la fecha.'),
+        'Confirmar contra el reporte si es demanda estable real o la medida ignora la fecha.'),
     ];
     case 'sop_inventario': return [
       P('Recuperar Cobertura y Composición','alta','Query ya validado en sesión previa',
@@ -5223,7 +5231,7 @@ function dxpDesglose(tipo, s) {
   }
   if (tipo === 'margen_variable_pag2') {
     // Avance por canal — tabla "FACTURACION AL ..." del reporte 11,
-    // pestaña RESUMEN 2 (Copiar consulta 2026-09-06)
+    // pestaña RESUMEN 2 (la consulta del reporte 2026-09-06)
     const cs = s.rp.margen_variable_pag2?.por_canal || [];
     // Cumplimiento del programa de producción de AYER — mide una jornada,
     // no el mes; por eso va rotulado con el día.
@@ -5365,7 +5373,7 @@ function dxpDesglose(tipo, s) {
       + mini('Brecha sobre meta', (mo-15).toFixed(1)+' pts')
       + mini('CxC por vencer', s.cxcVencer)
       + mini('CxC por vencer / venta del mes', (pv/vt*100).toFixed(1)+'%')
-      + `<div class="nd" style="margin-top:8px">El modelo no expone el tramo de vencimiento (30/60/90) ni el saldo total de cartera, así que no se puede abrir más sin capturarlo con Copiar consulta.</div>` };
+      + `<div class="nd" style="margin-top:8px">El modelo no expone el tramo de vencimiento (30/60/90) ni el saldo total de cartera, así que no se puede abrir más sin capturarlo con la consulta del reporte.</div>` };
   }
   if (tipo === 'sop_inventario') {
     const inv = parseVal(s.kv('sop_inventario','Inventario Total'));
