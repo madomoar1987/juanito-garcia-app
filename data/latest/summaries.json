@@ -529,12 +529,12 @@
         },
         "mermas": {
           "estado": "red",
-          "alerta": "Merma 4.87% — sobre meta 2%",
+          "alerta": "Merma sin total confiable. Peor UEN y peor planta: 4.27%.",
           "kpis": [
             {
               "label": "Merma Total",
-              "valor": "4.87%",
-              "meta": "2%",
+              "valor": "2.9%",
+              "meta": "<2%",
               "estado": "red",
               "fuente": "reporte"
             }
@@ -1452,9 +1452,9 @@
   },
   "diagnostico": [
     {
-      "consulta": "dataset_actualizado:mermas",
+      "consulta": "merma_total_incoherente",
       "http": 200,
-      "error": "el reporte 3fa688de-f4ad-4e58-878b-d2d816275ff3 ahora usa el dataset fdd58a2d-654d-41e0-b587-3d43c337ed47; el configurado era 35866214-f4da-45a3-a5a2-aa0c8caffe78"
+      "error": "Merma Total = 4.87% es mayor que el peor segmento (4.27%); un total no puede superar a sus partes. Se publica sin dato."
     }
   ]
 }
