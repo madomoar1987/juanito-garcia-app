@@ -507,7 +507,7 @@
             },
             {
               "label": "Venta Neta (KG) · acumulado 2026",
-              "valor": "16,750,700 KG",
+              "valor": "1,308,396 KG",
               "validado": true,
               "fuente": "reporte",
               "nota_periodo": "la consulta filtra solo por año, sin mes"
@@ -1363,7 +1363,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "yellow",
+          "estado": "red",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
@@ -1466,6 +1466,11 @@
     "pct": 79.4
   },
   "diagnostico": [
+    {
+      "consulta": "consumo_ventaneta",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (5, 9) Column '<oii>Peso total KG</oii>' in table '<oii>Maestra de Facturacion (Total)</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]}}}"
+    },
     {
       "consulta": "merma_total_incoherente",
       "http": 200,
@@ -1575,60 +1580,26 @@
     "iguales": 11,
     "distintas": [
       {
-        "kpi": "Producción Total (KG)",
-        "reporte": "productividad",
-        "en_powerbi": 6618879.247,
-        "en_juanito": 9621234.0,
-        "diferencia_pct": 31.2
-      },
-      {
-        "kpi": "Producción Total (KG)",
-        "reporte": "productividad",
-        "en_powerbi": 2869139.94,
-        "en_juanito": 9621234.0,
-        "diferencia_pct": 70.2
-      },
-      {
         "kpi": "Venta Neta (KG)",
         "reporte": "consumo_materiales",
-        "en_powerbi": 10178474.837,
-        "en_juanito": 16750700.0,
-        "diferencia_pct": 39.2
+        "en_powerbi": [
+          10178474.84,
+          7018344.94,
+          3160129.9
+        ],
+        "suma_powerbi": 20356949.67,
+        "en_juanito": 1308396.0,
+        "diferencia_pct": 58.6
       },
       {
         "kpi": "Costo x TN Producida",
         "reporte": "consumo_materiales",
-        "en_powerbi": 143.458,
+        "en_powerbi": [
+          143.46
+        ],
+        "suma_powerbi": null,
         "en_juanito": 151.64,
         "diferencia_pct": 5.4
-      },
-      {
-        "kpi": "Venta Neta (KG)",
-        "reporte": "consumo_materiales",
-        "en_powerbi": 7018344.936,
-        "en_juanito": 16750700.0,
-        "diferencia_pct": 58.1
-      },
-      {
-        "kpi": "Producción Neta (KG)",
-        "reporte": "consumo_materiales",
-        "en_powerbi": 7077219.876,
-        "en_juanito": 10207465.0,
-        "diferencia_pct": 30.7
-      },
-      {
-        "kpi": "Venta Neta (KG)",
-        "reporte": "consumo_materiales",
-        "en_powerbi": 3160129.901,
-        "en_juanito": 16750700.0,
-        "diferencia_pct": 81.1
-      },
-      {
-        "kpi": "Producción Neta (KG)",
-        "reporte": "consumo_materiales",
-        "en_powerbi": 3049874.16,
-        "en_juanito": 10207465.0,
-        "diferencia_pct": 70.1
       }
     ],
     "sin_correspondencia": 43
