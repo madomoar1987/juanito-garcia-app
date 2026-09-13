@@ -4341,4 +4341,16 @@ if __name__ == "__main__":
             print("→ traceback guardado en summaries.json → diagnostico")
         except Exception as e2:
             print(f"→ no se pudo guardar el traceback: {e2}")
+        # Y en un archivo aparte, porque cuando la corrida muere aquí el paso
+        # que publica summaries.json ni siquiera llega a ejecutarse: el error
+        # se queda dentro del runner y solo se puede leer con permisos sobre
+        # el log de Actions. Este archivo sí se publica, y no toca los datos
+        # que lee la app.
+        try:
+            (OUTPUT_DIR / "ultimo_error.txt").write_text(
+                f"corrida del {datetime.datetime.now(datetime.timezone.utc):%Y-%m-%d %H:%M UTC}\n\n"
+                + rastro, encoding="utf-8")
+            print("→ traceback guardado en data/latest/ultimo_error.txt")
+        except Exception as e3:
+            print(f"→ no se pudo guardar ultimo_error.txt: {e3}")
         sys.exit(1)

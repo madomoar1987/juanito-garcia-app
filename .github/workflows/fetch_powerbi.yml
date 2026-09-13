@@ -88,3 +88,19 @@ jobs:
       # que servía el canario. Avisar no requiere retener el dato.
       - name: Avisar si el dato publicado salió incompleto
         run: python scripts/verificar_publicado.py
+
+      # Cuando la extraccion muere, los pasos siguientes se saltan y el
+      # traceback se queda dentro del runner: leerlo exige permisos sobre el
+      # log de Actions. Este paso publica solo el archivo del error — nunca
+      # los datos, que en ese momento estan a medio escribir.
+      - name: Publicar el error si la corrida murio
+        if: failure()
+        run: |
+          test -f data/latest/ultimo_error.txt || exit 0
+          git config user.name  "JUANITO Bot"
+          git config user.email "juanito@pauno.pe"
+          git add -f data/latest/ultimo_error.txt
+          git diff --staged --quiet && exit 0
+          git commit -m "error: la corrida murio $(date -u +'%Y-%m-%d %H:%M UTC')"
+          REMOTO="https://x-access-token:${{ secrets.GH_PAT }}@github.com/rgarciaa78-svg/juanito-garcia-app.git"
+          git pull --rebase "$REMOTO" main && git push "$REMOTO" HEAD:main
