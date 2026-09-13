@@ -507,7 +507,7 @@
             },
             {
               "label": "Venta Neta (KG) · acumulado 2026",
-              "valor": "1,308,396 KG",
+              "valor": "10,178,475 KG",
               "validado": true,
               "fuente": "reporte",
               "nota_periodo": "la consulta filtra solo por año, sin mes"
@@ -1457,40 +1457,15 @@
     "avance": 0.6295519287006067
   },
   "verificacion": {
-    "verificados": 50,
+    "verificados": 49,
     "total": 63
   },
   "cobertura": {
-    "kpis_del_reporte": 50,
+    "kpis_del_reporte": 49,
     "kpis_totales": 63,
-    "pct": 79.4
+    "pct": 77.8
   },
   "diagnostico": [
-    {
-      "consulta": "tarjeta:Costo Total",
-      "http": 0,
-      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
-    },
-    {
-      "consulta": "tarjeta:Venta Neta (KG)",
-      "http": 0,
-      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
-    },
-    {
-      "consulta": "tarjeta:Costo x TN Vendida",
-      "http": 0,
-      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
-    },
-    {
-      "consulta": "tarjeta:Producción Neta (KG)",
-      "http": 0,
-      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
-    },
-    {
-      "consulta": "tarjeta:Costo x TN Producida",
-      "http": 0,
-      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
-    },
     {
       "consulta": "merma_total_incoherente",
       "http": 200,
@@ -1597,20 +1572,8 @@
     "sin_datos": []
   },
   "validacion_tarjetas": {
-    "iguales": 11,
+    "iguales": 12,
     "distintas": [
-      {
-        "kpi": "Venta Neta (KG)",
-        "reporte": "consumo_materiales",
-        "en_powerbi": [
-          10178474.84,
-          7018344.94,
-          3160129.9
-        ],
-        "suma_powerbi": 20356949.67,
-        "en_juanito": 1308396.0,
-        "diferencia_pct": 58.6
-      },
       {
         "kpi": "Costo x TN Producida",
         "reporte": "consumo_materiales",
