@@ -57,21 +57,50 @@ def revisar(datos, hoy):
     # —ya están publicadas y marcadas— pero sí tienen que llegar por correo:
     # un total que no es la suma de sus partes es un dato en el que alguien
     # va a apoyar una decisión.
+    # Diferencias ya investigadas y explicadas. No encienden la alarma: una
+    # alarma que suena todos los días por lo mismo deja de mirarse, y entonces
+    # el día que aparece algo nuevo tampoco se ve.
+    conocidos = set()
+    ruta_con = pathlib.Path("data/descuadres_conocidos.json")
+    if ruta_con.exists():
+        try:
+            conocidos = {x["prueba"] for x in
+                         json.loads(ruta_con.read_text(encoding="utf-8"))["conocidos"]}
+        except Exception as e:
+            lineas.append(f"  (no se pudo leer descuadres_conocidos.json: {e})")
+
     val = datos.get("validacion") or {}
-    descuadres = val.get("no_cuadran") or []
+    todos = val.get("no_cuadran") or []
+    descuadres = [x for x in todos if x["prueba"] not in conocidos]
+    ya_vistos = [x for x in todos if x["prueba"] in conocidos]
     lineas.append(f"coherencia: {val.get('cuadran', '?')} cuadran · "
                   f"{len(descuadres)} no cuadran")
     for x in descuadres[:8]:
         lineas.append(f"  ✗ {x['prueba']}: publicado {x['publicado']:,} · "
                       f"esperado {x['esperado']:,} ({x['diferencia_pct']}%)")
+    for x in ya_vistos:
+        lineas.append(f"  · {x['prueba']}: diferencia conocida y explicada")
+
+    # Diferencias contra las tarjetas del propio reporte. Estas no admiten
+    # lista de conocidos: si la app no dice lo que dice Power BI, es un error.
+    tar = datos.get("validacion_tarjetas") or {}
+    distintas = tar.get("distintas") or []
+    lineas.append(f"tarjetas: {tar.get('iguales', 0)} iguales · "
+                  f"{len(distintas)} distintas")
+    for x in distintas[:8]:
+        lineas.append(f"  ✗ {x['kpi']}: Power BI {x['en_powerbi']} · "
+                      f"Juanito {x['en_juanito']}")
 
     if fecha != hoy:
         return (f"el dato quedó con fecha {fecha}, no {hoy}: la corrida terminó "
                 "sin actualizar nada"), lineas
     if vacios:
         return f"desgloses vacíos: {', '.join(vacios)}", lineas
+    if distintas:
+        return (f"{len(distintas)} cifras difieren de la tarjeta de Power BI: "
+                + "; ".join(x["kpi"] for x in distintas[:4])), lineas
     if descuadres:
-        return (f"{len(descuadres)} cifras no cuadran entre sí: "
+        return (f"{len(descuadres)} descuadres nuevos: "
                 + "; ".join(x["prueba"] for x in descuadres[:4])), lineas
     return None, lineas
 

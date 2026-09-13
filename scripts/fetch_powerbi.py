@@ -205,110 +205,74 @@ def _dax_consumo_filtro_kardex(token, ws_id, dataset_id, value_expr, label, anio
     return None
 
 
-def dax_consumo_costo_total(token, ws_id, dataset_id, label="consumo_costo"):
-    """'Costo Total' del reporte '14. Consumo Materiales indirectos de producción'.
-    Es la medida 'Maestra de Kardex (Total)'[Costo total validado].
-    Filtrado por Calendario[Año]=PREV_YEAR desde 2026-09-04 (antes era histórico
-    total sin año — se corrigió tras confirmar con una segunda Copiar consulta,
-    esta vez con el selector de año marcado en el reporte).
-    """
-    return _dax_consumo_filtro_kardex(token, ws_id, dataset_id, "[Costo total validado]", label, anio=PREV_YEAR)
 
 
-def dax_consumo_produccion_neta_kg(token, ws_id, dataset_id, label="consumo_prodneta"):
-    """'Producción Neta (KG)' del reporte '14. Consumo Materiales indirectos de producción'.
-    Es la medida 'Medidas'[Producción (KG) Odoo] — mismos filtros que Costo Total,
-    incluido Calendario[Año]=PREV_YEAR (ver dax_consumo_costo_total).
-    """
-    return _dax_consumo_filtro_kardex(token, ws_id, dataset_id, "[Producción (KG) Odoo]", label, anio=PREV_YEAR)
 
 
-def _dax_consumo_filtro_venta(token, ws_id, dataset_id, value_expr, label):
-    """Aplica los 7 filtros confirmados con Copiar consulta que comparten las
-    tarjetas 'Venta Neta (KG)' y 'Costo x TN Vendida' del reporte '14. Consumo
-    Materiales indirectos de producción' (2026-09-03): filtro de fecha desde
-    2025-07-01, CATEGORIZACION='VENTA BRUTA', TIPO DE NEGOCIO N2 no vacío, y los
-    mismos 4 de Planta/Kardex que usa 'Costo Total' en este mismo reporte.
-    `value_expr` es la expresión DAX del valor (columna con SUM o [Medida]).
-    """
-    q = f"""EVALUATE
-ROW(
-  "v",
-  CALCULATE(
-    {value_expr},
-    FILTER(
-      KEEPFILTERS(VALUES('Calendario'[Date])),
-      'Calendario'[Date] >= (DATE(2025, 7, 1) + TIME(0, 0, 1))
-    ),
-    TREATAS({{"VENTA BRUTA"}}, 'Maestra de Facturacion (Total)'[CATEGORIZACION]),
-    FILTER(
-      KEEPFILTERS(VALUES('TIPO DE NEGOCIO'[TIPO DE NEGOCIO N2])),
-      NOT('TIPO DE NEGOCIO'[TIPO DE NEGOCIO N2] IN {{BLANK()}})
-    ),
-    TREATAS({{"Costo"}}, 'PLANTA POR CECOS'[TIPO DE OPERACION]),
-    FILTER(
-      KEEPFILTERS(VALUES('Maestra de Kardex (Total)'[categoria_hijo])),
-      NOT('Maestra de Kardex (Total)'[categoria_hijo] IN {{"ACUERDOS COMERCIALES"}})
-    ),
-    FILTER(
-      KEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),
-      NOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {{BLANK()}})
-    ),
-    FILTER(
-      KEEPFILTERS(VALUES('Maestra de Kardex (Total)'[cuenta_analitica])),
-      NOT('Maestra de Kardex (Total)'[cuenta_analitica] IN
-        {{BLANK(),"[941002] CONTROL INTERNO","ALMACEN ATE","ALMACEN PACHACAMAC"}})
-    )
-  )
-)"""
-    rows = dax(token, ws_id, dataset_id, q, label)
-    if rows:
-        return rows[0].get("[v]") or rows[0].get("v")
+# KPIs que se leen ejecutando la consulta EXACTA de la tarjeta del reporte,
+# identificada por su hash en capturas/catalogo.json.
+#
+# Reconstruir la consulta a mano fue un error caro: la de Consumo llevaba
+# siete filtros que la tarjeta no tiene, y publicaba 16,750,700 kg donde el
+# reporte marca 10,178,475. Al corregir la columna salió 1,308,396, tampoco
+# el del reporte. Dos intentos, dos cifras equivocadas, porque el problema
+# nunca fue la columna sino los filtros.
+#
+# Ejecutando el DAX capturado tal cual, la app no puede diferir del reporte:
+# es literalmente la misma consulta que Power BI usa para pintar la tarjeta.
+# Las funciones dax_consumo_* que reconstruían estas consultas a mano se
+# eliminaron el 13/09/2026: llevaban filtros que la tarjeta no tiene y daban
+# cifras distintas a las del reporte. Ejecutar el DAX capturado las hace
+# innecesarias.
+TARJETAS_KPI = {
+    ("consumo", "Costo Total"):            "7fc030955546",
+    ("consumo", "Venta Neta (KG)"):        "7768ef2ed901",
+    ("consumo", "Costo x TN Vendida"):     "d94f00974eb5",
+    ("consumo", "Producción Neta (KG)"):   "cce2788bf3ec",
+    ("consumo", "Costo x TN Producida"):   "7cbb71b8d5c7",
+}
+
+
+def valor_de_tarjeta(token, ws, dataset_id, hash_visual, label):
+    """Ejecuta la consulta capturada de una tarjeta y devuelve su número."""
+    entrada = next((q for q in _catalogo_por_hash().get(hash_visual, [])), None)
+    if not entrada:
+        DIAGNOSTICO.append({"consulta": f"tarjeta:{label}", "http": 0,
+                            "error": f"hash {hash_visual} no está en el catálogo"})
+        return None
+    tablas = tablas_de_captura(
+        lambda dax, lb: (_tablas_dax(token, ws, dataset_id, dax, lb) or [[]])[0],
+        entrada["dax"], f"tarjeta:{label}")
+    filas = tablas[0] if tablas else []
+    if not filas:
+        return None
+    for v in filas[0].values():
+        if isinstance(v, (int, float)):
+            return float(v)
     return None
 
 
-def dax_consumo_venta_neta_kg(token, ws_id, dataset_id, label="consumo_ventaneta"):
-    """'Venta Neta (KG)' del reporte '14. Consumo Materiales indirectos de producción'.
-
-    Es la columna 'Maestra de Facturacion (Total)'[Peso total K] con SUM
-    directo, no una medida.
-
-    Sí eran dos columnas distintas, una por dataset:
-
-      · Consumo usa [Peso total KG], con G.
-      · Productividad usa [Peso total K], sin G.
-
-    El 2026-09-06 se cambió Consumo a [Peso total K] porque [Peso total KG]
-    daba "cannot be found" — pero ese error venía del dataset de
-    Productividad, no del de Consumo, y la conclusión se aplicó al reporte
-    equivocado. El resultado fue publicar 16,750,700 kg donde la tarjeta del
-    reporte marca 10,178,475: un 65% de más durante una semana.
-
-    Lo encontró la comparación automática contra las tarjetas capturadas
-    (2026-09-13), que es justo para lo que se hizo. Las tres tarjetas del
-    reporte lo confirman: [Peso total KG] = 10,178,475 y sus dos plantas,
-    [Peso total KG ATE] 7,018,345 + [Peso total KG PACHACAMAC] 3,160,130,
-    suman exactamente eso.
-    """
-    return _dax_consumo_filtro_venta(
-        token, ws_id, dataset_id,
-        "SUM('Maestra de Facturacion (Total)'[Peso total KG])", label)
+_CAT_HASH = None
 
 
-def dax_consumo_costo_x_tn_vendida(token, ws_id, dataset_id, label="consumo_costotnvend"):
-    """'Costo x TN Vendida' del reporte '14. Consumo Materiales indirectos de producción'.
-    Es la medida 'Maestra de Kardex (Total)'[Ratio costo / kg] — mismos 7 filtros
-    que Venta Neta (KG), confirmados con Copiar consulta el 2026-09-03.
-    """
-    return _dax_consumo_filtro_venta(token, ws_id, dataset_id, "[Ratio costo / kg]", label)
+def _catalogo_por_hash():
+    global _CAT_HASH
+    if _CAT_HASH is None:
+        _CAT_HASH = {}
+        try:
+            for q in json.loads(CATALOGO_CAPTURAS.read_text(encoding="utf-8")):
+                _CAT_HASH.setdefault(q.get("hash"), []).append(q)
+        except Exception as e:
+            print(f"    · catálogo ilegible: {e}")
+    return _CAT_HASH
 
 
-def dax_consumo_costo_x_tn_producida(token, ws_id, dataset_id, label="consumo_costotnprod"):
-    """'Costo x TN Producida' del reporte '14. Consumo Materiales indirectos de producción'.
-    Es la medida 'Medidas'[Costo x ton producida] — mismos 7 filtros que
-    Venta Neta (KG) / Costo x TN Vendida, confirmados con Copiar consulta el 2026-09-03.
-    """
-    return _dax_consumo_filtro_venta(token, ws_id, dataset_id, "[Costo x ton producida]", label)
+
+
+
+
+
+
 
 
 def _dax_margen_filtros(uen, anio):
@@ -2448,24 +2412,14 @@ def build_mermas(found):
 def build_consumo_materiales(found):
     """Reporte '14. Consumo Materiales indirectos de produccion' — PAUNO.
 
-    Estado por KPI:
-      Costo Total          -> VALIDADO (dax_consumo_costo_total). Filtrado por
-                              Calendario[Año]=PREV_YEAR desde 2026-09-04 — la primera
-                              captura (2026-09-03) no tenía año seleccionado en el
-                              reporte y traía el acumulado histórico total; se repitió
-                              la captura con "2026" marcado y se corrigió.
-      Venta Neta KG        -> VALIDADO (dax_consumo_venta_neta_kg). Filtro de fecha
-                              propio (desde 2025-07-01).
-      Costo x TN Vendida   -> VALIDADO (dax_consumo_costo_x_tn_vendida). Mismos
-                              7 filtros que Venta Neta KG.
-      Producción Neta KG   -> VALIDADO (dax_consumo_produccion_neta_kg). Mismos
-                              filtros que Costo Total, incluido Calendario[Año] —
-                              confirmado 1:1 con su propia Copiar consulta (2026-09-04),
-                              idéntica a la de Costo Total salvo la medida.
-      Costo x TN Producida -> VALIDADO (dax_consumo_costo_x_tn_producida). Mismos
-                              7 filtros que Venta Neta KG / Costo x TN Vendida.
+    Los cinco KPIs se leen ejecutando la consulta capturada de su tarjeta
+    (ver TARJETAS_KPI), así que son literalmente los números que Power BI
+    pinta en pantalla.
 
-    Los 5 KPIs de este reporte quedaron validados 1:1 con Copiar consulta.
+    Antes se reconstruían a mano y no coincidían. La comparación automática
+    contra las tarjetas lo destapó el 13/09/2026: Venta Neta (KG) publicaba
+    16,750,700 kg donde la tarjeta marca 10,178,475 — los siete filtros que
+    llevaba la reconstrucción no son los de la tarjeta.
     """
     costo_total_val = found.get("Costo total validado") or found.get("Costo Consumo")
     venta_kg_val    = found.get("Peso total KG") or found.get("Venta Neta (KG)") or found.get("Venta Neta KG")
@@ -3501,44 +3455,28 @@ def main():
             if compras_val is None:
                 print(f"    Compras: ratio agosto no accesible via API (Live Connection)")
 
-        # ── Consumo: 'Costo Total' con el filtro EXACTO confirmado (Copiar consulta, 2026-09-03)
-        # Sin filtro de fecha — ver docstring de dax_consumo_costo_total. Sobrescribe
-        # cualquier valor sin filtrar que traiga el heurístico de abajo.
+        # ── Consumo: las cinco tarjetas se leen ejecutando su consulta
+        # capturada tal cual. Antes se reconstruían a mano y no coincidían con
+        # el reporte: Venta Neta (KG) publicaba 16.75M contra los 10.18M de la
+        # tarjeta, y al corregir la columna dio 1.31M — el problema eran los
+        # filtros, no la columna. Con el DAX literal no hay nada que acertar.
         if "consumo" in ids:
-            v_ct = dax_consumo_costo_total(token, ws_id, ids["consumo"])
-            if v_ct is not None:
-                scanned.setdefault("consumo", {})["Costo total validado"] = v_ct
-                print(f"    ✓ Consumo [Costo total validado] filtrado = {v_ct}")
-            else:
-                print("    ✗ Consumo [Costo total validado] — la consulta filtrada no devolvió valor")
-
-            v_vn = dax_consumo_venta_neta_kg(token, ws_id, ids["consumo"])
-            if v_vn is not None:
-                scanned.setdefault("consumo", {})["Peso total KG"] = v_vn
-                print(f"    ✓ Consumo [Venta Neta KG] filtrado = {v_vn}")
-            else:
-                print("    ✗ Consumo [Venta Neta KG] — la consulta filtrada no devolvió valor")
-
-            v_ctv = dax_consumo_costo_x_tn_vendida(token, ws_id, ids["consumo"])
-            if v_ctv is not None:
-                scanned.setdefault("consumo", {})["Ratio costo / kg"] = v_ctv
-                print(f"    ✓ Consumo [Costo x TN Vendida] filtrado = {v_ctv}")
-            else:
-                print("    ✗ Consumo [Costo x TN Vendida] — la consulta filtrada no devolvió valor")
-
-            v_pn = dax_consumo_produccion_neta_kg(token, ws_id, ids["consumo"])
-            if v_pn is not None:
-                scanned.setdefault("consumo", {})["Producción (KG) Odoo"] = v_pn
-                print(f"    ✓ Consumo [Producción Neta KG] filtrado = {v_pn}")
-            else:
-                print("    ✗ Consumo [Producción Neta KG] — la consulta filtrada no devolvió valor")
-
-            v_ctp = dax_consumo_costo_x_tn_producida(token, ws_id, ids["consumo"])
-            if v_ctp is not None:
-                scanned.setdefault("consumo", {})["Costo x ton producida"] = v_ctp
-                print(f"    ✓ Consumo [Costo x TN Producida] filtrado = {v_ctp}")
-            else:
-                print("    ✗ Consumo [Costo x TN Producida] — la consulta filtrada no devolvió valor")
+            for (grupo, etiqueta), h in TARJETAS_KPI.items():
+                if grupo != "consumo":
+                    continue
+                v = valor_de_tarjeta(token, ws_id, ids["consumo"], h, etiqueta)
+                destino = {
+                    "Costo Total": "Costo total validado",
+                    "Venta Neta (KG)": "Peso total KG",
+                    "Costo x TN Vendida": "Ratio costo / kg",
+                    "Producción Neta (KG)": "Producción (KG) Odoo",
+                    "Costo x TN Producida": "Costo x ton producida",
+                }[etiqueta]
+                if v is not None:
+                    scanned.setdefault("consumo", {})[destino] = v
+                    print(f"    ✓ Consumo [{etiqueta}] desde la tarjeta = {v:,.2f}")
+                else:
+                    print(f"    ✗ Consumo [{etiqueta}] — la tarjeta no devolvió valor")
 
         # ── Consumo: SUM directo desde tablas del dataset consumo
         if "consumo" in ids:

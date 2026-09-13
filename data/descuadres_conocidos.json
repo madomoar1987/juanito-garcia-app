@@ -1,0 +1,22 @@
+{
+  "_leeme": [
+    "Diferencias ya investigadas que NO deben encender la alarma.",
+    "",
+    "Sin esta lista, la corrida terminaba en rojo todos los días por las mismas",
+    "dos diferencias de siempre. Una alarma que suena siempre deja de mirarse, y",
+    "entonces el día que aparece algo nuevo tampoco se ve.",
+    "",
+    "Para entrar aquí, una diferencia tiene que estar explicada: no basta con",
+    "que moleste. Si no se sabe por qué difiere, se queda fuera y sigue sonando.",
+    "",
+    "Quitar una entrada vuelve a encender la alarma para esa diferencia."
+  ],
+  "conocidos": [
+    {
+      "prueba": "Ventas del mes: Margen vs Fill Rate",
+      "desde": "2026-09-13",
+      "explicacion": "Margen factura a todos los clientes (S/7.69M) y Fill Rate solo sigue a los que tienen acuerdo de nivel de servicio (S/6.09M). Su desglose lista ocho grupos: SPSA, CENCOSUD, TOTTUS, LIMA, CENTRO SUR, AJE y dos más. No es un error de extracción, son alcances distintos.",
+      "pendiente": "Confirmar con el área comercial que Fill Rate cubre solo esos ocho grupos. Si se confirma, conviene renombrar el KPI para que lo diga."
+    }
+  ]
+}
