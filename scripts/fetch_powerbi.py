@@ -233,6 +233,11 @@ TARJETAS_KPI = {
 }
 
 
+# KPIs cuyo valor se leyó de la tarjeta del reporte. La reconciliación de
+# series no debe pisarlos: la tarjeta es lo que el usuario ve en Power BI.
+LEIDOS_DE_TARJETA = []
+
+
 def valor_tarjeta_por_hash(token, ws, dataset_id, hash_visual, label):
     """Ejecuta la consulta capturada de una tarjeta y devuelve su número.
 
@@ -3487,9 +3492,17 @@ def main():
                     destino = DESTINO_CONSUMO.get(etiqueta)
                     if v is not None and destino:
                         scanned.setdefault("consumo", {})[destino] = v
+                        LEIDOS_DE_TARJETA.append(["consumo_materiales", etiqueta])
                         print(f"    ✓ Consumo [{etiqueta}] desde la tarjeta = {v:,.2f}")
                     else:
+                        # Sin esto el fallo es mudo y se queda el valor del
+                        # sondeo, que no es el del reporte.
                         print(f"    ✗ Consumo [{etiqueta}] — la tarjeta no devolvió valor")
+                        DIAGNOSTICO.append({
+                            "consulta": f"tarjeta:{etiqueta}", "http": 200,
+                            "error": "la consulta capturada no devolvió filas; "
+                                     "queda el valor del sondeo, que no es el "
+                                     "del reporte"})
                 except Exception as e:
                     print(f"    ✗ Consumo [{etiqueta}]: {e}")
                     DIAGNOSTICO.append({"consulta": f"tarjeta:{etiqueta}", "http": 0,
@@ -4399,6 +4412,7 @@ def main():
         # La lista de cifras calculadas viaja con los datos: quien mire la app
         # puede saber cuáles son derivadas sin leer el código.
         summary["derivados"] = DERIVADOS
+        summary["kpis_de_tarjeta"] = LEIDOS_DE_TARJETA
         if DERIVADOS:
             print(f"\n  {len(DERIVADOS)} cifra(s) calculadas, no leídas de Power BI:")
             for x in DERIVADOS:

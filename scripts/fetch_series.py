@@ -2187,7 +2187,16 @@ def reconciliar_kpis(resultado, periodos_str):
     cambios = 0
     for empresa, edatos in (datos.get("empresas") or {}).items():
         reportes = edatos.get("reportes") or {}
+        # Cifras que fetch_powerbi leyó ejecutando la tarjeta del reporte. No
+        # se tocan: la tarjeta es lo que el usuario ve en Power BI, y la serie
+        # mensual mide otra cosa. Costo x TN Producida se publicaba en 151.64
+        # —el mes, según la serie— cuando la tarjeta marca 143.46.
+        de_tarjeta = {tuple(x) for x in (datos.get("kpis_de_tarjeta") or [])}
+
         for tipo, etiqueta, ds, serie_nom, formato, meta in RECONCILIAR:
+            if (tipo, etiqueta) in de_tarjeta:
+                print(f"    = [{tipo}] {etiqueta}: se respeta el valor de la tarjeta")
+                continue
             rep = reportes.get(tipo)
             serie = (resultado.get(ds) or {}).get(serie_nom)
             if not rep or not serie:
