@@ -1812,6 +1812,341 @@
   {
     "visual": "Segmentación de datos",
     "tipo_visual": "slicer",
+    "filas": 2,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS(\r\n\t\t\t{\"Amauta Impresiones Comerciales SAC\",\r\n\t\t\t\t\"Pauno\"},\r\n\t\t\t'Pauno Registro de Ejecuciones'[Empresa]\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tCALCULATETABLE(\r\n\t\t\tVALUES('Pauno Registro de Ejecuciones'[Empresa]),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable)\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(101, __DS0Core, 'Pauno Registro de Ejecuciones'[Empresa], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'Pauno Registro de Ejecuciones'[Empresa]",
+    "hash": "d4c62185dbf4",
+    "archivo": "08-auditoria__tarjetas.json",
+    "duplicado_de": "08-auditoria__control-interno.json / Segmentación de datos",
+    "tablas": [
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "Empresa"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Segmentación de datos",
+    "tipo_visual": "slicer",
+    "filas": 12,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes])),\r\n\t\t\tNOT('LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\n\tVAR __DS0Core = \r\n\t\tCALCULATETABLE(\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\tVALUES('LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'),\r\n\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\r\n\t\t\t),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable2)\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t101,\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t1\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes]",
+    "hash": "a85982c8e075",
+    "archivo": "08-auditoria__tarjetas.json",
+    "duplicado_de": "08-auditoria__control-interno.json / Segmentación de datos",
+    "tablas": [
+      "LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1",
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "Empresa",
+      "Mes",
+      "NroMes"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "RESULTADO DE CUMPLIMIENTO",
+    "tipo_visual": "lineChart",
+    "filas": 9,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"v__Cumplimento\", 'Pauno Registro de Ejecuciones'[% Cumplimento]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t1001,\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t1\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes]",
+    "hash": "0d996e842590",
+    "archivo": "08-auditoria__tarjetas.json",
+    "duplicado_de": "08-auditoria__control-interno.json / RESULTADO DE CUMPLIMIENTO",
+    "tablas": [
+      "LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1",
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "% Cumplimento",
+      "Empresa",
+      "Mes",
+      "NroMes"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "RESULTADO DE CUMPLIMIENTO ACUMULADO",
+    "tipo_visual": "barChart",
+    "filas": 15,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'Areas-Pauno'[Jefe de Area],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"v__Cumplimento\", 'Pauno Registro de Ejecuciones'[% Cumplimento],\r\n\t\t\t\"Color_KPI\", IGNORE('Pauno Registro de Ejecuciones'[Color KPI])\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(1001, __DS0Core, [v__Cumplimento], 0, 'Areas-Pauno'[Jefe de Area], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t[v__Cumplimento] DESC, 'Areas-Pauno'[Jefe de Area]",
+    "hash": "65205ce7c0e5",
+    "archivo": "08-auditoria__tarjetas.json",
+    "duplicado_de": "08-auditoria__control-interno.json / RESULTADO DE CUMPLIMIENTO ACUMULADO",
+    "tablas": [
+      "Areas-Pauno",
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "% Cumplimento",
+      "Color KPI",
+      "Empresa",
+      "Jefe de Area"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "ESTADO DE PLANES DE ACCION",
+    "tipo_visual": "lineStackedColumnComboChart",
+    "filas": 13,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'Planes de Accion'[Planta],\r\n\t\t\tROLLUPADDISSUBTOTAL('Planes de Accion'[Estatus], \"IsGrandTotalColumnTotal\"),\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"CountÁrea\", CALCULATE(COUNTA('Planes de Accion'[Área])),\r\n\t\t\t\"Color_KPI\", IGNORE('Pauno Registro de Ejecuciones'[Color KPI])\r\n\t\t)\r\n\r\n\tVAR __DS0CoreOnlyOutputTotals = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsGrandTotalColumnTotal] = FALSE)),\r\n\t\t\t\"'Planes de Accion'[Planta]\", 'Planes de Accion'[Planta],\r\n\t\t\t\"'Planes de Accion'[Estatus]\", 'Planes de Accion'[Estatus],\r\n\t\t\t\"CountÁrea\", [CountÁrea],\r\n\t\t\t\"Color_KPI\", [Color_KPI]\r\n\t\t)\r\n\r\n\tVAR __DS0CoreTableByDM0 = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsGrandTotalColumnTotal] = TRUE)),\r\n\t\t\t\"'Planes de Accion'[Planta]\", 'Planes de Accion'[Planta],\r\n\t\t\t\"SortBy_DM0_0\", [CountÁrea]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWithSortColumns = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\tSUMMARIZE(__DS0Core, 'Planes de Accion'[Planta]),\r\n\t\t\t__DS0CoreTableByDM0\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(201, __DS0PrimaryWithSortColumns, [SortBy_DM0_0], 0, 'Planes de Accion'[Planta], 1)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(__DS0CoreOnlyOutputTotals, 'Planes de Accion'[Estatus])\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(62, __DS0SecondaryBase, 'Planes de Accion'[Estatus], 1)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0CoreOnlyOutputTotals,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'Planes de Accion'[Estatus],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'Planes de Accion'[Estatus]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[SortBy_DM0_0] DESC, 'Planes de Accion'[Planta], [ColumnIndex]",
+    "hash": "5438a27e0a42",
+    "archivo": "08-auditoria__tarjetas.json",
+    "duplicado_de": "08-auditoria__control-interno.json / ESTADO DE PLANES DE ACCION",
+    "tablas": [
+      "Pauno Registro de Ejecuciones",
+      "Planes de Accion"
+    ],
+    "campos": [
+      "Color KPI",
+      "Empresa",
+      "Estatus",
+      "Planta",
+      "Área"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Satisfactorio",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE VAR __DS0FilterTable = \r\n\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"Satisfactorio\", IGNORE('Pauno Registro de Ejecuciones'[Satisfactorio])\r\n\t)",
+    "hash": "52bb4f0a83cf",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "Empresa",
+      "Satisfactorio"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Con Observaciones",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE VAR __DS0FilterTable = \r\n\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"Con_Observaciones\", IGNORE('Pauno Registro de Ejecuciones'[Con Observaciones])\r\n\t)",
+    "hash": "75ee47245f6d",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "Con Observaciones",
+      "Empresa"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Critico",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE VAR __DS0FilterTable = \r\n\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(__DS0FilterTable, \"Critico\", IGNORE('Pauno Registro de Ejecuciones'[Critico]))",
+    "hash": "002616d79aa2",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "Critico",
+      "Empresa"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Resultado Acumulado",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE VAR __DS0FilterTable = \r\n\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"Color_KPI\", IGNORE('Pauno Registro de Ejecuciones'[Color KPI]),\r\n\t\t\"v__Cumplimento\", IGNORE('Pauno Registro de Ejecuciones'[% Cumplimento]),\r\n\t\t\"SumCalificación_0_3_\", IGNORE(\r\n\t\t\tCALCULATE(SUM('Pauno Registro de Ejecuciones'[Calificación(0-3)]))\r\n\t\t),\r\n\t\t\"SumPuntos_Totales\", IGNORE(CALCULATE(SUM('Pauno Registro de Ejecuciones'[Puntos Totales])))\r\n\t)",
+    "hash": "2dd066c629b2",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "% Cumplimento",
+      "Calificación(0-3)",
+      "Color KPI",
+      "Empresa",
+      "Puntos Totales"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Tarjeta",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE VAR __DS0FilterTable = \r\n\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"Total_Planes_de_Acción\", IGNORE('Planes de Accion'[Total Planes de Acción])\r\n\t)",
+    "hash": "0f571793839f",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones",
+      "Planes de Accion"
+    ],
+    "campos": [
+      "Empresa",
+      "Total Planes de Acción"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Tarjeta",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE VAR __DS0FilterTable = \r\n\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"Planes_Atrasados\", IGNORE('Planes de Accion'[Planes Atrasados])\r\n\t)",
+    "hash": "6a4c8e9382bb",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones",
+      "Planes de Accion"
+    ],
+    "campos": [
+      "Empresa",
+      "Planes Atrasados"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Tarjeta",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE VAR __DS0FilterTable = \r\n\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(__DS0FilterTable, \"Planes_Abiertos\", IGNORE('Planes de Accion'[Planes Abiertos]))",
+    "hash": "e4ba6f862d51",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones",
+      "Planes de Accion"
+    ],
+    "campos": [
+      "Empresa",
+      "Planes Abiertos"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Tarjeta",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE VAR __DS0FilterTable = \r\n\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(__DS0FilterTable, \"Planes_Cerrados\", IGNORE('Planes de Accion'[Planes Cerrados]))",
+    "hash": "d102a3050d82",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones",
+      "Planes de Accion"
+    ],
+    "campos": [
+      "Empresa",
+      "Planes Cerrados"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Tarjeta",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE VAR __DS0FilterTable = \r\n\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"Sumv_Ejecutado_\", IGNORE(CALCULATE(SUM('Pauno Registro de Ejecuciones'[¿Ejecutado?])))\r\n\t)",
+    "hash": "74e9e532453c",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "Empresa",
+      "¿Ejecutado?"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "RESULTADOS POR AREA Y PUNTO DE CONTROL",
+    "tipo_visual": "pivotTable",
+    "filas": 87,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'Areas-Pauno'[Jefe de Area],\r\n\t\t\tROLLUPADDISSUBTOTAL(\r\n\t\t\t\t'Areas-Pauno'[Area 1], \"IsDM0Total\",\r\n\t\t\t\tROLLUPGROUP(\r\n\t\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\r\n\t\t\t\t), \"IsGrandTotalColumnTotal\"\r\n\t\t\t),\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"Sumv_Ejecutado_\", CALCULATE(SUM('Pauno Registro de Ejecuciones'[¿Ejecutado?])),\r\n\t\t\t\"v__Cumplimento\", 'Pauno Registro de Ejecuciones'[% Cumplimento]\r\n\t\t)\r\n\r\n\tVAR __DS0CoreOnlyOutputTotals = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(\r\n\t\t\t\tFILTER(\r\n\t\t\t\t\tKEEPFILTERS(__DS0Core),\r\n\t\t\t\t\tAND([IsDM0Total] = FALSE, [IsGrandTotalColumnTotal] = FALSE)\r\n\t\t\t\t)\r\n\t\t\t),\r\n\t\t\t\"'Areas-Pauno'[Jefe de Area]\", 'Areas-Pauno'[Jefe de Area],\r\n\t\t\t\"'Areas-Pauno'[Area 1]\", 'Areas-Pauno'[Area 1],\r\n\t\t\t\"'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes]\", 'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\"'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\", 'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t\"v__Cumplimento\", [v__Cumplimento],\r\n\t\t\t\"Sumv_Ejecutado_\", [Sumv_Ejecutado_]\r\n\t\t)\r\n\r\n\tVAR __DS0CoreTableByDM0 = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(\r\n\t\t\t\tFILTER(\r\n\t\t\t\t\tKEEPFILTERS(__DS0Core),\r\n\t\t\t\t\tAND([IsDM0Total] = TRUE, [IsGrandTotalColumnTotal] = TRUE)\r\n\t\t\t\t)\r\n\t\t\t),\r\n\t\t\t\"'Areas-Pauno'[Jefe de Area]\", 'Areas-Pauno'[Jefe de Area],\r\n\t\t\t\"SortBy_DM0_0\", [Sumv_Ejecutado_]\r\n\t\t)\r\n\r\n\tVAR __DS0CoreTableByDM1 = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsGrandTotalColumnTotal] = TRUE)),\r\n\t\t\t\"'Areas-Pauno'[Jefe de Area]\", 'Areas-Pauno'[Jefe de Area],\r\n\t\t\t\"IsDM0Total\", [IsDM0Total],\r\n\t\t\t\"'Areas-Pauno'[Area 1]\", 'Areas-Pauno'[Area 1],\r\n\t\t\t\"SortBy_DM1_0\", [Sumv_Ejecutado_]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWithSortColumns = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t\tSUMMARIZE(__DS0Core, 'Areas-Pauno'[Jefe de Area], 'Areas-Pauno'[Area 1], [IsDM0Total]),\r\n\t\t\t\t__DS0CoreTableByDM0\r\n\t\t\t),\r\n\t\t\t__DS0CoreTableByDM1\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWithSortColumnsOutputTotals = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(FILTER(KEEPFILTERS(__DS0PrimaryWithSortColumns), [IsDM0Total] = FALSE)),\r\n\t\t\t\"'Areas-Pauno'[Jefe de Area]\", 'Areas-Pauno'[Jefe de Area],\r\n\t\t\t\"SortBy_DM0_0\", [SortBy_DM0_0],\r\n\t\t\t\"'Areas-Pauno'[Area 1]\", 'Areas-Pauno'[Area 1],\r\n\t\t\t\"SortBy_DM1_0\", [SortBy_DM1_0]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t101,\r\n\t\t\t__DS0PrimaryWithSortColumnsOutputTotals,\r\n\t\t\t[SortBy_DM0_0],\r\n\t\t\t0,\r\n\t\t\t'Areas-Pauno'[Jefe de Area],\r\n\t\t\t1,\r\n\t\t\t[SortBy_DM1_0],\r\n\t\t\t0,\r\n\t\t\t'Areas-Pauno'[Area 1],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(\r\n\t\t\t__DS0CoreOnlyOutputTotals,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\r\n\t\t)\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\t__DS0SecondaryBase,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0CoreOnlyOutputTotals,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[SortBy_DM0_0] DESC,\r\n\t'Areas-Pauno'[Jefe de Area],\r\n\t[SortBy_DM1_0] DESC,\r\n\t'Areas-Pauno'[Area 1],\r\n\t[ColumnIndex]",
+    "hash": "0ab9f976c67d",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Areas-Pauno",
+      "LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1",
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "% Cumplimento",
+      "Area 1",
+      "Empresa",
+      "Jefe de Area",
+      "Mes",
+      "NroMes",
+      "¿Ejecutado?"
+    ],
+    "probablemente_implementada": false
+  },
+  {
+    "visual": "PLANES DE ACCION",
+    "tipo_visual": "pivotTable",
+    "filas": 72,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\n\tVAR __DM3FilterTable = \r\n\t\tTREATAS({\"Atrasado\"}, 'Planes de Accion'[Estatus])\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL(\r\n\t\t\t\t'Planes de Accion'[Estatus], \"IsGrandTotalRowTotal\",\r\n\t\t\t\t'Planes de Accion'[Responsable], \"IsDM1Total\", NONVISUAL(__DM3FilterTable),\r\n\t\t\t\t'Planes de Accion'[Plan de Acción ], \"IsDM3Total\", NONVISUAL(__DM3FilterTable),\r\n\t\t\t\t'Planes de Accion'[Fecha de Cierre], \"IsDM5Total\", NONVISUAL(__DM3FilterTable)\r\n\t\t\t),\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"SumDias_atrasados\", CALCULATE(SUM('Planes de Accion'[Dias atrasados]))\r\n\t\t)\r\n\r\n\tVAR __DS0CoreTableByDM1 = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(\r\n\t\t\t\tFILTER(\r\n\t\t\t\t\tKEEPFILTERS(__DS0Core),\r\n\t\t\t\t\tAND(AND([IsDM1Total] = TRUE, [IsDM3Total] = TRUE), [IsDM5Total] = TRUE)\r\n\t\t\t\t)\r\n\t\t\t),\r\n\t\t\t\"IsGrandTotalRowTotal\", [IsGrandTotalRowTotal],\r\n\t\t\t\"'Planes de Accion'[Estatus]\", 'Planes de Accion'[Estatus],\r\n\t\t\t\"SortBy_DM1_0\", [SumDias_atrasados]\r\n\t\t)\r\n\r\n\tVAR __DS0CoreTableByDM3 = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(\r\n\t\t\t\tFILTER(KEEPFILTERS(__DS0Core), AND([IsDM3Total] = TRUE, [IsDM5Total] = TRUE))\r\n\t\t\t),\r\n\t\t\t\"IsGrandTotalRowTotal\", [IsGrandTotalRowTotal],\r\n\t\t\t\"'Planes de Accion'[Estatus]\", 'Planes de Accion'[Estatus],\r\n\t\t\t\"IsDM1Total\", [IsDM1Total],\r\n\t\t\t\"'Planes de Accion'[Responsable]\", 'Planes de Accion'[Responsable],\r\n\t\t\t\"SortBy_DM3_0\", [SumDias_atrasados]\r\n\t\t)\r\n\r\n\tVAR __DS0CoreTableByDM5 = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsDM5Total] = TRUE)),\r\n\t\t\t\"IsGrandTotalRowTotal\", [IsGrandTotalRowTotal],\r\n\t\t\t\"'Planes de Accion'[Estatus]\", 'Planes de Accion'[Estatus],\r\n\t\t\t\"IsDM1Total\", [IsDM1Total],\r\n\t\t\t\"'Planes de Accion'[Responsable]\", 'Planes de Accion'[Responsable],\r\n\t\t\t\"IsDM3Total\", [IsDM3Total],\r\n\t\t\t\"'Planes de Accion'[Plan de Acción ]\", 'Planes de Accion'[Plan de Acción ],\r\n\t\t\t\"SortBy_DM5_0\", [SumDias_atrasados]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWithSortColumns = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t\t\t__DS0Core,\r\n\t\t\t\t\t__DS0CoreTableByDM1\r\n\t\t\t\t),\r\n\t\t\t\t__DS0CoreTableByDM3\r\n\t\t\t),\r\n\t\t\t__DS0CoreTableByDM5\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t502,\r\n\t\t\t__DS0PrimaryWithSortColumns,\r\n\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t0,\r\n\t\t\t[SortBy_DM1_0],\r\n\t\t\t0,\r\n\t\t\t'Planes de Accion'[Estatus],\r\n\t\t\t1,\r\n\t\t\t[IsDM1Total],\r\n\t\t\t0,\r\n\t\t\t[SortBy_DM3_0],\r\n\t\t\t0,\r\n\t\t\t'Planes de Accion'[Responsable],\r\n\t\t\t1,\r\n\t\t\t[IsDM3Total],\r\n\t\t\t0,\r\n\t\t\t[SortBy_DM5_0],\r\n\t\t\t0,\r\n\t\t\t'Planes de Accion'[Plan de Acción ],\r\n\t\t\t1,\r\n\t\t\t[IsDM5Total],\r\n\t\t\t0,\r\n\t\t\t[SumDias_atrasados],\r\n\t\t\t0,\r\n\t\t\t'Planes de Accion'[Fecha de Cierre],\r\n\t\t\t1\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal] DESC,\r\n\t[SortBy_DM1_0] DESC,\r\n\t'Planes de Accion'[Estatus],\r\n\t[IsDM1Total] DESC,\r\n\t[SortBy_DM3_0] DESC,\r\n\t'Planes de Accion'[Responsable],\r\n\t[IsDM3Total] DESC,\r\n\t[SortBy_DM5_0] DESC,\r\n\t'Planes de Accion'[Plan de Acción ],\r\n\t[IsDM5Total] DESC,\r\n\t[SumDias_atrasados] DESC,\r\n\t'Planes de Accion'[Fecha de Cierre]",
+    "hash": "371937a32c90",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Pauno Registro de Ejecuciones",
+      "Planes de Accion"
+    ],
+    "campos": [
+      "Dias atrasados",
+      "Empresa",
+      "Estatus",
+      "Fecha de Cierre",
+      "Plan de Acción ",
+      "Responsable"
+    ],
+    "probablemente_implementada": false
+  },
+  {
+    "visual": "RESULTADOS POR JEFATURAS",
+    "tipo_visual": "pivotTable",
+    "filas": 77,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL('Areas-Pauno'[Jefe de Area], \"IsGrandTotalRowTotal\"),\r\n\t\t\tROLLUPADDISSUBTOTAL(\r\n\t\t\t\tROLLUPGROUP(\r\n\t\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\r\n\t\t\t\t), \"IsGrandTotalColumnTotal\"\r\n\t\t\t),\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"Sumv_Ejecutado_\", CALCULATE(SUM('Pauno Registro de Ejecuciones'[¿Ejecutado?])),\r\n\t\t\t\"v__Cumplimento\", 'Pauno Registro de Ejecuciones'[% Cumplimento]\r\n\t\t)\r\n\r\n\tVAR __DS0CoreOnlyOutputTotals = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsGrandTotalColumnTotal] = FALSE)),\r\n\t\t\t\"IsGrandTotalRowTotal\", [IsGrandTotalRowTotal],\r\n\t\t\t\"'Areas-Pauno'[Jefe de Area]\", 'Areas-Pauno'[Jefe de Area],\r\n\t\t\t\"'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes]\", 'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\"'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\", 'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t\"v__Cumplimento\", [v__Cumplimento],\r\n\t\t\t\"Sumv_Ejecutado_\", [Sumv_Ejecutado_]\r\n\t\t)\r\n\r\n\tVAR __DS0CoreTableByDM1 = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsGrandTotalColumnTotal] = TRUE)),\r\n\t\t\t\"IsGrandTotalRowTotal\", [IsGrandTotalRowTotal],\r\n\t\t\t\"'Areas-Pauno'[Jefe de Area]\", 'Areas-Pauno'[Jefe de Area],\r\n\t\t\t\"SortBy_DM1_0\", [Sumv_Ejecutado_]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWithSortColumns = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\tSUMMARIZE(__DS0Core, 'Areas-Pauno'[Jefe de Area], [IsGrandTotalRowTotal]),\r\n\t\t\t__DS0CoreTableByDM1\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\t__DS0PrimaryWithSortColumns,\r\n\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t0,\r\n\t\t\t[SortBy_DM1_0],\r\n\t\t\t0,\r\n\t\t\t'Areas-Pauno'[Jefe de Area],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(\r\n\t\t\t__DS0CoreOnlyOutputTotals,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\r\n\t\t)\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\t__DS0SecondaryBase,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0CoreOnlyOutputTotals,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal] DESC,\r\n\t[SortBy_DM1_0] DESC,\r\n\t'Areas-Pauno'[Jefe de Area],\r\n\t[ColumnIndex]",
+    "hash": "341f1ce6a495",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Areas-Pauno",
+      "LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1",
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "% Cumplimento",
+      "Empresa",
+      "Jefe de Area",
+      "Mes",
+      "NroMes",
+      "¿Ejecutado?"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "RESULTADOS POR GERENCIA",
+    "tipo_visual": "pivotTable",
+    "filas": 35,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"Pauno\"}, 'Pauno Registro de Ejecuciones'[Empresa])\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'Areas-Pauno'[Gerente de Departamento],\r\n\t\t\tROLLUPADDISSUBTOTAL(\r\n\t\t\t\tROLLUPGROUP(\r\n\t\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\r\n\t\t\t\t), \"IsGrandTotalColumnTotal\"\r\n\t\t\t),\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"v__Cumplimento\", 'Pauno Registro de Ejecuciones'[% Cumplimento],\r\n\t\t\t\"Sumv_Ejecutado_\", CALCULATE(SUM('Pauno Registro de Ejecuciones'[¿Ejecutado?]))\r\n\t\t)\r\n\r\n\tVAR __DS0CoreOnlyOutputTotals = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsGrandTotalColumnTotal] = FALSE)),\r\n\t\t\t\"'Areas-Pauno'[Gerente de Departamento]\", 'Areas-Pauno'[Gerente de Departamento],\r\n\t\t\t\"'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes]\", 'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\"'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\", 'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t\"v__Cumplimento\", [v__Cumplimento],\r\n\t\t\t\"Sumv_Ejecutado_\", [Sumv_Ejecutado_]\r\n\t\t)\r\n\r\n\tVAR __DS0CoreTableByDM0 = \r\n\t\tSELECTCOLUMNS(\r\n\t\t\tKEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsGrandTotalColumnTotal] = TRUE)),\r\n\t\t\t\"'Areas-Pauno'[Gerente de Departamento]\", 'Areas-Pauno'[Gerente de Departamento],\r\n\t\t\t\"SortBy_DM0_0\", [v__Cumplimento]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWithSortColumns = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\tSUMMARIZE(__DS0Core, 'Areas-Pauno'[Gerente de Departamento]),\r\n\t\t\t__DS0CoreTableByDM0\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t101,\r\n\t\t\t__DS0PrimaryWithSortColumns,\r\n\t\t\t[SortBy_DM0_0],\r\n\t\t\t0,\r\n\t\t\t'Areas-Pauno'[Gerente de Departamento],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(\r\n\t\t\t__DS0CoreOnlyOutputTotals,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes]\r\n\t\t)\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\t__DS0SecondaryBase,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0CoreOnlyOutputTotals,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[NroMes],\r\n\t'LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1'[Mes]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[SortBy_DM0_0] DESC, 'Areas-Pauno'[Gerente de Departamento], [ColumnIndex]",
+    "hash": "a78dc86533d7",
+    "archivo": "08-auditoria__tarjetas.json",
+    "tablas": [
+      "Areas-Pauno",
+      "LocalDateTable_54e60697-8c3e-4089-804f-925c1c976fb1",
+      "Pauno Registro de Ejecuciones"
+    ],
+    "campos": [
+      "% Cumplimento",
+      "Empresa",
+      "Gerente de Departamento",
+      "Mes",
+      "NroMes",
+      "¿Ejecutado?"
+    ],
+    "probablemente_implementada": false
+  },
+  {
+    "visual": "Segmentación de datos",
+    "tipo_visual": "slicer",
     "filas": 8,
     "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS(\r\n\t\t\t{\"MATERIA PRIMA\",\r\n\t\t\t\t\"MERCADERIAS SALSAS PACKS\",\r\n\t\t\t\t\"PROD. EN PROCESO\",\r\n\t\t\t\t\"PT DERIVADOS LACTEOS\",\r\n\t\t\t\t\"PT SALSAS\",\r\n\t\t\t\t\"PT YOGURTS\",\r\n\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\"ENVASES Y EMBALAJES\"},\r\n\t\t\t'Maestra de Productos'[data.categoria_producto]\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(KEEPFILTERS(VALUES('SALDO ACTUAL'[Saldo Soles])), 'SALDO ACTUAL'[Saldo Soles] > 0)\r\n\r\n\tVAR __DS0Core = \r\n\t\tCALCULATETABLE(\r\n\t\t\tVALUES('Maestra de Productos'[data.categoria_producto]),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable2)\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(101, __DS0Core, 'Maestra de Productos'[data.categoria_producto], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'Maestra de Productos'[data.categoria_producto]",
     "hash": "56e29064dc99",

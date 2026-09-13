@@ -225,6 +225,18 @@ def _dax_consumo_filtro_kardex(token, ws_id, dataset_id, value_expr, label, anio
 # cifras distintas a las del reporte. Ejecutar el DAX capturado las hace
 # innecesarias.
 TARJETAS_KPI = {
+    # Control Interno (reporte 8). Cuatro de sus tarjetas no llevan título en
+    # el reporte y salen como "Tarjeta": se identificaron por la medida que
+    # consultan, no por el nombre.
+    ("control_ds", "% Cumplimiento"):      "2dd066c629b2",
+    ("control_ds", "Satisfactorio"):       "52bb4f0a83cf",
+    ("control_ds", "Con Observaciones"):   "75ee47245f6d",
+    ("control_ds", "Crítico"):             "002616d79aa2",
+    ("control_ds", "Planes de Acción Abiertos"):   "e4ba6f862d51",
+    ("control_ds", "Planes de Acción Cerrados"):   "d102a3050d82",
+    ("control_ds", "Planes de Acción Atrasados"):  "6a4c8e9382bb",
+    ("control_ds", "Puntos Ejecutados"):   "74e9e532453c",
+
     ("consumo", "Costo Total"):            "7fc030955546",
     ("consumo", "Venta Neta (KG)"):        "7768ef2ed901",
     ("consumo", "Costo x TN Vendida"):     "d94f00974eb5",
@@ -236,6 +248,25 @@ TARJETAS_KPI = {
 # KPIs cuyo valor se leyó de la tarjeta del reporte. La reconciliación de
 # series no debe pisarlos: la tarjeta es lo que el usuario ve en Power BI.
 LEIDOS_DE_TARJETA = []
+
+# Claves de `scanned` que se llenaron con una consulta del reporte (capturada
+# con Copiar consulta o ejecutando la tarjeta), no con el sondeo genérico.
+#
+# Sirve como evidencia POSITIVA para marcar_origen. Antes solo había evidencia
+# negativa —"su valor no coincide con ninguno del sondeo"— y eso marcaba como
+# dudosas las once cifras de Control Interno, que vienen de consultas exactas
+# pero dan el mismo número que el sondeo porque ese reporte no tiene filtros
+# de página que cambien el resultado.
+CLAVES_DEL_REPORTE = set()
+
+
+def guardar_del_reporte(scanned, ds, clave, valor):
+    """Guarda un valor y deja constancia de que vino de una consulta real."""
+    if valor is None:
+        return False
+    scanned.setdefault(ds, {})[clave] = valor
+    CLAVES_DEL_REPORTE.add((ds, clave))
+    return True
 
 
 def valor_tarjeta_por_hash(token, ws, dataset_id, hash_visual, label):
@@ -1808,24 +1839,34 @@ def marcar_origen(reportes, scanned=None):
     """
     ver = tot = 0
     for tipo, rep in reportes.items():
-        sondeados = []
+        ds = DS_DE_REPORTE.get(tipo, "")
+        sondeados, del_reporte = [], []
         if scanned:
-            crudos = scanned.get(DS_DE_REPORTE.get(tipo, ""), {}) or {}
+            crudos = scanned.get(ds, {}) or {}
             for nombre, v in crudos.items():
                 if nombre.startswith("__"):
                     continue
                 f = to_float(v)
-                if f is not None:
-                    sondeados.append(f)
+                if f is None:
+                    continue
+                # Evidencia positiva: esta clave la llenó una consulta del
+                # reporte, no el sondeo.
+                (del_reporte if (ds, nombre) in CLAVES_DEL_REPORTE
+                 else sondeados).append(f)
         for k in rep.get("kpis", []):
             tot += 1
             val = to_float(str(k.get("valor", "")).replace("S/", "")
                            .replace(",", "").replace("%", "").replace("d", ""))
             # Las cifras se publican formateadas (millones abreviados,
             # porcentajes ×100): se compara en varias escalas.
-            del_sondeo = val is not None and any(
-                abs(val - v * e) <= max(abs(val), abs(v * e)) * 0.001
-                for v in sondeados for e in (1, 100, 0.01, 1e-6, 1e-3))
+            def coincide(lista):
+                return val is not None and any(
+                    abs(val - v * e) <= max(abs(val), abs(v * e)) * 0.001
+                    for v in lista for e in (1, 100, 0.01, 1e-6, 1e-3))
+
+            # La evidencia positiva manda: si el número es el de una consulta
+            # del reporte, viene del reporte aunque el sondeo dé lo mismo.
+            del_sondeo = not coincide(del_reporte) and coincide(sondeados)
             k["fuente"] = "sondeo" if del_sondeo else "reporte"
             if not del_sondeo:
                 ver += 1
@@ -4108,46 +4149,46 @@ def main():
             obs_v    = dax_control_interno(token, ws_id, control_ds_id, "Con Observaciones")
             crit_v   = dax_control_interno(token, ws_id, control_ds_id, "Critico")
             if satisf_v is not None:
-                scanned.setdefault("control_ds", {})["Satisfactorio"] = satisf_v
+                guardar_del_reporte(scanned, "control_ds", "Satisfactorio", satisf_v)
             if obs_v is not None:
-                scanned.setdefault("control_ds", {})["Con Observaciones"] = obs_v
+                guardar_del_reporte(scanned, "control_ds", "Con Observaciones", obs_v)
             if crit_v is not None:
-                scanned.setdefault("control_ds", {})["Critico"] = crit_v
+                guardar_del_reporte(scanned, "control_ds", "Critico", crit_v)
             if satisf_v is not None or obs_v is not None or crit_v is not None:
                 print(f"    ✓ Control Interno: Satisfactorio={satisf_v} Con Observaciones={obs_v} Critico={crit_v}")
 
             planes_abiertos_v = dax_planes_accion(token, ws_id, control_ds_id, "Planes Abiertos")
             if planes_abiertos_v is not None:
-                scanned.setdefault("control_ds", {})["Planes Abiertos"] = planes_abiertos_v
+                guardar_del_reporte(scanned, "control_ds", "Planes Abiertos", planes_abiertos_v)
                 print(f"    ✓ Control Interno: Planes Abiertos={planes_abiertos_v}")
 
             planes_cerrados_v = dax_planes_accion(token, ws_id, control_ds_id, "Planes Cerrados")
             if planes_cerrados_v is not None:
-                scanned.setdefault("control_ds", {})["Planes Cerrados"] = planes_cerrados_v
+                guardar_del_reporte(scanned, "control_ds", "Planes Cerrados", planes_cerrados_v)
                 print(f"    ✓ Control Interno: Planes Cerrados={planes_cerrados_v}")
 
             total_planes_v = dax_planes_accion(token, ws_id, control_ds_id, "Total Planes de Acción")
             if total_planes_v is not None:
-                scanned.setdefault("control_ds", {})["Total Planes de Acción"] = total_planes_v
+                guardar_del_reporte(scanned, "control_ds", "Total Planes de Acción", total_planes_v)
                 print(f"    ✓ Control Interno: Total Planes de Acción={total_planes_v}")
 
             planes_atrasados_v = dax_planes_accion(token, ws_id, control_ds_id, "Planes Atrasados")
             if planes_atrasados_v is not None:
-                scanned.setdefault("control_ds", {})["Planes Atrasados"] = planes_atrasados_v
+                guardar_del_reporte(scanned, "control_ds", "Planes Atrasados", planes_atrasados_v)
                 print(f"    ✓ Control Interno: Planes Atrasados={planes_atrasados_v}")
 
             ejecutado_v = dax_control_interno_sum(token, ws_id, control_ds_id, "¿Ejecutado?")
             if ejecutado_v is not None:
-                scanned.setdefault("control_ds", {})["Ejecutado"] = ejecutado_v
+                guardar_del_reporte(scanned, "control_ds", "Ejecutado", ejecutado_v)
                 print(f"    ✓ Control Interno: Ejecutado (suma)={ejecutado_v}")
 
             resultado_acum = dax_control_resultado_acumulado(token, ws_id, control_ds_id)
             if resultado_acum:
-                scanned.setdefault("control_ds", {}).update({
-                    "% Cumplimento": resultado_acum.get("cumplimiento_pct"),
-                    "Calificación": resultado_acum.get("calificacion"),
-                    "Puntos Totales": resultado_acum.get("puntos_totales"),
-                })
+                for clave, valor in (
+                        ("% Cumplimento", resultado_acum.get("cumplimiento_pct")),
+                        ("Calificación", resultado_acum.get("calificacion")),
+                        ("Puntos Totales", resultado_acum.get("puntos_totales"))):
+                    guardar_del_reporte(scanned, "control_ds", clave, valor)
                 print(f"    ✓ Control Interno: Resultado Acumulado={resultado_acum}")
 
         # ── Control
