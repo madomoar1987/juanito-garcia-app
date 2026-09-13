@@ -1783,72 +1783,64 @@ def aplicar_kpis_capturados(token, ws, candidatos_por_reporte, reportes):
 
 
 
-# KPIs que provienen de una consulta capturada del reporte, por tipo. Todo lo
-# que no esté aquí viene del sondeo genérico: consulta la medida SIN los
-# filtros del visual, así que puede no coincidir con lo que muestra Power BI.
-#
-# La distinción no es teórica. En Margen el sondeo daba 49.5% donde el reporte
-# muestra 46.5%; en Mermas daba 4.87% donde son 2.93%. Marcar el origen evita
-# que una cifra sin contrastar se lea con la misma confianza que una validada.
-KPIS_VERIFICADOS = {
-    "cuentas_por_cobrar": {"Morosidad", "CxC Total", "CxC por vencer",
-                           "CxC Vencido", "Rotación CxC", "Clientes",
-                           "Ventas del mes"},
-    "cuentas_por_pagar": {"CxP Total", "Refinanciado", "# Proveedores",
-                          "CxP Vencido", "Deuda top 15 proveedores", "Días CxP",
-                          "Top 15 proveedores"},  # etiqueta anterior
-    "margen_variable": {"Margen variable", "Precio/kg", "Costo/kg", "Ventas mes"},
-    "mermas": {"Merma Total"},
-    "compras": {"Stock PP (Punto de Pedido)", "Stock Valorizado",
-                "Consumo Prom 3M", "Consumo Prom 6M", "Materiales en quiebre",
-                "Ítems con necesidad de compra", "Ratio Consumo/Compra"},
-    "sop_inventario": {"Inventario Total", "Dead Stock", "% Dead Stock",
-                       "Working Stock", "Exceso 1 (2-5 meses)",
-                       "Exceso 2 (5-12 meses)"},
-    "fill_rate": {"Fill Rate", "Venta del mes (tarjeta)",
-                  "Pedidos no atendidos (mes)",
-                  # Del visual "FILL RATE (S/) - MENSUAL" del reporte 12.
-                  "Facturación", "Orden de Venta", "Venta Perdida"},
-    "consumo_materiales": {"Costo Total", "Producción Neta (KG)",
-                           "Costo x TN Vendida", "Costo x TN Producida",
-                           # dax_consumo_venta_neta_kg, confirmada con Copiar
-                           # consulta y corregida a [Peso total K] tras el
-                           # diagnóstico del 2026-09-06.
-                           "Venta Neta (KG)"},
-    # Los 14 de Control Interno salen de dax_control_interno(),
-    # dax_planes_accion(), dax_control_interno_sum() y
-    # dax_control_resultado_acumulado(): las cuatro se armaron con Copiar
-    # consulta el 2026-09-04 y se verificaron carácter a carácter.
-    "control_interno": {"% Cumplimiento", "Puntos de Control evaluados",
-                        "Satisfactorio", "Con Observaciones", "Crítico",
-                        "% Puntos en estado Crítico", "Total Planes de Acción",
-                        "Planes de Acción Abiertos", "Planes de Acción Cerrados",
-                        "Planes de Acción Atrasados", "% Avance Planes de Acción",
-                        "Puntos Ejecutados", "Calificación", "Puntos Totales"},
-    "productividad": {"Producción Total (KG)", "Planilla Total",
-                      "Venta Neta (KG)", "Planilla S/. / KG Producido",
-                      "Planilla S/. / KG Vendido"},
-    "margen_variable_pag2": {"Presupuesto del mes", "Facturado",
-                             "Avance vs presupuesto", "Pendiente de facturar",
-                             "Cumplimiento producción (ayer)"},
+# La lista de KPIs verificados se eliminó el 13/09/2026. Era una relación
+# escrita a mano de qué cifras venían del reporte, y ese tipo de lista ya
+# falló tres veces en este proyecto: nadie se acuerda de actualizarla y una
+# cifra sin verificar queda marcada como verificada. Ahora marcar_origen()
+# lo deduce comparando contra lo que devolvió el sondeo.
+
+
+
+# De qué dataset se sondeó cada reporte, para poder reconocer después qué
+# valores salieron del sondeo genérico.
+DS_DE_REPORTE = {
+    "cuentas_por_cobrar": "cxc", "cuentas_por_pagar": "cxp",
+    "margen_variable": "margen", "mermas": "mermas", "compras": "compras",
+    "sop_inventario": "inventario", "control_interno": "control_ds",
+    "consumo_materiales": "consumo", "productividad": "productividad_ds",
+    "fill_rate": "fill_rate", "margen_variable_pag2": "inventario",
 }
 
 
-def marcar_origen(reportes):
-    """Anota en cada KPI si viene del reporte o del sondeo genérico.
+def marcar_origen(reportes, scanned=None):
+    """Anota en cada KPI si su cifra viene del reporte o del sondeo genérico.
 
-    Devuelve (verificados, total) para poder informarlo al final.
+    Antes esto era una lista escrita a mano, y ese es justo el tipo de lista
+    que en este proyecto ya falló tres veces: nadie se acuerda de actualizarla
+    y una cifra sin verificar queda marcada como verificada.
+
+    Ahora se decide comparando: el sondeo genérico consulta las medidas SIN los
+    filtros del visual, así que sus valores quedan guardados en `scanned`. Si
+    el número que publica un KPI es exactamente uno de esos, salió de ahí. Si
+    no coincide con ninguno, vino de una consulta capturada del reporte.
+
+    La dirección del error es la segura: una cifra capturada que por
+    casualidad coincida con la sondeada se marca como no verificada, nunca al
+    revés.
     """
     ver = tot = 0
     for tipo, rep in reportes.items():
-        conocidos = KPIS_VERIFICADOS.get(tipo, set())
+        sondeados = []
+        if scanned:
+            crudos = scanned.get(DS_DE_REPORTE.get(tipo, ""), {}) or {}
+            for nombre, v in crudos.items():
+                if nombre.startswith("__"):
+                    continue
+                f = to_float(v)
+                if f is not None:
+                    sondeados.append(f)
         for k in rep.get("kpis", []):
             tot += 1
-            if k["label"] in conocidos:
-                k["fuente"] = "reporte"
+            val = to_float(str(k.get("valor", "")).replace("S/", "")
+                           .replace(",", "").replace("%", "").replace("d", ""))
+            # Las cifras se publican formateadas (millones abreviados,
+            # porcentajes ×100): se compara en varias escalas.
+            del_sondeo = val is not None and any(
+                abs(val - v * e) <= max(abs(val), abs(v * e)) * 0.001
+                for v in sondeados for e in (1, 100, 0.01, 1e-6, 1e-3))
+            k["fuente"] = "sondeo" if del_sondeo else "reporte"
+            if not del_sondeo:
                 ver += 1
-            else:
-                k["fuente"] = "sondeo"
     return ver, tot
 
 
@@ -4415,7 +4407,7 @@ def main():
     # Origen de cada cifra: del reporte o del sondeo genérico.
     try:
         reps_m = (summary.get("empresas", {}).get("PAUNO", {}) or {}).get("reportes", {})
-        ver, tot = marcar_origen(reps_m)
+        ver, tot = marcar_origen(reps_m, scanned)
         summary["verificacion"] = {"verificados": ver, "total": tot}
         print(f"\n  Origen de los KPIs: {ver}/{tot} desde el reporte "
               f"({ver / tot * 100:.0f}%)" if tot else "")
@@ -4424,6 +4416,11 @@ def main():
 
     if DIAGNOSTICO:
         etiquetar_periodos(summary)
+        # Cobertura: cuántas cifras vienen de una consulta del reporte y
+        # cuántas del sondeo genérico. Es el número que responde "¿está todo
+        # validado?" sin depender de ninguna lista mantenida a mano.
+        summary["cobertura"] = {"kpis_del_reporte": ver, "kpis_totales": tot,
+                                "pct": round(ver / tot * 100, 1) if tot else None}
         summary["diagnostico"] = DIAGNOSTICO
         # La lista de cifras calculadas viaja con los datos: quien mire la app
         # puede saber cuáles son derivadas sin leer el código.

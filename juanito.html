@@ -7205,6 +7205,34 @@ function bannerFrescura() {
   return `<div style="background:#052e16;color:#86efac;padding:6px 12px;border-radius:6px;margin-bottom:10px;font-size:11px">🟦 Datos al ${DATA?.fecha||''} — fuente confirmada.</div>`;
 }
 
+// Cuánto de lo que se muestra viene de una consulta del reporte y cuánto no.
+// Es el número que responde "¿está todo validado?" sin creerle a nadie: lo
+// calcula la extracción comparando cada cifra contra lo que devolvió el
+// sondeo genérico, que es el camino sin filtros y por tanto el no verificado.
+function bannerCobertura() {
+  const c = DATA?.cobertura;
+  const t = DATA?.validacion_tarjetas;
+  if (!c && !t) return '';
+  const partes = [];
+  if (c && c.kpis_totales) {
+    partes.push(`<b>${c.kpis_del_reporte} de ${c.kpis_totales}</b> cifras ` +
+      `salen de una consulta del reporte (${c.pct}%)`);
+  }
+  if (t) {
+    const n = (t.distintas || []).length;
+    partes.push(n === 0
+      ? `<b>${t.iguales}</b> comparadas contra la tarjeta de Power BI: todas iguales`
+      : `<b>${n}</b> difieren de la tarjeta de Power BI`);
+  }
+  const mal = (DATA?.validacion?.no_cuadran || []).length
+            + ((DATA?.validacion_tarjetas?.distintas || []).length);
+  const fondo = mal ? 'var(--yellow-bg)' : 'var(--green-bg)';
+  const borde = mal ? 'var(--yellow)' : 'var(--green)';
+  return `<div style="background:${fondo};border-left:3px solid ${borde};
+      padding:7px 11px;border-radius:6px;margin-bottom:10px;font-size:11.5px;
+      color:var(--text)">${partes.join(' · ')}</div>`;
+}
+
 function crossCheckMora() {
   if (!RISK_REGISTER || !DATA) return '';
   const alertas = [];
@@ -7312,7 +7340,7 @@ async function sendJuanito() {
 
   // Solo mostrar banner y crosscheck en la primera respuesta de la sesión
   const esPrimera = chatHistorial.filter(m => m.rol === 'assistant').length === 0;
-  const prefijo = esPrimera ? bannerFrescura() + crossCheckMora() : '';
+  const prefijo = esPrimera ? bannerFrescura() + bannerCobertura() + crossCheckMora() : '';
 
   const chipsHtml = '';
 

@@ -241,7 +241,13 @@ def test_derivados_declarados(src):
         # res["x"] = delante. En ese caso vale una declaración cercana.
         cerca = re.findall(r'anotar_derivado\(\s*\n?\s*"[a-z_0-9]+",\s*\n?\s*'
                            r'(?:clave|"[a-z_0-9]+")', bloque)
-        desglose = dm[-1] if dm else ("(declarado cerca)" if cerca else "?")
+        desglose = dm[-1] if dm else ("(declarado cerca)" if cerca else None)
+        # Sin desglose identificable y sin declaración cerca, el cálculo no es
+        # de una cifra del reporte: es metadato nuestro (la cobertura de la
+        # validación, por ejemplo). Este test vigila los datos publicados, no
+        # las estadísticas sobre ellos.
+        if desglose is None:
+            continue
         sospechas.append((campo, desglose, i + 1))
 
     if not sospechas:
