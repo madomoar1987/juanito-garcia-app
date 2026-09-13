@@ -611,6 +611,75 @@
         43.20399252578909,
         38.67553250190029,
         39.02385421745492
+      ],
+      "% Margen B&D": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.651040392507775,
+        0.648749026738391,
+        0.6466020419144897,
+        0.6343386668377773,
+        0.6338822642800611,
+        0.6257615533884526,
+        0.6438593994815961,
+        0.6230111674074785,
+        0.5966761879875931
+      ],
+      "% Margen MAQUILA": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.45376071560432185,
+        0.4411522772018463,
+        0.4430023226484438,
+        0.3754792734205772,
+        0.3700305454567478,
+        0.3769514801838882,
+        0.37662860428154726,
+        0.3741193755634254,
+        0.4310450494944953
+      ],
+      "% Margen TIGO": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.5312761515036691,
+        0.5358363761250298,
+        0.5265968065319693,
+        0.48216054546016973,
+        0.482570680062205,
+        0.5084398383286841,
+        0.5231118387895233,
+        0.4995509008231407,
+        0.5433751429846788
       ]
     },
     "fill_rate": {
@@ -1154,12 +1223,5 @@
         6728469.824643016
       ]
     }
-  },
-  "diagnostico": [
-    {
-      "consulta": "captura:MARGEN VARIABLE POR UNIDAD DE NEGOCIO",
-      "http": 200,
-      "error": "29 filas pero ninguna serie con 3+ meses. eje=sí. Muestra: [{'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75[Año]': 2026, 'Calendario[Mes Corto]': 'ene', 'Calendario[MES]': 1, '[v__Margen_Contribución___]': 0.651040392507775, '[ColumnIndex]': 1}, {'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75[Año]': 2026, 'Calendario[Mes Corto]': 'ene', 'Calendario[MES]': 1, '[v__Margen_Contribución___]': 0.45376071560432185, '[ColumnIndex]': 2}]"
-    }
-  ]
+  }
 }
