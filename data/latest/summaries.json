@@ -498,17 +498,19 @@
           "alerta": null,
           "kpis": [
             {
-              "label": "Costo Total",
+              "label": "Costo Total · acumulado 2026",
               "valor": "S/-1.46M",
               "validado": true,
               "nota": "Filtro exacto confirmado — sin corte de fecha (histórico total)",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "la consulta filtra solo por año, sin mes"
             },
             {
-              "label": "Venta Neta (KG)",
+              "label": "Venta Neta (KG) · acumulado 2026",
               "valor": "16,750,700 KG",
               "validado": true,
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "la consulta filtra solo por año, sin mes"
             },
             {
               "label": "Costo x TN Vendida",
@@ -517,10 +519,11 @@
               "fuente": "reporte"
             },
             {
-              "label": "Producción Neta (KG)",
+              "label": "Producción Neta (KG) · acumulado 2026",
               "valor": "10,207,465 kg",
               "validado": true,
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "la consulta filtra solo por año, sin mes"
             },
             {
               "label": "Costo x TN Producida",
@@ -995,7 +998,7 @@
               "valor": "69.32%",
               "meta": "85%",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "Puntos de Control evaluados",
@@ -1006,20 +1009,20 @@
               "label": "Satisfactorio",
               "valor": "139",
               "estado": "green",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "Con Observaciones",
               "valor": "64",
               "estado": "yellow",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "Crítico",
               "valor": "108",
               "meta": "0",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "% Puntos en estado Crítico",
@@ -1031,26 +1034,26 @@
             {
               "label": "Total Planes de Acción",
               "valor": "93",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "Planes de Acción Abiertos",
               "valor": "1",
               "estado": "yellow",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "Planes de Acción Cerrados",
               "valor": "62",
               "estado": "green",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "Planes de Acción Atrasados",
               "valor": "29",
               "meta": "0",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "% Avance Planes de Acción",
@@ -1061,17 +1064,17 @@
             {
               "label": "Puntos Ejecutados",
               "valor": "314",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "Calificación",
               "valor": "653",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             },
             {
               "label": "Puntos Totales",
               "valor": "942",
-              "fuente": "reporte"
+              "fuente": "sondeo"
             }
           ],
           "por_area": [
@@ -1230,9 +1233,10 @@
               "nota_periodo": "no es del mes: es la suma de 2026 hasta 2026-08. El mes fue 1,239,289."
             },
             {
-              "label": "Venta Neta (KG)",
+              "label": "Venta Neta (KG) · acumulado 2026 · solo planta ATE",
               "valor": "6,786,752 kg",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "la consulta filtra por año y por Planta = ATE"
             },
             {
               "label": "Planilla Total · acumulado 2026",
@@ -1453,8 +1457,13 @@
     "avance": 0.6295519287006067
   },
   "verificacion": {
-    "verificados": 63,
+    "verificados": 50,
     "total": 63
+  },
+  "cobertura": {
+    "kpis_del_reporte": 50,
+    "kpis_totales": 63,
+    "pct": 79.4
   },
   "diagnostico": [
     {
@@ -1550,58 +1559,78 @@
     }
   ],
   "validacion": {
-    "cuadran": 23,
+    "cuadran": 24,
     "no_cuadran": [
-      {
-        "prueba": "CxP: total vs suma de tramos",
-        "publicado": 16230000.0,
-        "esperado": 10439217.0,
-        "diferencia_pct": 35.7,
-        "detalle": "8 tramos"
-      },
-      {
-        "prueba": "Productividad: planilla por kg vendido",
-        "publicado": 0.5,
-        "esperado": 0.7529,
-        "diferencia_pct": 33.6,
-        "detalle": "5,110,000 / 6,786,752 kg"
-      },
-      {
-        "prueba": "Consumo: costo por tonelada vendida",
-        "publicado": 143.63,
-        "esperado": 87.1605,
-        "diferencia_pct": 39.3,
-        "detalle": "1,460,000 / 16,751 TN"
-      },
-      {
-        "prueba": "Kilos vendidos: Consumo vs Productividad",
-        "publicado": 16750700.0,
-        "esperado": 6786752.0,
-        "diferencia_pct": 59.5,
-        "detalle": "los dos reportes dicen 'Venta Neta (KG)'"
-      },
-      {
-        "prueba": "Kilos producidos: Consumo vs Productividad",
-        "publicado": 10207465.0,
-        "esperado": 9621234.0,
-        "diferencia_pct": 5.7,
-        "detalle": "producción del mismo mes"
-      },
       {
         "prueba": "Ventas del mes: Margen vs Fill Rate",
         "publicado": 7690000.0,
         "esperado": 6090000.0,
         "diferencia_pct": 20.8,
-        "detalle": "facturación del mismo mes por dos caminos"
-      },
-      {
-        "prueba": "Venta Neta (KG): período desconocido",
-        "publicado": 6786752.0,
-        "esperado": 1306341.682,
-        "diferencia_pct": 80.8,
-        "detalle": "mes 1,306,342 · año 9,845,191 · total 15,275,344"
+        "detalle": "mismo mes, dos reportes: Fill Rate podría cubrir menos clientes"
       }
     ],
     "sin_datos": []
+  },
+  "validacion_tarjetas": {
+    "iguales": 11,
+    "distintas": [
+      {
+        "kpi": "Producción Total (KG)",
+        "reporte": "productividad",
+        "en_powerbi": 6618879.247,
+        "en_juanito": 9621234.0,
+        "diferencia_pct": 31.2
+      },
+      {
+        "kpi": "Producción Total (KG)",
+        "reporte": "productividad",
+        "en_powerbi": 2869139.94,
+        "en_juanito": 9621234.0,
+        "diferencia_pct": 70.2
+      },
+      {
+        "kpi": "Venta Neta (KG)",
+        "reporte": "consumo_materiales",
+        "en_powerbi": 10178474.837,
+        "en_juanito": 16750700.0,
+        "diferencia_pct": 39.2
+      },
+      {
+        "kpi": "Costo x TN Producida",
+        "reporte": "consumo_materiales",
+        "en_powerbi": 143.458,
+        "en_juanito": 151.64,
+        "diferencia_pct": 5.4
+      },
+      {
+        "kpi": "Venta Neta (KG)",
+        "reporte": "consumo_materiales",
+        "en_powerbi": 7018344.936,
+        "en_juanito": 16750700.0,
+        "diferencia_pct": 58.1
+      },
+      {
+        "kpi": "Producción Neta (KG)",
+        "reporte": "consumo_materiales",
+        "en_powerbi": 7077219.876,
+        "en_juanito": 10207465.0,
+        "diferencia_pct": 30.7
+      },
+      {
+        "kpi": "Venta Neta (KG)",
+        "reporte": "consumo_materiales",
+        "en_powerbi": 3160129.901,
+        "en_juanito": 16750700.0,
+        "diferencia_pct": 81.1
+      },
+      {
+        "kpi": "Producción Neta (KG)",
+        "reporte": "consumo_materiales",
+        "en_powerbi": 3049874.16,
+        "en_juanito": 10207465.0,
+        "diferencia_pct": 70.1
+      }
+    ],
+    "sin_correspondencia": 43
   }
 }
