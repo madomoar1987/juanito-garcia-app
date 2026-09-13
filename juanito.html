@@ -1786,6 +1786,23 @@ function serieDe(dsKey, medida) {
 
 function periodos() { return (SERIES && SERIES.periodos) || []; }
 
+// El ultimo periodo de la serie es el mes EN CURSO y va incompleto: doce dias
+// contra treinta. Compararlo de igual a igual con un mes cerrado hace leer
+// una caida donde solo hay calendario.
+function mesParcial() { return (SERIES && SERIES.parcial) || null; }
+// Ultimo mes CERRADO. Es el que corresponde a las tarjetas de KPI, que se
+// extraen con el filtro del mes completo: titular el tablero con el mes en
+// curso pondria "Septiembre" encima de cifras de agosto.
+function mesCerrado() {
+  const ps = periodos();
+  for (let i = ps.length - 1; i >= 0; i--) if (!esParcial(ps[i])) return ps[i];
+  return ps[ps.length - 1] || null;
+}
+function esParcial(periodo) { return !!periodo && periodo === mesParcial(); }
+function marcaParcial(periodo) {
+  return esParcial(periodo) ? ' <i>(mes en curso, parcial)</i>' : '';
+}
+
 function idxUltimoConDato(vals) {
   for (let i = vals.length - 1; i >= 0; i--) if (vals[i] != null) return i;
   return -1;
@@ -2839,7 +2856,8 @@ function renderHome() {
   const MESES_LARGO = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   let mesTitulo = DATA.fecha || '';
   if (SERIES && SERIES.periodos && SERIES.periodos.length) {
-    const p = SERIES.periodos[SERIES.periodos.length-1];       // "2026-08"
+    // El mes cerrado, no el ultimo de la serie: las tarjetas son de ese mes.
+    const p = mesCerrado() || SERIES.periodos[SERIES.periodos.length-1];
     mesTitulo = MESES_LARGO[parseInt(p.slice(5,7),10)-1] + ' ' + p.slice(0,4);
   }
 
@@ -6040,7 +6058,14 @@ function localElegirDesglose(rp, tipo, tk, det, texto) {
 // Tendencia de una serie: primer y último dato, cambio y punto de inflexión.
 function localTendencia(arr, periodos) {
   const pts = [];
-  arr.forEach((v, i) => { if (v != null) pts.push({ v, p: periodos[i] }); });
+  let parcial = null;
+  arr.forEach((v, i) => {
+    if (v == null) return;
+    // El mes en curso queda fuera de maximos, minimos y variacion: llevaria
+    // el minimo casi siempre, por llevar menos dias, no por ir mejor.
+    if (esParcial(periodos[i])) { parcial = { v, p: periodos[i] }; return; }
+    pts.push({ v, p: periodos[i] });
+  });
   if (pts.length < 3) return null;
   const ini = pts[0], fin = pts[pts.length - 1];
   const cambio = ini.v ? (fin.v - ini.v) / Math.abs(ini.v) * 100 : null;
@@ -6053,7 +6078,7 @@ function localTendencia(arr, periodos) {
   }
   const max = pts.reduce((a, b) => b.v > a.v ? b : a);
   const min = pts.reduce((a, b) => b.v < a.v ? b : a);
-  return { ini, fin, cambio, quiebre, max, min, n: pts.length };
+  return { ini, fin, cambio, quiebre, max, min, n: pts.length, parcial };
 }
 
 function localSeriesDe(tipo) {
@@ -6221,16 +6246,21 @@ function analizarLocal(pregunta) {
         k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(t))) || claves[0];
       const t = localTendencia(ss[clave], SERIES.periodos);
       if (t) {
+        var parcialFin = t.parcial;
         const esPct = clave.trim().startsWith('%');
         const f = v => esPct ? (v * 100).toFixed(2) + '%' : localFmt(v, false);
         if (!partes.length) partes.push(cab);
         partes.push(`<br><b>${clave}</b> — ${t.n} meses con dato:<br>` +
           `· ${t.ini.p}: ${f(t.ini.v)}<br>` +
-          `· ${t.fin.p}: <b>${f(t.fin.v)}</b>` +
+          `· ${t.fin.p}: <b>${f(t.fin.v)}</b>${marcaParcial(t.fin.p)}` +
           (t.cambio != null ? ` (${t.cambio >= 0 ? '+' : ''}${t.cambio.toFixed(1)}%)` : '') + '<br>' +
           `· máximo ${f(t.max.v)} en ${t.max.p} · mínimo ${f(t.min.v)} en ${t.min.p}`);
-        if (t.quiebre) partes.push(`<br><br>El mayor salto fue en <b>${t.quiebre.p}</b> ` +
-          `(${f(t.quiebre.v)}): ahí conviene mirar primero.`);
+        if (parcialFin) partes.push(`<br><br><b>${parcialFin.p} en curso:</b> ` +
+          `${f(parcialFin.v)} — son los días transcurridos, no el mes entero. ` +
+          `No lo compares de frente contra un mes cerrado.`);
+        if (t.quiebre && !esParcial(t.quiebre.p))
+          partes.push(`<br><br>El mayor salto fue en <b>${t.quiebre.p}</b> ` +
+            `(${f(t.quiebre.v)}): ahí conviene mirar primero.`);
       }
       // Si hay varias series del mismo grupo, se comparan entre sí
       const grupo = claves.filter(k => k !== clave && k.split(' ')[0] === clave.split(' ')[0]);
@@ -6242,7 +6272,8 @@ function analizarLocal(pregunta) {
         }).filter(Boolean).sort((a, b) => b.v - a.v);
         if (ult.length) {
           const esPct = ult[0].k.trim().startsWith('%');
-          partes.push(`<br><br><b>Comparación por segmento</b> (${ult[0].p}):<br>` +
+          partes.push(`<br><br><b>Comparación por segmento</b> (${ult[0].p})` +
+            `${marcaParcial(ult[0].p)}:<br>` +
             ult.map(x => `· ${x.k.replace(clave.split(' ')[0], '').trim() || x.k}: ` +
               `<b>${esPct ? (x.v * 100).toFixed(2) + '%' : localFmt(x.v)}</b>`).join('<br>'));
         }

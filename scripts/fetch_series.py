@@ -157,10 +157,25 @@ def _sanear_no_finitos(obj):
     return n
 
 
+def hoy_lima():
+    """Hoy en Lima (UTC-5). El runner de GitHub corre en UTC y desde las 7 de
+    la tarde de Lima adelantaba el dia — y con el, el mes, los ultimos dias
+    del mes."""
+    return (datetime.datetime.now(datetime.timezone.utc)
+            - datetime.timedelta(hours=5)).date()
+
+
 def build_periodos():
-    """Lista de (anio, mes) desde Ene-2025 hasta el mes anterior al actual."""
-    hoy = datetime.date.today()
-    fin_anio, fin_mes = (hoy.year, hoy.month - 1) if hoy.month > 1 else (hoy.year - 1, 12)
+    """Lista de (anio, mes) desde Ene-2025 hasta el mes EN CURSO.
+
+    El mes en curso va incompleto por definicion, y antes se excluia por eso:
+    en setiembre la app solo mostraba hasta agosto y no habia forma de ver el
+    avance del mes. Se incluye igual, marcado como parcial, porque saber que
+    llevamos 12 dias de setiembre es informacion — siempre que quede claro
+    que no se compara de igual a igual contra un mes cerrado.
+    """
+    hoy = hoy_lima()
+    fin_anio, fin_mes = hoy.year, hoy.month
     out, a, m = [], INICIO_ANIO, INICIO_MES
     while (a, m) <= (fin_anio, fin_mes):
         out.append((a, m))
@@ -2577,7 +2592,10 @@ def main():
         print()
 
     out = {
-        "generado": datetime.date.today().isoformat(),
+        "generado": hoy_lima().isoformat(),
+        # El ultimo periodo es el mes en curso: la app lo marca para que nadie
+        # lea una caida del 60% que en realidad son doce dias contra treinta.
+        "parcial": f"{hoy_lima():%Y-%m}",
         "fuente": "Power BI REST API executeQueries",
         "periodos": periodos_str,
         "tablas_fecha": fechas_usadas,
