@@ -759,6 +759,610 @@
     "probablemente_implementada": false
   },
   {
+    "visual": "Segmentación de datos",
+    "tipo_visual": "slicer",
+    "filas": 12,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Calendario'[MES])),\r\n\t\t\tNOT('Calendario'[MES] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tCALCULATETABLE(\r\n\t\t\tVALUES('Calendario'[MES]),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable2),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable3),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable4),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable5),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable6),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable7),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable8),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable9),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable10),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable11)\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(101, __DS0Core, 'Calendario'[MES], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'Calendario'[MES]",
+    "hash": "d534dd2cd3f7",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CUENTA ORIGEN",
+      "MES",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Segmentación de datos",
+    "tipo_visual": "slicer",
+    "filas": 2,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({2025,\r\n\t\t\t2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tCALCULATETABLE(\r\n\t\t\tVALUES('Calendario'[Año]),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable2),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable3),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable4),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable5),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable6),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable7),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable8),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable9),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable10)\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(101, __DS0Core, 'Calendario'[Año], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'Calendario'[Año]",
+    "hash": "c5c84da18ccb",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CUENTA ORIGEN",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Segmentación de datos",
+    "tipo_visual": "slicer",
+    "filas": 1,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Calendario'[MES])),\r\n\t\t\tNOT('Calendario'[MES] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t__DS0FilterTable2,\r\n\t\t__DS0FilterTable3,\r\n\t\t__DS0FilterTable4,\r\n\t\t__DS0FilterTable5,\r\n\t\t__DS0FilterTable6,\r\n\t\t__DS0FilterTable7,\r\n\t\t__DS0FilterTable8,\r\n\t\t__DS0FilterTable9,\r\n\t\t__DS0FilterTable10,\r\n\t\t\"MinDIA\", IGNORE(CALCULATE(MIN('Calendario'[DIA]))),\r\n\t\t\"MaxDIA\", IGNORE(CALCULATE(MAX('Calendario'[DIA])))\r\n\t)",
+    "hash": "8ee5d2191319",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "CUENTA ORIGEN",
+      "DIA",
+      "MES",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "VENTAS (S/.) PAUNO",
+    "tipo_visual": "clusteredColumnChart",
+    "filas": 10,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[DESCRIPCION])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[DESCRIPCION] IN {\"BONIFICACION SELL IN\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable12 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t'Calendario'[Año],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t__DS0FilterTable12,\r\n\t\t\t\"SumMonto_Neto_Factura\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura]))\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t201,\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t\t'Calendario'[MES]\r\n\t\t\t),\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(__DS0Core, 'Calendario'[Año])\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(62, __DS0SecondaryBase, 'Calendario'[Año], 1)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'Calendario'[Año],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'Calendario'[Año]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'Calendario'[MES],\r\n\t'Calendario'[Mes Corto],\r\n\t[ColumnIndex]",
+    "hash": "1b8b14f5d845",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "DESCRIPCION",
+      "MES",
+      "Mes Corto",
+      "Monto_Neto_Factura",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "VENTAS (S/.) POR UNIDAD DE NEGOCIO",
+    "tipo_visual": "lineChart",
+    "filas": 33,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[DESCRIPCION])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[DESCRIPCION] IN {\"BONIFICACION SELL IN\",\r\n\t\t\t\t\t\"DESCUENTOS COM\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable12 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t__DS0FilterTable12,\r\n\t\t\t\"SumMonto_Neto_Factura\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura]))\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t201,\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t\t'Calendario'[MES]\r\n\t\t\t),\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(__DS0Core, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1])\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(62, __DS0SecondaryBase, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1], 1)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'Calendario'[MES],\r\n\t'Calendario'[Mes Corto],\r\n\t[ColumnIndex]",
+    "hash": "53340badcba3",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Tipo de Negocio",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "DESCRIPCION",
+      "MES",
+      "Mes Corto",
+      "Monto_Neto_Factura",
+      "TIPO DE NEGOCIO N1",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "MARGEN VARIABLE PAUNO",
+    "tipo_visual": "lineChart",
+    "filas": 10,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t'Calendario'[Año],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t\"v__Margen_Contribución___\", 'Medidas Julito'[% Margen Contribución. %]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t201,\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t\t'Calendario'[MES]\r\n\t\t\t),\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(__DS0Core, 'Calendario'[Año])\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(62, __DS0SecondaryBase, 'Calendario'[Año], 1)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'Calendario'[Año],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'Calendario'[Año]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t'Calendario'[MES],\r\n\t[ColumnIndex]",
+    "hash": "380d4a47e527",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "% Margen Contribución. %",
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "MES",
+      "Mes",
+      "NroMes",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "MARGEN VARIABLE POR UNIDAD DE NEGOCIO",
+    "tipo_visual": "lineChart",
+    "filas": 33,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[DESCRIPCION])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[DESCRIPCION] IN {\"DESCUENTOS COM\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable12 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t__DS0FilterTable12,\r\n\t\t\t\"v__Margen_Contribución___\", 'Medidas Julito'[% Margen Contribución. %]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t201,\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t\t'Calendario'[MES]\r\n\t\t\t),\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(__DS0Core, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1])\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(62, __DS0SecondaryBase, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1], 1)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'Calendario'[MES],\r\n\t'Calendario'[Mes Corto],\r\n\t[ColumnIndex]",
+    "hash": "f1c1304dd2c7",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Tipo de Negocio",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "% Margen Contribución. %",
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "DESCRIPCION",
+      "MES",
+      "Mes Corto",
+      "TIPO DE NEGOCIO N1",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "B&D",
+    "tipo_visual": "lineClusteredColumnComboChart",
+    "filas": 9,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[DESCRIPCION])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[DESCRIPCION] IN {\"BONIFICACION SELL IN\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tTREATAS({\"B&D\"}, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1])\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable12 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable13 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t__DS0FilterTable12,\r\n\t\t\t__DS0FilterTable13,\r\n\t\t\t\"Precio_x_Kilo\", 'Medidas Julito'[Precio x Kilo],\r\n\t\t\t\"Costo_x_Kilo\", 'Medidas Julito'[Costo x Kilo]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t1001,\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t1\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'Calendario'[MES],\r\n\t'Calendario'[Mes Corto]",
+    "hash": "bfd3945ea0a8",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Tipo de Negocio",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "Costo x Kilo",
+      "DESCRIPCION",
+      "MES",
+      "Mes Corto",
+      "Precio x Kilo",
+      "TIPO DE NEGOCIO N1",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "PAUNO",
+    "tipo_visual": "lineClusteredColumnComboChart",
+    "filas": 9,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[DESCRIPCION])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[DESCRIPCION] IN {\"BONIFICACION SELL IN\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable12 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t__DS0FilterTable12,\r\n\t\t\t\"Precio_x_Kilo\", 'Medidas Julito'[Precio x Kilo],\r\n\t\t\t\"Costo_x_Kilo\", 'Medidas Julito'[Costo x Kilo]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t1001,\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t1\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'Calendario'[MES],\r\n\t'Calendario'[Mes Corto]",
+    "hash": "5a9c09c85878",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "Costo x Kilo",
+      "DESCRIPCION",
+      "MES",
+      "Mes Corto",
+      "Precio x Kilo",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "MAQUILA",
+    "tipo_visual": "lineClusteredColumnComboChart",
+    "filas": 9,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({\"MAQUILA\"}, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1])\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable12 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t__DS0FilterTable12,\r\n\t\t\t\"Precio_x_Kilo\", 'Medidas Julito'[Precio x Kilo],\r\n\t\t\t\"Costo_x_Kilo\", 'Medidas Julito'[Costo x Kilo]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t1001,\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t1\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'Calendario'[MES],\r\n\t'Calendario'[Mes Corto]",
+    "hash": "7420d0607902",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Tipo de Negocio",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "Costo x Kilo",
+      "MES",
+      "Mes Corto",
+      "Precio x Kilo",
+      "TIPO DE NEGOCIO N1",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "TIGO",
+    "tipo_visual": "lineClusteredColumnComboChart",
+    "filas": 9,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[DESCRIPCION])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[DESCRIPCION] IN {\"BONIFICACION SELL IN\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tTREATAS({\"TIGO\"}, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1])\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable12 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable13 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t__DS0FilterTable12,\r\n\t\t\t__DS0FilterTable13,\r\n\t\t\t\"Precio_x_Kilo\", 'Medidas Julito'[Precio x Kilo],\r\n\t\t\t\"Costo_x_Kilo\", 'Medidas Julito'[Costo x Kilo]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t1001,\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t1\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'Calendario'[MES],\r\n\t'Calendario'[Mes Corto]",
+    "hash": "e92a1be1c440",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Tipo de Negocio",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "Costo x Kilo",
+      "DESCRIPCION",
+      "MES",
+      "Mes Corto",
+      "Precio x Kilo",
+      "TIPO DE NEGOCIO N1",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Segmentación de datos",
+    "tipo_visual": "slicer",
+    "filas": 4,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Calendario'[MES])),\r\n\t\t\tNOT('Calendario'[MES] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tCALCULATETABLE(\r\n\t\t\tVALUES('Exl Tipo de Negocio'[TIPO DE NEGOCIO N1]),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable2),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable3),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable4),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable5),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable6),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable7),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable8),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable9),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable10),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable11)\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(101, __DS0Core, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1]",
+    "hash": "c322d8b963c7",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Tipo de Negocio",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CUENTA ORIGEN",
+      "MES",
+      "TIPO DE NEGOCIO N1",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Segmentación de datos",
+    "tipo_visual": "slicer",
+    "filas": 12,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Calendario'[MES])),\r\n\t\t\tNOT('Calendario'[MES] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tCALCULATETABLE(\r\n\t\t\tVALUES('Calendario'[MES]),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable2),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable3),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable4),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable5),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable6),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable7),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable8),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable9),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable10),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable11)\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(101, __DS0Core, 'Calendario'[MES], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'Calendario'[MES]",
+    "hash": "d534dd2cd3f7",
+    "archivo": "03-margen__margen-variable.json",
+    "duplicado_de": "03-margen__margen-variable.json / Segmentación de datos",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CUENTA ORIGEN",
+      "MES",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "MARGEN VARIABLE POR UNIDAD DE NEGOCIO DIA",
+    "tipo_visual": "lineStackedColumnComboChart",
+    "filas": 130,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[DESCRIPCION])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[DESCRIPCION] IN {\"DESCUENTOS COM\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable12 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __ScopedCoreI0 = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t'Calendario'[Semana],\r\n\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t__DS0FilterTable12,\r\n\t\t\t\"v__Margen_Contribución___\", 'Medidas Julito'[% Margen Contribución. %]\r\n\t\t)\r\n\r\n\tVAR __ScopedCoreDM0 = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t'Calendario'[Semana],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t__DS0FilterTable12,\r\n\t\t\t\"Costo_x_Kilo\", 'Medidas Julito'[Costo x Kilo]\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__ScopedCoreI0,\r\n\t\t\t__ScopedCoreDM0\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t201,\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t\t'Calendario'[MES],\r\n\t\t\t\t'Calendario'[Semana]\r\n\t\t\t),\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[MES],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[Mes Corto],\r\n\t\t\t1,\r\n\t\t\t'Calendario'[Semana],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(__DS0Core, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1])\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(62, __DS0SecondaryBase, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1], 1)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'Calendario'[MES],\r\n\t'Calendario'[Mes Corto],\r\n\t'Calendario'[Semana],\r\n\t[ColumnIndex]",
+    "hash": "e6bf4d84114e",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Tipo de Negocio",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "% Margen Contribución. %",
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "Costo x Kilo",
+      "DESCRIPCION",
+      "MES",
+      "Mes Corto",
+      "Semana",
+      "TIPO DE NEGOCIO N1",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": true
+  },
+  {
+    "visual": "Tarjeta",
+    "tipo_visual": "cardVisual",
+    "filas": 1,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t__DS0FilterTable2,\r\n\t\t__DS0FilterTable3,\r\n\t\t__DS0FilterTable4,\r\n\t\t__DS0FilterTable5,\r\n\t\t__DS0FilterTable6,\r\n\t\t__DS0FilterTable7,\r\n\t\t__DS0FilterTable8,\r\n\t\t__DS0FilterTable9,\r\n\t\t__DS0FilterTable10,\r\n\t\t\"MinFechaHora\", IGNORE(CALCULATE(MIN('FECHA Y HORA ACTUALIZADA'[FechaHora])))\r\n\t)",
+    "hash": "7bc9f438ea30",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "FECHA Y HORA ACTUALIZADA",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CUENTA ORIGEN",
+      "FechaHora",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": false
+  },
+  {
+    "visual": "DETALLE ANÁLISIS DE COSTOS",
+    "tipo_visual": "pivotTable",
+    "filas": 113,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DM2FilterTable = \r\n\t\tTREATAS({\"MAQUILA\"}, 'Exl A Maestra de Facturas de Venta'[Categoria])\r\n\r\n\tVAR __DM5FilterTable = \r\n\t\tTREATAS(\r\n\t\t\t{(\"MAQUILA\", \"MAQUILA YOGURT\")},\r\n\t\t\t'Exl A Maestra de Facturas de Venta'[Categoria],\r\n\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N2]\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[Categoria], \"IsGrandTotalRowTotal\",\r\n\t\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N2],\r\n\t\t\t\t\"IsDM0Total\",\r\n\t\t\t\tNONVISUAL(__DM2FilterTable),\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[Subcategoria],\r\n\t\t\t\t\"IsDM2Total\",\r\n\t\t\t\tNONVISUAL(__DM2FilterTable),\r\n\t\t\t\tNONVISUAL(__DM5FilterTable)\r\n\t\t\t),\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t\"SumPeso_total\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Peso total])),\r\n\t\t\t\"SumMonto_Neto_Factura_TG_0\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura TG 0])),\r\n\t\t\t\"SumCosto_Total\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Costo Total])),\r\n\t\t\t\"Precio_x_Kilo\", 'Medidas Julito'[Precio x Kilo],\r\n\t\t\t\"Costo_x_Kilo\", 'Medidas Julito'[Costo x Kilo]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t101,\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[Categoria],\r\n\t\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N2],\r\n\t\t\t\t[IsDM0Total],\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[Subcategoria],\r\n\t\t\t\t[IsDM2Total]\r\n\t\t\t),\r\n\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t1,\r\n\t\t\t'Exl A Maestra de Facturas de Venta'[Categoria],\r\n\t\t\t1,\r\n\t\t\t[IsDM0Total],\r\n\t\t\t1,\r\n\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N2],\r\n\t\t\t1,\r\n\t\t\t[IsDM2Total],\r\n\t\t\t0,\r\n\t\t\t'Exl A Maestra de Facturas de Venta'[Subcategoria],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes]\r\n\t\t)\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\t__DS0SecondaryBase,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal],\r\n\t'Exl A Maestra de Facturas de Venta'[Categoria],\r\n\t[IsDM0Total],\r\n\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N2],\r\n\t[IsDM2Total] DESC,\r\n\t'Exl A Maestra de Facturas de Venta'[Subcategoria],\r\n\t[ColumnIndex]",
+    "hash": "5bb77c922cd9",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Tipo de Negocio",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "Categoria",
+      "Costo Total",
+      "Costo x Kilo",
+      "Mes",
+      "Monto_Neto_Factura TG 0",
+      "NroMes",
+      "Peso total",
+      "Precio x Kilo",
+      "Subcategoria",
+      "TIPO DE NEGOCIO N2",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": false
+  },
+  {
+    "visual": "DETALLE ANÁLISIS DE COSTOS (POR CLIENTE)",
+    "tipo_visual": "pivotTable",
+    "filas": 45,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL('Exl A Maestra de Facturas de Venta'[Categoria], \"IsGrandTotalRowTotal\"),\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t\"Sumcantidad\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[cantidad])),\r\n\t\t\t\"SumMonto_Neto_Factura_TG_0\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura TG 0])),\r\n\t\t\t\"SumCosto_Total\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Costo Total])),\r\n\t\t\t\"Precio_unitario\", 'Medidas Julito'[Precio unitario],\r\n\t\t\t\"AverageP__Unit_NC\", CALCULATE(AVERAGE('Exl A Maestra de Facturas de Venta'[P. Unit NC])),\r\n\t\t\t\"C__Unit\", 'Medidas Julito'[C. Unit],\r\n\t\t\t\"v__Margen_Contribución___\", 'Medidas Julito'[% Margen Contribución. %]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t101,\r\n\t\t\tSUMMARIZE(__DS0Core, 'Exl A Maestra de Facturas de Venta'[Categoria], [IsGrandTotalRowTotal]),\r\n\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t1,\r\n\t\t\t'Exl A Maestra de Facturas de Venta'[Categoria],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes]\r\n\t\t)\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\t__DS0SecondaryBase,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal],\r\n\t'Exl A Maestra de Facturas de Venta'[Categoria],\r\n\t[ColumnIndex]",
+    "hash": "b59430fd8089",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "% Margen Contribución. %",
+      "Año",
+      "C. Unit",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "Categoria",
+      "Costo Total",
+      "Mes",
+      "Monto_Neto_Factura TG 0",
+      "NroMes",
+      "P. Unit NC",
+      "Precio unitario",
+      "cantidad",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": false
+  },
+  {
+    "visual": "FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO",
+    "tipo_visual": "pivotTable",
+    "filas": 49,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL('Exl Cliente x Vendedor'[Canal], \"IsGrandTotalRowTotal\"),\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t\"SumCANT_SIN_TG_0\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[CANT SIN TG 0])),\r\n\t\t\t\"Sumcantidad\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[cantidad])),\r\n\t\t\t\"SumMonto_Neto_Factura_TG_0\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura TG 0]))\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t101,\r\n\t\t\tSUMMARIZE(__DS0Core, 'Exl Cliente x Vendedor'[Canal], [IsGrandTotalRowTotal]),\r\n\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t1,\r\n\t\t\t'Exl Cliente x Vendedor'[Canal],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes]\r\n\t\t)\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\t__DS0SecondaryBase,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal], 'Exl Cliente x Vendedor'[Canal], [ColumnIndex]",
+    "hash": "d37f17982d3b",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Cliente x Vendedor",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "Año",
+      "CANT SIN TG 0",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "Canal",
+      "Mes",
+      "Monto_Neto_Factura TG 0",
+      "NroMes",
+      "cantidad",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": false
+  },
+  {
+    "visual": "DETALLE ANÁLISIS DE COSTOS",
+    "tipo_visual": "pivotTable",
+    "filas": 45,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"VENTA BRUTA\"}, 'Exl A Maestra de Facturas de Venta'[CATEGORIZACION])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable11 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL('Exl A Maestra de Facturas de Venta'[Categoria], \"IsGrandTotalRowTotal\"),\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t__DS0FilterTable11,\r\n\t\t\t\"Sumcantidad\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[cantidad])),\r\n\t\t\t\"SumMonto_Neto_Factura_TG_0\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura TG 0])),\r\n\t\t\t\"SumCosto_Total\", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Costo Total])),\r\n\t\t\t\"Precio_unitario\", 'Medidas Julito'[Precio unitario],\r\n\t\t\t\"AverageP__Unit_NC\", CALCULATE(AVERAGE('Exl A Maestra de Facturas de Venta'[P. Unit NC])),\r\n\t\t\t\"C__Unit\", 'Medidas Julito'[C. Unit],\r\n\t\t\t\"v__Margen_Contribución___\", 'Medidas Julito'[% Margen Contribución. %]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t101,\r\n\t\t\tSUMMARIZE(__DS0Core, 'Exl A Maestra de Facturas de Venta'[Categoria], [IsGrandTotalRowTotal]),\r\n\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t1,\r\n\t\t\t'Exl A Maestra de Facturas de Venta'[Categoria],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(\r\n\t\t\t__DS0Core,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes]\r\n\t\t)\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\t__DS0SecondaryBase,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Año],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[NroMes],\r\n\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Mes]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal],\r\n\t'Exl A Maestra de Facturas de Venta'[Categoria],\r\n\t[ColumnIndex]",
+    "hash": "b59430fd8089",
+    "archivo": "03-margen__margen-variable.json",
+    "duplicado_de": "03-margen__margen-variable.json / DETALLE ANÁLISIS DE COSTOS (POR CLIENTE)",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "% Margen Contribución. %",
+      "Año",
+      "C. Unit",
+      "CATEGORIZACION",
+      "CUENTA ORIGEN",
+      "Categoria",
+      "Costo Total",
+      "Mes",
+      "Monto_Neto_Factura TG 0",
+      "NroMes",
+      "P. Unit NC",
+      "Precio unitario",
+      "cantidad",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": false
+  },
+  {
+    "visual": "Margen Variable Dia",
+    "tipo_visual": "pivotTable",
+    "filas": 569,
+    "dax": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({2026}, 'Calendario'[Año])\r\n\r\n\tVAR __DS0FilterTable2 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[categoria_producto] IN {\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\tBLANK()}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable3 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Exl A Maestra de Facturas de Venta'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable4 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Exl A Maestra de Facturas de Venta'[estado])),\r\n\t\t\tNOT('Exl A Maestra de Facturas de Venta'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable5 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'Maestra de Facturacion (Total)'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\",\r\n\t\t\t\t\t\"INTERESES\",\r\n\t\t\t\t\t\"MATERIA PRIMA\",\r\n\t\t\t\t\t\"SUMINISTROS\",\r\n\t\t\t\t\t\"SERVICIOS\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable6 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Facturacion (Total)'[estado])),\r\n\t\t\tNOT('Maestra de Facturacion (Total)'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable7 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('Maestra de Kardex (Total)'[CUENTA ORIGEN])),\r\n\t\t\tNOT('Maestra de Kardex (Total)'[CUENTA ORIGEN] IN {BLANK()})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable8 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[categoria_producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[categoria_producto] IN {BLANK(),\r\n\t\t\t\t\t\"CHATARRA\",\r\n\t\t\t\t\t\"SERVICIOS\",\r\n\t\t\t\t\t\"BONIFICACION Y REBATES\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable9 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[estado])),\r\n\t\t\tNOT('OrdenxFactura'[estado] IN {\"Cancelado\"})\r\n\t\t)\r\n\r\n\tVAR __DS0FilterTable10 = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(VALUES('OrdenxFactura'[producto])),\r\n\t\t\tNOT(\r\n\t\t\t\t'OrdenxFactura'[producto] IN {\"PAVO C/M C/ASA EP CONG (8 KG)\",\r\n\t\t\t\t\t\"ALIMENTACION COMERCIAL\"}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL('Exl Tipo de Negocio'[TIPO DE NEGOCIO N1], \"IsGrandTotalRowTotal\"),\r\n\t\t\t'Calendario'[Semana],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Día],\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t__DS0FilterTable2,\r\n\t\t\t__DS0FilterTable3,\r\n\t\t\t__DS0FilterTable4,\r\n\t\t\t__DS0FilterTable5,\r\n\t\t\t__DS0FilterTable6,\r\n\t\t\t__DS0FilterTable7,\r\n\t\t\t__DS0FilterTable8,\r\n\t\t\t__DS0FilterTable9,\r\n\t\t\t__DS0FilterTable10,\r\n\t\t\t\"v__Margen_Contribución_____25\", 'Medidas Julito'[% Margen Contribución. %  25]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t101,\r\n\t\t\tSUMMARIZE(__DS0Core, 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1], [IsGrandTotalRowTotal]),\r\n\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t1,\r\n\t\t\t'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(\r\n\t\t\t__DS0Core,\r\n\t\t\t'Calendario'[Semana],\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Día]\r\n\t\t)\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\t__DS0SecondaryBase,\r\n\t\t\t'Calendario'[Semana],\r\n\t\t\t1,\r\n\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Día],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t'Calendario'[Semana],\r\n\t\t\t\tASC,\r\n\t\t\t\t'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Día],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t'Calendario'[Semana], 'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75'[Día]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal], 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1], [ColumnIndex]",
+    "hash": "441449c6a25c",
+    "archivo": "03-margen__margen-variable.json",
+    "tablas": [
+      "Calendario",
+      "Exl A Maestra de Facturas de Venta",
+      "Exl Tipo de Negocio",
+      "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75",
+      "Maestra de Facturacion (Total)",
+      "Maestra de Kardex (Total)",
+      "Medidas Julito",
+      "OrdenxFactura"
+    ],
+    "campos": [
+      "% Margen Contribución. %  25",
+      "Año",
+      "CUENTA ORIGEN",
+      "Día",
+      "Semana",
+      "TIPO DE NEGOCIO N1",
+      "categoria_producto",
+      "estado",
+      "producto"
+    ],
+    "probablemente_implementada": false
+  },
+  {
     "visual": "Tarjeta",
     "tipo_visual": "cardVisual",
     "filas": 1,

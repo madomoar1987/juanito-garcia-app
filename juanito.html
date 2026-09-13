@@ -3147,8 +3147,9 @@ function avanceSegmentos(ind, meta, pct) {
     const previo = prev ? arr[per.indexOf(prev)] : null;
 
     // La distancia a la meta solo aplica si el segmento mide lo mismo que su
-    // indicador. El costo unitario por UEN no se compara contra el margen.
-    const mismaUnidad = !(ind.segmentos_nota);
+    // indicador: el margen de TIGO sí se compara contra la meta de margen, el
+    // costo unitario de TIGO no.
+    const mismaUnidad = !unidad || unidad === ind.unidad;
     const dist = mismaUnidad ? distanciaMeta(fmt, curso, meta) : null;
     const tri = triangulo(ind, cerrado, previo);
     const col = dist ? (dist.bien ? 'var(--green)' : 'var(--red)') : 'var(--text3)';

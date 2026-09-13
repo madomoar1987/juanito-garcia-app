@@ -2467,6 +2467,13 @@ def main():
              "margen", ["margen"]),
             ("PRECIO UNITARIO", "Canal", "Precio_unitario", "Precio unitario",
              "margen", ["margen"]),
+            # El margen por unidad de negocio, con la medida del propio
+            # reporte. Hasta ahora la app lo calculaba dividiendo precio entre
+            # costo y daba 65.3% donde el reporte marca 62.30%: el reporte
+            # pondera por producto y el cálculo promediaba. Es la pieza que
+            # faltaba para poder abrir el margen por B&D, TIGO y MAQUILA.
+            ("MARGEN VARIABLE POR UNIDAD DE NEGOCIO", "TIPO DE NEGOCIO N1",
+             "v__Margen_Contribución___", "% Margen", "margen", ["margen"]),
             # Le da a S&OP su primera serie mensual: hasta ahora ese reporte
             # tenía KPIs pero ninguna tendencia.
             ("EVOLUCIÓN DE INVENTARIO (S/. MM)", None, "Días_Rotación",

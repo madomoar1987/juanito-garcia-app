@@ -108,6 +108,27 @@
       "origen": "gerencia",
       "segmentos": [
         [
+          "B&D",
+          [
+            "margen",
+            "% Margen B&D"
+          ]
+        ],
+        [
+          "TIGO",
+          [
+            "margen",
+            "% Margen TIGO"
+          ]
+        ],
+        [
+          "MAQUILA",
+          [
+            "margen",
+            "% Margen MAQUILA"
+          ]
+        ],
+        [
           "Costo unitario B&D",
           [
             "margen",
@@ -131,8 +152,7 @@
           ],
           "soles"
         ]
-      ],
-      "segmentos_nota": "el reporte no publica el margen por unidad de negocio; se abre el costo unitario, que es lo que lo mueve"
+      ]
     },
     {
       "clave": "merma",
