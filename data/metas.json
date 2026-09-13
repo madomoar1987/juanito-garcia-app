@@ -14,7 +14,10 @@
     "direccion: 'mayor' = conviene que suba (margen, fill rate).",
     "           'menor' = conviene que baje (merma, morosidad, días de pago).",
     "tipo:      'acumula' = suma día a día, se mide contra el ritmo del mes.",
-    "           'tasa'    = ya viene promediado, se mide por distancia a la meta."
+    "           'tasa'    = ya viene promediado, se mide por distancia a la meta.",
+    "",
+    "segmentos: series por unidad de negocio, planta o categoría que explican el indicador. La app las muestra al desplegar la fila, para poder ver de dónde viene el atraso en vez de solo que existe.",
+    "Un segmento puede llevar su propia unidad como tercer elemento: el costo unitario por UEN se mide en soles aunque su indicador padre sea un porcentaje."
   ],
   "actualizado": "2026-09-13",
   "indicadores": [
@@ -22,7 +25,10 @@
       "clave": "facturacion",
       "label": "Facturación",
       "reporte": "margen_variable_pag2",
-      "serie": ["fill_rate", "Facturación"],
+      "serie": [
+        "fill_rate",
+        "Facturación"
+      ],
       "meta": 7830000,
       "direccion": "mayor",
       "tipo": "acumula",
@@ -33,7 +39,10 @@
       "clave": "produccion",
       "label": "Producción",
       "reporte": "margen_variable_pag2",
-      "serie": ["productividad", "Producción (kg)"],
+      "serie": [
+        "productividad",
+        "Producción (kg)"
+      ],
       "meta": null,
       "direccion": "mayor",
       "tipo": "acumula",
@@ -44,40 +53,153 @@
       "clave": "compras",
       "label": "Ratio consumo / compra",
       "reporte": "compras",
-      "serie": ["compras", "% Ratio Consumo/Compra"],
+      "serie": [
+        "compras",
+        "% Ratio Consumo/Compra"
+      ],
       "meta": 1.0,
       "direccion": "mayor",
       "tipo": "acumula",
       "unidad": "ratio",
-      "origen": "sobre 100% jala inventario; por debajo, se está sobre-comprando"
+      "origen": "sobre 100% jala inventario; por debajo, se está sobre-comprando",
+      "segmentos": [
+        [
+          "Envases y embalajes",
+          [
+            "compras",
+            "% Ratio ENVASES Y EMBALAJES"
+          ]
+        ],
+        [
+          "Materia prima",
+          [
+            "compras",
+            "% Ratio MATERIA PRIMA"
+          ]
+        ],
+        [
+          "Repuestos",
+          [
+            "compras",
+            "% Ratio REPUESTOS"
+          ]
+        ],
+        [
+          "Suministros",
+          [
+            "compras",
+            "% Ratio SUMINISTROS"
+          ]
+        ]
+      ]
     },
     {
       "clave": "margen",
       "label": "Margen variable",
       "reporte": "margen_variable",
-      "serie": ["margen", "% Margen Variable"],
+      "serie": [
+        "margen",
+        "% Margen Variable"
+      ],
       "meta": 0.52,
       "direccion": "mayor",
       "tipo": "tasa",
       "unidad": "pct",
-      "origen": "gerencia"
+      "origen": "gerencia",
+      "segmentos": [
+        [
+          "Costo unitario B&D",
+          [
+            "margen",
+            "Costo unitario B&D"
+          ],
+          "soles"
+        ],
+        [
+          "Costo unitario TIGO",
+          [
+            "margen",
+            "Costo unitario TIGO"
+          ],
+          "soles"
+        ],
+        [
+          "Costo unitario MAQUILA",
+          [
+            "margen",
+            "Costo unitario MAQUILA"
+          ],
+          "soles"
+        ]
+      ],
+      "segmentos_nota": "el reporte no publica el margen por unidad de negocio; se abre el costo unitario, que es lo que lo mueve"
     },
     {
       "clave": "merma",
       "label": "Merma total",
       "reporte": "mermas",
-      "serie": ["mermas", "% Merma Total"],
+      "serie": [
+        "mermas",
+        "% Merma Total"
+      ],
       "meta": 0.02,
       "direccion": "menor",
       "tipo": "tasa",
       "unidad": "pct",
-      "origen": "gerencia"
+      "origen": "gerencia",
+      "segmentos": [
+        [
+          "B&D",
+          [
+            "mermas",
+            "% Merma B&D"
+          ]
+        ],
+        [
+          "TIGO",
+          [
+            "mermas",
+            "% Merma TIGO"
+          ]
+        ],
+        [
+          "MAQUILA",
+          [
+            "mermas",
+            "% Merma MAQUILA"
+          ]
+        ],
+        [
+          "Planta ATE",
+          [
+            "mermas",
+            "% Merma Planta ATE"
+          ]
+        ],
+        [
+          "Planta Pachacámac",
+          [
+            "mermas",
+            "% Merma Planta Pachacamac"
+          ]
+        ],
+        [
+          "Planta Terceros",
+          [
+            "mermas",
+            "% Merma Planta Terceros"
+          ]
+        ]
+      ]
     },
     {
       "clave": "fill_rate",
       "label": "Fill rate",
       "reporte": "fill_rate",
-      "serie": ["fill_rate", "% Fill Rate mensual"],
+      "serie": [
+        "fill_rate",
+        "% Fill Rate mensual"
+      ],
       "meta": 0.98,
       "direccion": "mayor",
       "tipo": "tasa",
@@ -88,7 +210,10 @@
       "clave": "morosidad",
       "label": "Morosidad",
       "reporte": "cuentas_por_cobrar",
-      "serie": ["cxc", "% Morosidad"],
+      "serie": [
+        "cxc",
+        "% Morosidad"
+      ],
       "meta": 0.15,
       "direccion": "menor",
       "tipo": "tasa",
@@ -99,7 +224,10 @@
       "clave": "dias_cxp",
       "label": "Días de pago a proveedores",
       "reporte": "cuentas_por_pagar",
-      "serie": ["cxp", "Días CxP"],
+      "serie": [
+        "cxp",
+        "Días CxP"
+      ],
       "meta": 90,
       "direccion": "menor",
       "tipo": "tasa",
@@ -110,7 +238,10 @@
       "clave": "rotacion",
       "label": "Días de rotación de inventario",
       "reporte": "sop_inventario",
-      "serie": ["inventario", "Días de rotación"],
+      "serie": [
+        "inventario",
+        "Días de rotación"
+      ],
       "meta": null,
       "direccion": "menor",
       "tipo": "tasa",
@@ -121,7 +252,10 @@
       "clave": "mip_tn",
       "label": "Costo de materiales por tonelada vendida",
       "reporte": "consumo_materiales",
-      "serie": ["consumo", "MIP / TN Vendida"],
+      "serie": [
+        "consumo",
+        "MIP / TN Vendida"
+      ],
       "meta": null,
       "direccion": "menor",
       "tipo": "tasa",
@@ -132,7 +266,10 @@
       "clave": "planilla_kg",
       "label": "Planilla por kilo producido",
       "reporte": "productividad",
-      "serie": ["productividad", "Planilla / kg producido"],
+      "serie": [
+        "productividad",
+        "Planilla / kg producido"
+      ],
       "meta": null,
       "direccion": "menor",
       "tipo": "tasa",

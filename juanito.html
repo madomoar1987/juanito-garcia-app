@@ -1492,6 +1492,14 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .av-btn { font-size:12px; padding:4px 10px; border-radius:5px; cursor:pointer;
   border:1px solid var(--border); background:var(--card); color:var(--text); }
 .av-nota { padding:22px; color:var(--text2); font-size:14px; }
+.av-abrible { cursor:pointer; }
+.av-abrible:hover { background:var(--card2); }
+.av-flecha { color:var(--text3); font-size:10px; display:inline-block; width:10px; }
+.av-hijas .av-seg td { background:var(--card2); border-bottom:1px solid var(--border);
+  font-size:12px; padding-top:7px; padding-bottom:7px; }
+.av-seg-n { padding-left:26px !important; color:var(--text2); }
+.av-seg-nota { color:var(--text3); font-size:11.5px; text-align:left !important;
+  padding-left:26px !important; font-style:italic; }
 
 .calc { font-size:10px; color:var(--yellow); white-space:nowrap; cursor:help; }
 .chat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
@@ -3068,6 +3076,14 @@ function chispaSerie(arr, color) {
 // Editar una meta. Se guarda en el navegador y se marca como sin publicar:
 // la oficial es la de data/metas.json, que queda con historial en el
 // repositorio. Esto permite probar un número hoy sin esperar una publicación.
+function avanceAbrir(clave) {
+  const c = document.getElementById('seg-' + clave);
+  const f = document.getElementById('fl-' + clave);
+  if (!c) return;
+  c.hidden = !c.hidden;
+  if (f) f.textContent = c.hidden ? '\u25b8' : '\u25be';
+}
+
 function editarMeta(clave) {
   const ind = (METAS?.indicadores || []).find(i => i.clave === clave);
   if (!ind) return;
@@ -3108,6 +3124,50 @@ function exportarMetas() {
     '\n\nPara que las vea todo el mundo hay que grabarlas en data/metas.json ' +
     'del repositorio. Pásale esta lista a quien publica y quedan con ' +
     'historial de quién las cambió y cuándo.');
+}
+
+// Filas hijas de un indicador: sus unidades de negocio, plantas o categorías.
+// Ver que la merma esta sobre meta no dice donde actuar; ver que TIGO va en
+// 4.49% y B&D en 1.34% si.
+function avanceSegmentos(ind, meta, pct) {
+  const segs = ind.segmentos || [];
+  if (!segs.length) return '';
+  const filas = segs.map(([nombre, par, unidad]) => {
+    const arr = serieDe(par);
+    if (!arr) return '';
+    // Un segmento puede medir otra cosa que su indicador: el costo unitario
+    // por UEN va en soles aunque el margen sea un porcentaje.
+    const fmt = unidad ? Object.assign({}, ind, { unidad }) : ind;
+    const per = periodos();
+    const iC = per.indexOf(mesParcial());
+    const iX = per.indexOf(mesCerrado());
+    const prev = per[iX - 1];
+    const curso = iC >= 0 ? arr[iC] : null;
+    const cerrado = iX >= 0 ? arr[iX] : null;
+    const previo = prev ? arr[per.indexOf(prev)] : null;
+
+    // La distancia a la meta solo aplica si el segmento mide lo mismo que su
+    // indicador. El costo unitario por UEN no se compara contra el margen.
+    const mismaUnidad = !(ind.segmentos_nota);
+    const dist = mismaUnidad ? distanciaMeta(fmt, curso, meta) : null;
+    const tri = triangulo(ind, cerrado, previo);
+    const col = dist ? (dist.bien ? 'var(--green)' : 'var(--red)') : 'var(--text3)';
+    return `<tr class="av-seg">
+      <td class="av-seg-n">${esc(nombre)}</td>
+      <td></td>
+      <td class="av-num">${curso == null
+        ? `<span class="av-vacio">${cerrado == null ? '—' : esc(fmtMeta(fmt, cerrado)) + ' en ' + esc(mesCerrado())}</span>`
+        : esc(fmtMeta(fmt, curso))}</td>
+      <td>${dist ? `<span class="av-num" style="color:${col}">${dist.txt}</span>` : ''}</td>
+      <td>${chispaSerie(arr, col)}</td>
+      <td>${tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>` : ''}</td>
+      <td></td>
+    </tr>`;
+  }).join('');
+  const nota = ind.segmentos_nota
+    ? `<tr class="av-seg"><td colspan="7" class="av-seg-nota">${esc(ind.segmentos_nota)}</td></tr>`
+    : '';
+  return nota + filas;
 }
 
 function dxpAvanceView() {
@@ -3181,8 +3241,9 @@ function dxpAvanceView() {
     const triHtml = tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>`
                         : '<span class="av-vacio">—</span>';
 
-    return `<tr>
-      <td class="av-rep">${esc(ind.label)}
+    const tieneSeg = (ind.segmentos || []).length > 0;
+    return `<tr${tieneSeg ? ` class="av-abrible" onclick="avanceAbrir('${ind.clave}')"` : ''}>
+      <td class="av-rep">${tieneSeg ? `<span class="av-flecha" id="fl-${ind.clave}">▸</span> ` : ''}${esc(ind.label)}
         <small>${esc(DXP_NOMBRE[ind.reporte] || ind.reporte)}${
           ind.nota ? ' · ' + esc(ind.nota) : ''}</small></td>
       <td><span class="av-meta ${meta == null ? 'av-meta-vacia' : ''} ${propia ? 'av-meta-mia' : ''}"
@@ -3201,7 +3262,9 @@ function dxpAvanceView() {
                      : chispaSerie(serie, col)}</td>
       <td>${triHtml}</td>
       <td>${veredicto}</td>
-    </tr>`;
+    </tr>
+    ${tieneSeg ? `<tbody class="av-hijas" id="seg-${ind.clave}" hidden>
+      ${avanceSegmentos(ind, meta, pct)}</tbody>` : ''}`;
   }).join('');
 
   const nPropias = Object.keys(borr).length;
