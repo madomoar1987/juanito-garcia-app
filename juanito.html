@@ -4081,8 +4081,18 @@ function renderMcKinseyArea(empresa, tipo) {
   // distinguir una cifra contrastada de una que no lo está.
   const marcaFuente = (tipoRep, lbl) => {
     const k = rp[tipoRep]?.kpis?.find(x => x.label === lbl);
-    if (!k || k.fuente === 'reporte' || !k.fuente) return '';
-    return ` <span title="No contrastado contra Power BI: viene del escaneo automático, sin los filtros del visual" style="color:var(--yellow);font-weight:700;cursor:help">◦</span>`;
+    if (!k) return '';
+    let out = '';
+    if (k.fuente && k.fuente !== 'reporte') {
+      out += ` <span title="No contrastado contra Power BI: viene del escaneo autom\u00e1tico, sin los filtros del visual" style="color:var(--yellow);font-weight:700;cursor:help">\u25e6</span>`;
+    }
+    // Cifras que no son del mes que titula el tablero. La validación las
+    // detecta comparándolas contra la serie mensual y les pone la nota: sin
+    // esto, un acumulado del año se lee como si fuera de agosto.
+    if (k.nota_periodo) {
+      out += ` <span title="${esc(k.nota_periodo)}" style="color:var(--yellow);font-weight:700;cursor:help">\u26a0</span>`;
+    }
+    return out;
   };
 
   const rowKpi = (lbl, val, meta, col, tipoRep) => {

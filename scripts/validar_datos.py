@@ -77,6 +77,110 @@ def kpi(rep, etiqueta):
     return None
 
 
+# Un KPI con serie mensual equivalente: si el número no es el del mes, se
+# averigua de qué sí es y se corrige el nombre.
+EQUIVALENCIAS = [
+    ("productividad", "Producción Total (KG)", "productividad", "Producción (kg)", "kg"),
+    ("productividad", "Planilla Total", "productividad", "Planilla (S/)", "soles"),
+    ("productividad", "Venta Neta (KG)", "productividad", "Venta (kg)", "kg"),
+    ("margen_variable", "Ventas mes", "margen", "Ventas (S/.)", "soles"),
+    ("fill_rate", "Facturación", "fill_rate", "Facturación", "soles"),
+    ("fill_rate", "Orden de Venta", "fill_rate", "Orden de Venta", "soles"),
+]
+
+
+# Cifras de saldo: valen "hoy", no "el mes". Una cartera vencida o una deuda
+# son una foto del momento; el gráfico mensual de lo mismo es el cierre de
+# cada mes. Las dos son correctas y distintas, y publicarlas con el mismo
+# nombre junto a cifras del mes cerrado hace que se lean como si fueran del
+# mes. Se marca cuál es cuál en vez de pedirle a nadie que elija.
+SALDOS = [
+    ("cuentas_por_cobrar", "Morosidad", "cxc", "% Morosidad", True),
+]
+
+
+def marcar_saldos(rp, ser, cerrado):
+    per = ser.get("periodos") or []
+    if not per or not cerrado:
+        return
+    i = per.index(cerrado)
+    for rep_k, etiqueta, ds, sk, es_pct in SALDOS:
+        arr = (ser.get("datasets", {}).get(ds) or {}).get(sk)
+        rep = rp.get(rep_k) or {}
+        k = next((x for x in rep.get("kpis", []) if x.get("label") == etiqueta), None)
+        if not arr or not k or i >= len(arr) or arr[i] is None:
+            continue
+        pub = num(k.get("valor"))
+        cierre = arr[i] * 100 if es_pct else abs(arr[i])
+        if pub is None or abs(pub - cierre) / max(abs(pub), abs(cierre)) <= 0.03:
+            continue
+        k["label"] = f"{etiqueta} · hoy"
+        k["nota_periodo"] = (f"saldo del día. El cierre de {cerrado} fue "
+                             f"{cierre:.1f}{'%' if es_pct else ''}.")
+        print(f"  MARCA  {etiqueta} → {k['label']}  "
+              f"(hoy {pub:.1f} · cierre de {cerrado} {cierre:.1f})")
+
+
+def corregir_etiquetas(rp, ser, cerrado, inf):
+    """Renombra los KPIs que no son del mes, diciendo de qué período son.
+
+    "Producción Total (KG)" publicaba 9,621,234 kg junto a cifras de agosto, y
+    resulta ser el acumulado de 2026 — coincide al 0.0%. Un acumulado del año
+    presentado al lado del mes hace comparar peras con sandías, y el que mira
+    no tiene cómo saberlo.
+
+    La corrección es automática y no adivina: solo renombra cuando el número
+    coincide con una de las agregaciones posibles. Si no coincide con ninguna,
+    se deja como está y se anota, porque inventarle un período sería peor.
+    """
+    print("\nDe qué período es realmente cada cifra")
+    per = ser.get("periodos") or []
+    if not per or not cerrado:
+        return
+    hasta = per.index(cerrado)
+    anio = cerrado[:4]
+    for rep_k, etiqueta, ds, sk, _u in EQUIVALENCIAS:
+        arr = (ser.get("datasets", {}).get(ds) or {}).get(sk)
+        rep = rp.get(rep_k) or {}
+        k = next((x for x in rep.get("kpis", []) if x.get("label") == etiqueta), None)
+        if not arr or not k:
+            continue
+        pub = num(k.get("valor"))
+        if pub is None:
+            continue
+        vals = [(per[i], arr[i]) for i in range(min(len(per), len(arr)))
+                if arr[i] is not None and i <= hasta]
+        if not vals:
+            continue
+        mes = abs(vals[-1][1])
+        ytd = sum(abs(v) for p, v in vals if p.startswith(anio))
+        todo = sum(abs(v) for _, v in vals)
+
+        def cerca(x):
+            return x and abs(pub - x) / max(abs(pub), abs(x)) <= 0.02
+
+        if cerca(mes):
+            print(f"  OK     {etiqueta}: es del mes, como dice")
+            inf.ok += 1
+        elif cerca(ytd):
+            nuevo = f"{etiqueta} · acumulado {anio}"
+            print(f"  CORRIGE  {etiqueta} → {nuevo}  (coincide con el acumulado del año)")
+            k["label"] = nuevo
+            k["nota_periodo"] = (f"no es del mes: es la suma de {anio} hasta "
+                                 f"{cerrado}. El mes fue {mes:,.0f}.")
+        elif cerca(todo):
+            nuevo = f"{etiqueta} · acumulado histórico"
+            print(f"  CORRIGE  {etiqueta} → {nuevo}  (coincide con toda la serie)")
+            k["label"] = nuevo
+            k["nota_periodo"] = (f"no es del mes ni del año: es toda la serie "
+                                 f"disponible. El mes fue {mes:,.0f}.")
+        else:
+            print(f"  ?      {etiqueta}: no coincide con mes, año ni total")
+            inf.fallos.append((f"{etiqueta}: período desconocido", pub, mes,
+                               abs(pub - mes) / max(pub, mes),
+                               f"mes {mes:,.0f} · año {ytd:,.0f} · total {todo:,.0f}"))
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     anotar = "--anotar" in sys.argv
@@ -244,6 +348,22 @@ def main():
                                    tot, hi, 0, ""))
                 print(f"  FALLA  {etiqueta} = {tot:.2f}% fuera del rango de "
                       f"{clave} ({lo:.2f}% a {hi:.2f}%)")
+
+    if anotar:
+        corregir_etiquetas(rp, ser, cerrado, inf)
+        marcar_saldos(rp, ser, cerrado)
+        # Un descuadre que acaba de quedar explicado ya no es un descuadre.
+        # Si no se retira, el correo avisaría cada día de algo resuelto, y un
+        # aviso que siempre suena deja de mirarse.
+        explicados = {k["label"].split(" · ")[0]
+                      for r in rp.values() for k in r.get("kpis", [])
+                      if k.get("nota_periodo")}
+        antes = len(inf.fallos)
+        inf.fallos = [f for f in inf.fallos
+                      if not any(e in f[0] for e in explicados)]
+        if antes != len(inf.fallos):
+            print(f"\n  {antes - len(inf.fallos)} descuadre(s) quedaron "
+                  f"explicados al corregir el período")
 
     # ── Resumen ────────────────────────────────────────────────────────
     print(f"\n{'─'*66}")
