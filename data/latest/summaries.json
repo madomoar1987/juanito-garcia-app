@@ -1363,7 +1363,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "red",
+          "estado": "yellow",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
@@ -1467,9 +1467,29 @@
   },
   "diagnostico": [
     {
-      "consulta": "consumo_ventaneta",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (5, 9) Column '<oii>Peso total KG</oii>' in table '<oii>Maestra de Facturacion (Total)</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]}}}"
+      "consulta": "tarjeta:Costo Total",
+      "http": 0,
+      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
+    },
+    {
+      "consulta": "tarjeta:Venta Neta (KG)",
+      "http": 0,
+      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
+    },
+    {
+      "consulta": "tarjeta:Costo x TN Vendida",
+      "http": 0,
+      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
+    },
+    {
+      "consulta": "tarjeta:Producción Neta (KG)",
+      "http": 0,
+      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
+    },
+    {
+      "consulta": "tarjeta:Costo x TN Producida",
+      "http": 0,
+      "error": "TypeError('valor_de_tarjeta() takes 4 positional arguments but 5 were given')"
     },
     {
       "consulta": "merma_total_incoherente",
