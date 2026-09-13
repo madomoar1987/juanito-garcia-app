@@ -38,7 +38,7 @@ DATASETS = {
     "margen":        "38076daa-d2cd-4a93-858a-82c0a4cf8cb6",
     "compras":       "06408938-8202-424e-80c0-b42c178dabde",
     "inventario":    "0e27d784-41a4-48f0-9208-60210119f0a7",
-    "mermas":        "35866214-f4da-45a3-a5a2-aa0c8caffe78",
+    "mermas":        "fdd58a2d-654d-41e0-b587-3d43c337ed47",
     "consumo":       "c972c8cb-e5fc-4b60-8f5e-265a78e1e796",
     "planificacion": "30074d92-7ec1-4762-82f2-1cb29c15dcfe",
     "cxc":           "2eec70cd-0820-408f-b938-a2cd547b0c18",

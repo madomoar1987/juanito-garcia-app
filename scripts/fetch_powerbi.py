@@ -884,7 +884,7 @@ DATASET_IDS = {
         "cxc":            "2eec70cd-0820-408f-b938-a2cd547b0c18",  # 1. Cuentas por cobrar
         "cxp":            "45a8ab8d-e162-4398-a260-3a9a5f90829f",  # 2. Cuentas por pagar
         "margen":         "38076daa-d2cd-4a93-858a-82c0a4cf8cb6",  # 3. Reporte de Margen
-        "mermas":         "35866214-f4da-45a3-a5a2-aa0c8caffe78",  # 4. Reporte de mermas
+        "mermas":         "fdd58a2d-654d-41e0-b587-3d43c337ed47",  # 4. Reporte de mermas
         "compras":        "06408938-8202-424e-80c0-b42c178dabde",  # 5. Reporte de compras
         "inventario":     "0e27d784-41a4-48f0-9208-60210119f0a7",  # 6. Rotacion de inventario
         "control_ds":     "0aca7bdd-6b72-49c2-be41-17ae0f6b5848",  # 8. Reporte de auditoria
@@ -3855,6 +3855,37 @@ def main():
                 # mes. El 13 de setiembre eso publicó "Merma Total 4.87%", una
                 # cifra vieja y equivocada, presentada como si fuera de hoy.
                 # Un dato ausente se nota; uno incorrecto se usa para decidir.
+                # Un total es un promedio ponderado de sus partes, asi que
+                # NUNCA puede superar a la mayor. El 13/09 se publico "Merma
+                # Total 4.87%" con la peor UEN en 4.27% y la peor planta en
+                # 3.11%: el total venia del sondeo generico, sin el filtro de
+                # mes del reporte, y no medía lo mismo que los segmentos.
+                # Publicar una cifra imposible en la tarjeta principal es peor
+                # que no publicarla: es la que se mira primero.
+                rep_m = empresa_data["reportes"]["mermas"]
+                partes = [to_float(x["merma"].rstrip("%"))
+                          for x in (uen_merma + planta_merma)]
+                partes = [v for v in partes if v is not None]
+                if partes:
+                    tope = max(partes)
+                    for kpi in rep_m.get("kpis", []):
+                        val = to_float(str(kpi.get("valor", "")).rstrip("%"))
+                        if val is not None and val > tope * 1.05:
+                            print(f"    ✗ {kpi['label']} = {kpi['valor']} supera a "
+                                  f"su mayor segmento ({tope:.2f}%) — se oculta")
+                            DIAGNOSTICO.append({
+                                "consulta": "merma_total_incoherente", "http": 200,
+                                "error": (f"{kpi['label']} = {kpi['valor']} es mayor que el "
+                                          f"peor segmento ({tope:.2f}%); un total no puede "
+                                          "superar a sus partes. Se publica sin dato.")})
+                            kpi["valor"] = "sin dato"
+                            kpi["meta"] = "el total del reporte no cuadra con sus segmentos"
+                            kpi["estado"] = "red"
+                            if rep_m.get("alerta", "").startswith("Merma "):
+                                rep_m["alerta"] = (
+                                    f"Merma sin total confiable. Peor UEN y peor planta: "
+                                    f"{tope:.2f}%.")
+
                 if not uen_merma and not planta_merma:
                     rep = empresa_data["reportes"]["mermas"]
                     rep["kpis"] = [{"label": "Merma Total", "valor": "sin dato",
