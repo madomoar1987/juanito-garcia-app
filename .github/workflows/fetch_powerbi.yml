@@ -66,6 +66,21 @@ jobs:
       - name: Validar coherencia de las cifras
         run: python scripts/validar_datos.py --anotar
 
+      # Ejecuta las tarjetas capturadas del reporte —la misma consulta que
+      # Power BI usa para pintar el numero en pantalla— y las compara con lo
+      # que va a publicar la app. Es la validacion "contra lo que veo en Power
+      # BI" sin tener que mandar capturas de pantalla cada dia.
+      - name: Comparar contra las tarjetas del reporte
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          PBI_USERNAME:        ${{ secrets.PBI_USERNAME }}
+          PBI_PASSWORD:        ${{ secrets.PBI_PASSWORD }}
+          PBI_WORKSPACE_ID:    ${{ secrets.PBI_WORKSPACE_ID }}
+        run: python scripts/validar_tarjetas.py --anotar
+        continue-on-error: true
+
       - name: Commit & push JSON files
         run: |
           git config user.name  "JUANITO Bot"
