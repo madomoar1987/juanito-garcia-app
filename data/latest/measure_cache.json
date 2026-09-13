@@ -49,7 +49,8 @@
     "Venta Perdida": null
   },
   "mermas": {
-    "% Merma Total": null
+    "% Merma Total": null,
+    "Merma": null
   },
   "planificacion": {
     "% Avance": null

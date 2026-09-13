@@ -538,6 +538,202 @@
               "estado": "red",
               "fuente": "reporte"
             }
+          ],
+          "por_sku": [
+            {
+              "sku": "E001410",
+              "almacen": "Lacteos Producción",
+              "estandar": 97476.0,
+              "consumido": 129636.0,
+              "exceso": 32160.0,
+              "pct": "33.0%"
+            },
+            {
+              "sku": "E001567",
+              "almacen": "Lacteos Producción",
+              "estandar": 0.0,
+              "consumido": 19776.0,
+              "exceso": 19776.0,
+              "pct": null
+            },
+            {
+              "sku": "I000177",
+              "almacen": "Lacteos Producción",
+              "estandar": 214241.3,
+              "consumido": 233203.5,
+              "exceso": 18962.3,
+              "pct": "8.9%"
+            },
+            {
+              "sku": "E001523",
+              "almacen": "Lacteos Producción",
+              "estandar": 0.0,
+              "consumido": 15966.0,
+              "exceso": 15966.0,
+              "pct": null
+            },
+            {
+              "sku": "INT122",
+              "almacen": "Lacteos Producción",
+              "estandar": 225570.3,
+              "consumido": 237714.8,
+              "exceso": 12144.5,
+              "pct": "5.4%"
+            },
+            {
+              "sku": "E001841",
+              "almacen": "Lacteos Producción",
+              "estandar": 69368.0,
+              "consumido": 81466.0,
+              "exceso": 12098.0,
+              "pct": "17.4%"
+            },
+            {
+              "sku": "PP00356",
+              "almacen": "Lacteos Producción",
+              "estandar": 0.0,
+              "consumido": 11880.0,
+              "exceso": 11880.0,
+              "pct": null
+            },
+            {
+              "sku": "INT121",
+              "almacen": "Lacteos Producción",
+              "estandar": 125272.3,
+              "consumido": 136415.2,
+              "exceso": 11142.9,
+              "pct": "8.9%"
+            },
+            {
+              "sku": "E001840",
+              "almacen": "Lacteos Producción",
+              "estandar": 230638.0,
+              "consumido": 239357.0,
+              "exceso": 8719.0,
+              "pct": "3.8%"
+            },
+            {
+              "sku": "INT123",
+              "almacen": "Lacteos Producción",
+              "estandar": 2724.1,
+              "consumido": 10307.6,
+              "exceso": 7583.4,
+              "pct": "278.4%"
+            },
+            {
+              "sku": "E001544",
+              "almacen": "Lacteos Producción",
+              "estandar": 0.0,
+              "consumido": 7403.0,
+              "exceso": 7403.0,
+              "pct": null
+            },
+            {
+              "sku": "E001837",
+              "almacen": "Lacteos Producción",
+              "estandar": 53360.0,
+              "consumido": 59898.0,
+              "exceso": 6538.0,
+              "pct": "12.3%"
+            },
+            {
+              "sku": "INT0075",
+              "almacen": "Lacteos Producción",
+              "estandar": 19778.1,
+              "consumido": 24994.3,
+              "exceso": 5216.2,
+              "pct": "26.4%"
+            },
+            {
+              "sku": "E001846",
+              "almacen": "Lacteos Producción",
+              "estandar": 55254.0,
+              "consumido": 59984.0,
+              "exceso": 4730.0,
+              "pct": "8.6%"
+            },
+            {
+              "sku": "E001431",
+              "almacen": "Lacteos Producción",
+              "estandar": 11545.0,
+              "consumido": 15501.0,
+              "exceso": 3956.0,
+              "pct": "34.3%"
+            },
+            {
+              "sku": "PP00441",
+              "almacen": "Lacteos Producción",
+              "estandar": 119256.0,
+              "consumido": 122761.0,
+              "exceso": 3505.0,
+              "pct": "2.9%"
+            },
+            {
+              "sku": "INT0074",
+              "almacen": "Lacteos Producción",
+              "estandar": 39340.8,
+              "consumido": 42638.9,
+              "exceso": 3298.1,
+              "pct": "8.4%"
+            },
+            {
+              "sku": "INT0008",
+              "almacen": "Lacteos Producción",
+              "estandar": 45494.2,
+              "consumido": 48654.4,
+              "exceso": 3160.2,
+              "pct": "6.9%"
+            },
+            {
+              "sku": "PP00357",
+              "almacen": "Lacteos Producción",
+              "estandar": 0.0,
+              "consumido": 3027.0,
+              "exceso": 3027.0,
+              "pct": null
+            },
+            {
+              "sku": "MQP00007",
+              "almacen": "Lacteos Producción",
+              "estandar": 0.0,
+              "consumido": 2954.0,
+              "exceso": 2954.0,
+              "pct": null
+            }
+          ],
+          "por_uen": [
+            {
+              "uen": "B&D",
+              "merma": "1.49%",
+              "estado": "green"
+            },
+            {
+              "uen": "TIGO",
+              "merma": "4.27%",
+              "estado": "red"
+            },
+            {
+              "uen": "MAQUILA",
+              "merma": "2.93%",
+              "estado": "yellow"
+            }
+          ],
+          "por_planta": [
+            {
+              "planta": "ATE",
+              "merma": "3.11%",
+              "estado": "red"
+            },
+            {
+              "planta": "PACHACAMAC",
+              "merma": "1.81%",
+              "estado": "green"
+            },
+            {
+              "planta": "TERCEROS",
+              "merma": "0.68%",
+              "estado": "green"
+            }
           ]
         },
         "compras": {
@@ -1256,49 +1452,9 @@
   },
   "diagnostico": [
     {
-      "consulta": "captura:Matriz#32dc719b5e1f",
-      "http": 404,
-      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
-    },
-    {
-      "consulta": "captura:Matriz#32dc719b5e1f",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (20, 16) Column '<oii>MES</oii>' in table '<oii>Calendario</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]}}}"
-    },
-    {
-      "consulta": "captura:Matriz#32dc719b5e1f",
+      "consulta": "dataset_actualizado:mermas",
       "http": 200,
-      "error": "ninguna tabla del resultado contiene las columnas ['[sku]', '[almacen_referencia]', '[SumSTD_CANT]', '[SumCANT_REAL]', '[SumDIF_CANT]', '[v__Merma__Texto_]']. Devueltas: []"
-    },
-    {
-      "consulta": "merma-uen-B&D",
-      "http": 404,
-      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
-    },
-    {
-      "consulta": "merma-uen-TIGO",
-      "http": 404,
-      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
-    },
-    {
-      "consulta": "merma-uen-MAQUILA",
-      "http": 404,
-      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
-    },
-    {
-      "consulta": "merma-planta-ATE",
-      "http": 404,
-      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
-    },
-    {
-      "consulta": "merma-planta-PACHACAMAC",
-      "http": 404,
-      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
-    },
-    {
-      "consulta": "merma-planta-TERCEROS",
-      "http": 404,
-      "error": "{\"error\":{\"code\":\"PowerBIEntityNotFound\",\"pbi.error\":{\"code\":\"PowerBIEntityNotFound\",\"parameters\":{},\"details\":[],\"exceptionCulprit\":1}}}"
+      "error": "el reporte 3fa688de-f4ad-4e58-878b-d2d816275ff3 ahora usa el dataset fdd58a2d-654d-41e0-b587-3d43c337ed47; el configurado era 35866214-f4da-45a3-a5a2-aa0c8caffe78"
     }
   ]
 }
