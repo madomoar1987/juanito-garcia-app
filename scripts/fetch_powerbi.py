@@ -3760,6 +3760,16 @@ def main():
                             "uen": uen, "margen": f"{pct:.1f}%",
                             "precio_kg": f"S/{precio:.2f}", "costo_kg": f"S/{costo:.2f}",
                             "estado": "green" if pct >= 52 else ("yellow" if pct >= 46 else "red"),
+                            # Este margen NO viene del reporte: se deriva de
+                            # (precio − costo) / precio con los precios y costos
+                            # unitarios de cada UEN. El reporte tiene su propia
+                            # medida de margen por unidad de negocio y no da lo
+                            # mismo — pondera por producto, no promedia. En
+                            # agosto el reporte marcaba B&D 62.30% y este
+                            # cálculo daba 65.3%.
+                            "fuente": "calculado",
+                            "nota": "derivado de precio y costo por kilo, "
+                                    "no es la medida del reporte",
                         })
                         print(f"    ✓ Margen UEN [{uen}]: precio=S/{precio:.2f} costo=S/{costo:.2f} margen={pct:.1f}%")
                     else:
