@@ -98,6 +98,11 @@ def main():
 
     print(f"Validando {len(tarjetas)} tarjetas del reporte contra la app\n")
     iguales, distintas, sin_mapa, sin_dato = [], [], 0, 0
+    # Varias tarjetas pueden llamarse igual: el reporte de Consumo tiene una
+    # "VENTA NETA (KG)" por planta además del total. Se juntan por KPI y se
+    # comparan al final contra cada una y contra su suma — comparar de a una
+    # marcaba diferencias que no existían.
+    valores = {}
 
     for q in tarjetas:
         clave = clave_visual(q)
@@ -132,22 +137,32 @@ def main():
             sin_dato += 1
             print(f"  ?      {etiqueta}: sin comparación posible")
             continue
+        v = valores.setdefault((rep_k, etiqueta), {"app": v_app, "cards": []})
+        v["cards"].append(v_reporte)
 
+    for (rep_k, etiqueta), v in valores.items():
+        v_app, cards = v["app"], v["cards"]
         # La app formatea (porcentajes ×100, millones abreviados): se compara
-        # en proporción, no en valor absoluto.
+        # en proporción, no en valor absoluto. Y se acepta tanto cualquier
+        # tarjeta suelta como la suma de todas, porque un total repartido en
+        # varias tarjetas es igual de correcto que una sola.
         escala = [1, 100, 0.01, 1e6, 1e-6]
-        dif = min(abs(v_app - v_reporte * e) / max(abs(v_app), abs(v_reporte * e) or 1)
-                  for e in escala)
+        candidatos = list(cards) + ([sum(cards)] if len(cards) > 1 else [])
+        dif = min(abs(v_app - c * e) / max(abs(v_app), abs(c * e) or 1)
+                  for c in candidatos for e in escala)
         if dif <= TOL:
             iguales.append(etiqueta)
-            print(f"  OK     {etiqueta}")
+            print(f"  OK     {etiqueta}" +
+                  (f"  (contra la suma de {len(cards)} tarjetas)" if len(cards) > 1 else ""))
         else:
-            distintas.append({"kpi": etiqueta, "reporte": rep_k,
-                              "en_powerbi": round(v_reporte, 4),
-                              "en_juanito": round(v_app, 4),
-                              "diferencia_pct": round(dif * 100, 1)})
-            print(f"  FALLA  {etiqueta}: Power BI {v_reporte:,.2f} · "
-                  f"Juanito {v_app:,.2f}")
+            distintas.append({
+                "kpi": etiqueta, "reporte": rep_k,
+                "en_powerbi": [round(c, 2) for c in cards],
+                "suma_powerbi": round(sum(cards), 2) if len(cards) > 1 else None,
+                "en_juanito": round(v_app, 2),
+                "diferencia_pct": round(dif * 100, 1)})
+            print(f"  FALLA  {etiqueta}: Power BI "
+                  f"{[f'{c:,.0f}' for c in cards]} · Juanito {v_app:,.0f}")
 
     print(f"\n{len(iguales)} iguales · {len(distintas)} distintas · "
           f"{sin_mapa} tarjetas sin correspondencia · {sin_dato} sin datos")

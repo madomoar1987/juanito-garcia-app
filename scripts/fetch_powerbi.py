@@ -273,15 +273,26 @@ def dax_consumo_venta_neta_kg(token, ws_id, dataset_id, label="consumo_ventaneta
     Es la columna 'Maestra de Facturacion (Total)'[Peso total K] con SUM
     directo, no una medida.
 
-    Antes se usaba [Peso total KG], con G, bajo el supuesto de que era una
-    columna distinta de la que usa Productividad. El diagnóstico del
-    2026-09-06 mostró que esa no existe ("Column 'Peso total KG' cannot be
-    found"), y la consulta capturada del visual de Productividad confirma que
-    la buena es [Peso total K], sin G. Era una sola columna, no dos.
+    Sí eran dos columnas distintas, una por dataset:
+
+      · Consumo usa [Peso total KG], con G.
+      · Productividad usa [Peso total K], sin G.
+
+    El 2026-09-06 se cambió Consumo a [Peso total K] porque [Peso total KG]
+    daba "cannot be found" — pero ese error venía del dataset de
+    Productividad, no del de Consumo, y la conclusión se aplicó al reporte
+    equivocado. El resultado fue publicar 16,750,700 kg donde la tarjeta del
+    reporte marca 10,178,475: un 65% de más durante una semana.
+
+    Lo encontró la comparación automática contra las tarjetas capturadas
+    (2026-09-13), que es justo para lo que se hizo. Las tres tarjetas del
+    reporte lo confirman: [Peso total KG] = 10,178,475 y sus dos plantas,
+    [Peso total KG ATE] 7,018,345 + [Peso total KG PACHACAMAC] 3,160,130,
+    suman exactamente eso.
     """
     return _dax_consumo_filtro_venta(
         token, ws_id, dataset_id,
-        "SUM('Maestra de Facturacion (Total)'[Peso total K])", label)
+        "SUM('Maestra de Facturacion (Total)'[Peso total KG])", label)
 
 
 def dax_consumo_costo_x_tn_vendida(token, ws_id, dataset_id, label="consumo_costotnvend"):
