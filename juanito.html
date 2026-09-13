@@ -1493,6 +1493,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   border:1px solid var(--border); background:var(--card); color:var(--text); }
 .av-nota { padding:22px; color:var(--text2); font-size:14px; }
 
+.calc { font-size:10px; color:var(--yellow); white-space:nowrap; cursor:help; }
 .chat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .chat-chip { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent); border-radius: 20px; padding: 5px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; }
 .chat-chip:active { opacity: 0.7; }
@@ -3717,6 +3718,21 @@ function renderEmpresa(empresa, containerId) {
   `;
 }
 
+// ¿Este campo de este desglose lo calculamos nosotros? La lista viaja en
+// summaries.json, así que marcarlo no depende de que alguien recuerde cuáles
+// eran: si mañana se agrega otro cálculo, se marca solo.
+function esDerivado(reporte, desglose, campo) {
+  return (DATA?.derivados || []).some(x =>
+    x.reporte === reporte && x.desglose === desglose && x.campo === campo);
+}
+
+function notaDerivado(reporte, desglose, campo) {
+  const d = (DATA?.derivados || []).find(x =>
+    x.reporte === reporte && x.desglose === desglose && x.campo === campo);
+  if (!d) return '';
+  return `<span class="calc" title="${esc(d.formula)} — ${esc(d.razon)}">◦ calculado</span>`;
+}
+
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function renderKpiCard(k, contexto, empresa, tipo, archivo, desc) {
@@ -4879,7 +4895,8 @@ function renderVentasMcKinsey(empresa) {
           <div style="font-size:22px;font-weight:800;color:${colU(parseFloat(u.margen))}">${u.margen}</div>
           <div style="font-size:9px;color:var(--sub);margin-top:2px">meta ≥52%</div>
           ${u.precio_kg && u.costo_kg ? `<div style="font-size:9px;color:var(--sub);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">Precio ${u.precio_kg} · Costo ${u.costo_kg}</div>` : ''}
-          ${u.fuente === 'calculado' ? `<div style="font-size:9px;color:var(--yellow);margin-top:4px">◦ calculado, no es la cifra del reporte</div>` : ''}
+          ${esDerivado('margen_variable','por_uen','margen')
+            ? `<div style="margin-top:4px">${notaDerivado('margen_variable','por_uen','margen')}</div>` : ''}
         </div>`).join('')}
       </div>
       <div style="font-size:11px;color:var(--sub);margin-top:10px;padding:8px;background:rgba(0,0,0,.04);border-radius:6px">

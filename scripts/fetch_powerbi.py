@@ -1105,6 +1105,32 @@ def get_token():
 # vuelcan al final en summaries.json, bajo "diagnostico".
 DIAGNOSTICO = []
 
+# Toda cifra que la app muestra y que NO viene de una consulta a Power BI,
+# sino de una operación hecha aquí.
+#
+# Existe porque el margen por unidad de negocio se publicó durante semanas
+# como si fuera del reporte: se calculaba (precio − costo) / precio, y en
+# agosto daba 65.3% donde el reporte marcaba 62.30%. Nadie podía notarlo
+# mirando la app. Una cifra derivada puede ser útil; presentarla como leída
+# no lo es.
+#
+# Cada anotación viaja a summaries.json, la app las marca en pantalla, y
+# cualquiera puede auditar la lista completa sin leer el código.
+DERIVADOS = []
+
+
+# Razón que se repite: una participación sobre el total no puede contradecir
+# al reporte, porque es una proporción de sus propias cifras. Se distingue del
+# caso grave —el margen por UEN— donde el reporte tiene su propia medida y da
+# otro número.
+PART = ("participación sobre el total, calculada sumando las filas del propio "
+        "reporte. No puede contradecirlo: es una proporción de sus cifras.")
+
+
+def anotar_derivado(reporte, desglose, campo, formula, razon):
+    DERIVADOS.append({"reporte": reporte, "desglose": desglose, "campo": campo,
+                      "formula": formula, "razon": razon})
+
 
 CATALOGO_CAPTURAS = Path("capturas/catalogo.json")
 _CATALOGO = None
@@ -1856,6 +1882,12 @@ def build_cxc(found):
                          "meta": f"{venc/total_aging*100:.1f}% de cartera",
                          "estado": "red" if sem == "red" else "yellow"})
 
+    if tramos and any("pct" in t for t in tramos):
+        anotar_derivado("cuentas_por_cobrar", "tramos", "pct",
+                        "valor del tramo / cartera total × 100",
+                        "participación sobre el total, calculada sumando las "
+                        "filas del propio reporte. No puede contradecirlo: es "
+                        "una proporción de sus cifras.")
     result = {"estado": sem, "alerta": alerta, "kpis": kpis}
     if tramos: result["tramos"] = tramos
 
@@ -2152,6 +2184,8 @@ def build_cxp(found):
             m = re.search(r"(\d+)", n)
             dias = int(m.group(1)) if m else 0
             return "red" if dias >= 31 else "yellow"
+        anotar_derivado("cuentas_por_pagar", "tramos", "pct",
+                        "valor del tramo / suma de tramos × 100", PART)
         res["tramos"] = [{
             "label": est,
             "valor": fmt_soles(v),
@@ -2170,6 +2204,11 @@ def build_cxp(found):
     top = found.get("__top_proveedores") or []
     if top:
         tot = sum(v for _, _, v in top) or None
+        anotar_derivado("cuentas_por_pagar", "proveedores_criticos", "pct",
+                        "deuda del proveedor / deuda del top 15 × 100",
+                        "participación sobre el total, calculada sumando las "
+                        "filas del propio reporte. Ojo: el denominador es el "
+                        "top 15, no la deuda total de la empresa.")
         res["proveedores_criticos"] = [{
             "nombre": n,
             "categoria": c,
@@ -2245,6 +2284,8 @@ def build_margen(found):
     if limpios:
         limpios.sort(key=lambda t: -t[1])
         total_v = sum(t[1] for t in limpios) or None
+        anotar_derivado("margen_variable", "por_cliente", "pct_venta",
+                        "venta del cliente / venta total × 100", PART)
         res["por_cliente"] = [{
             "cliente": n,
             "venta": fmt_soles(v),
@@ -2634,6 +2675,9 @@ def build_inventario(found):
             if not acum:
                 return None
             top = sorted(acum.items(), key=lambda kv: -kv[1])[:6]
+            for clave in ("dead_por_categoria", "working_por_categoria"):
+                anotar_derivado("sop_inventario", clave, "pct",
+                                "saldo de la categoría / saldo total × 100", PART)
             return [{"categoria": c, "valor": fmt_soles(v),
                      "pct": round(v / tot * 100, 1) if tot else None}
                     for c, v in top]
@@ -3067,6 +3111,8 @@ def build_fill_rate(found):
         elif suma and abs(total - suma) > max(1.0, abs(total) * 0.005):
             print(f"    ⚠ Fill Rate: tarjeta {total:,.0f} vs suma de marcas "
                   f"{suma:,.0f} — el desglose no cuadra con el total")
+        anotar_derivado("fill_rate", "por_marca", "pct",
+                        "pedidos de la marca / pedidos totales × 100", PART)
         res["por_marca"] = [{
             "marca": m,
             "valor": f"{v:,.0f}",          # pedidos, no soles
@@ -3247,6 +3293,10 @@ def build_avance(found):
             "pct": (round(c["producido"] / c["programado"] * 100, 1)
                     if c["programado"] and c["producido"] is not None else None),
         } for c in cump]
+        anotar_derivado("margen_variable_pag2", "cumplimiento_produccion", "pct",
+                        "producido / programado × 100",
+                        "el reporte muestra las dos cantidades pero no el "
+                        "porcentaje por categoría")
         if prog:
             p = prod / prog * 100
             res["kpis"].append({
@@ -3258,6 +3308,10 @@ def build_avance(found):
     # sondeo genérico: estas vienen de la tabla del reporte, con su filtro.
     canales = found.get("__avance_canal") or []
     if canales:
+        anotar_derivado("margen_variable_pag2", "por_canal", "avance",
+                        "facturado / ppto × 100",
+                        "la medida del reporte [%Av vs PPTO AL DIA] compara "
+                        "contra el presupuesto proporcional al día y devuelve 0")
         ppto = sum(c["ppto"] or 0 for c in canales)
         fact = sum(c["facturado"] or 0 for c in canales)
         res["por_canal"] = [{
@@ -3768,14 +3822,20 @@ def main():
                             # agosto el reporte marcaba B&D 62.30% y este
                             # cálculo daba 65.3%.
                             "fuente": "calculado",
-                            "nota": "derivado de precio y costo por kilo, "
-                                    "no es la medida del reporte",
                         })
                         print(f"    ✓ Margen UEN [{uen}]: precio=S/{precio:.2f} costo=S/{costo:.2f} margen={pct:.1f}%")
                     else:
                         print(f"    ✗ Margen UEN [{uen}] — la consulta filtrada no devolvió valor")
                 if uen_data:
                     empresa_data["reportes"]["margen_variable"]["por_uen"] = uen_data
+                    anotar_derivado(
+                        "margen_variable", "por_uen", "margen",
+                        "(precio_kg − costo_kg) / precio_kg",
+                        "el reporte tiene su propia medida de margen por unidad "
+                        "de negocio y pondera por producto; este cálculo promedia. "
+                        "En agosto el reporte marcaba B&D 62.30% y esto da 65.3%. "
+                        "Falta capturar la consulta del visual MARGEN VARIABLE "
+                        "POR UNIDAD DE NEGOCIO del reporte 3.")
                     print(f"  Margen UEN: {uen_data}")
 
         # ── Consumo de Materiales (PRODUCCIÓN: CECO Ajustado + MIP/TN)
@@ -4329,6 +4389,13 @@ def main():
 
     if DIAGNOSTICO:
         summary["diagnostico"] = DIAGNOSTICO
+        # La lista de cifras calculadas viaja con los datos: quien mire la app
+        # puede saber cuáles son derivadas sin leer el código.
+        summary["derivados"] = DERIVADOS
+        if DERIVADOS:
+            print(f"\n  {len(DERIVADOS)} cifra(s) calculadas, no leídas de Power BI:")
+            for x in DERIVADOS:
+                print(f"    · {x['reporte']}/{x['desglose']}.{x['campo']} = {x['formula']}")
         print(f"\n⚠ {len(DIAGNOSTICO)} consultas con problema — detalle en "
               f"summaries.json → diagnostico")
 

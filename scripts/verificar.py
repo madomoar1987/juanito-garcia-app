@@ -209,6 +209,52 @@ def test_campos(salidas, html):
                 + (f" — NO EXISTEN {huerfanos}" if huerfanos else ""))
 
 
+def test_derivados_declarados(src):
+    """Toda cifra calculada aquí debe estar declarada con anotar_derivado().
+
+    El margen por unidad de negocio se publicó semanas como si viniera del
+    reporte: se calculaba (precio − costo) / precio y daba tres puntos más que
+    Power BI. Nadie podía notarlo mirando la app, y el código tampoco lo decía.
+
+    Esto busca las divisiones que producen un porcentaje sobre datos del
+    reporte y exige que cada una esté declarada. No detecta todo cálculo
+    posible —eso sería resolver el problema de la parada— pero sí la forma
+    exacta que ya se nos coló dos veces.
+    """
+    print("\n6. Cifras calculadas: todas declaradas")
+    lineas = src.split("\n")
+    declarados = set()
+    for m in re.finditer(r'anotar_derivado\(\s*\n?\s*"([a-z_0-9]+)",\s*"([a-z_0-9]+)",\s*"([a-z_0-9]+)"', src):
+        declarados.add(m.groups())
+
+    # Patrón: se asigna un campo de un desglose a partir de una división.
+    sospechas = []
+    for i, l in enumerate(lineas):
+        m = re.search(r'"([a-z_0-9]+)":\s*\(?\s*round\(\s*\w+\[?[^)]*\]?\s*/\s*', l)
+        if not m:
+            continue
+        campo = m.group(1)
+        # ¿A qué desglose pertenece? Se busca hacia atrás el res["x"] = [ o similar.
+        bloque = "\n".join(lineas[max(0, i - 14):i])
+        dm = re.findall(r'res\["([a-z_0-9]+)"\]\s*=', bloque)
+        # Algunos desgloses se arman dentro de una función auxiliar y no hay un
+        # res["x"] = delante. En ese caso vale una declaración cercana.
+        cerca = re.findall(r'anotar_derivado\(\s*\n?\s*"[a-z_0-9]+",\s*\n?\s*'
+                           r'(?:clave|"[a-z_0-9]+")', bloque)
+        desglose = dm[-1] if dm else ("(declarado cerca)" if cerca else "?")
+        sospechas.append((campo, desglose, i + 1))
+
+    if not sospechas:
+        revisar(True, "no se detectaron divisiones sin declarar")
+    for campo, desglose, ln in sospechas:
+        ok = (desglose == "(declarado cerca)"
+              or any(d[1] == desglose and d[2] == campo for d in declarados))
+        revisar(ok, f"L{ln}: {desglose}.{campo} "
+                    + ("declarado" if ok else "CALCULA y no está declarado"))
+    revisar(len(declarados) > 0,
+            f"{len(declarados)} cifra(s) declaradas como calculadas")
+
+
 def main():
     src_pbi = leer("scripts", "fetch_powerbi.py")
     src_ser = leer("scripts", "fetch_series.py")
@@ -216,6 +262,7 @@ def main():
 
     test_claves_internas(src_pbi)
     test_orden_carga_build(src_pbi)
+    test_derivados_declarados(src_pbi)
     test_funciones_usadas(src_pbi, "dax_", "fetch_powerbi.py")
     test_funciones_usadas(src_ser, "serie_", "fetch_series.py")
     salidas = test_construccion(cargar_fetch_powerbi())
