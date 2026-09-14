@@ -3167,14 +3167,12 @@ function avanceSegmentos(ind, meta, pct) {
     return `<tr class="av-seg">
       <td class="av-seg-n">${esc(nombre)}</td>
       <td></td>
+      <td class="av-cerrado">${cerrado == null ? '' : esc(fmtMeta(fmt, cerrado))}</td>
       <td class="av-num">${curso == null
-        ? `<span class="av-vacio">${cerrado == null ? '—' : esc(fmtMeta(fmt, cerrado)) + ' en ' + esc(mesCerrado())}</span>`
-        : esc(fmtMeta(fmt, curso))}</td>
+        ? '<span class="av-vacio">—</span>' : esc(fmtMeta(fmt, curso))}</td>
+      <td>${tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>` : ''}</td>
       <td>${dist ? `<span class="av-num" style="color:${col}">${dist.txt}</span>` : ''}</td>
       <td>${chispaSerie(arr, col)}</td>
-      <td class="av-cerrado">${cerrado == null
-        ? '' : esc(fmtMeta(fmt, cerrado))}</td>
-      <td>${tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>` : ''}</td>
       <td></td>
     </tr>`;
   }).join('');
@@ -3186,12 +3184,16 @@ function avanceSegmentos(ind, meta, pct) {
 
 // Nombre corto del mes cerrado ("agosto"), para encabezar su columna. Ver
 // "−4.0%" sin la cifra de contra qué obliga a ir a buscarla a otra pantalla.
+const MESES_ES = ['enero','febrero','marzo','abril','mayo','junio','julio',
+                  'agosto','setiembre','octubre','noviembre','diciembre'];
+
+function nombreMes(periodo) {
+  if (!periodo) return '';
+  return MESES_ES[parseInt(periodo.slice(5, 7), 10) - 1] || periodo;
+}
+
 function nombreMesCerrado() {
-  const p = mesCerrado();
-  if (!p) return 'mes anterior';
-  const M = ['enero','febrero','marzo','abril','mayo','junio','julio',
-             'agosto','setiembre','octubre','noviembre','diciembre'];
-  return M[parseInt(p.slice(5, 7), 10) - 1] || p;
+  return nombreMes(mesCerrado()) || 'mes anterior';
 }
 
 function dxpAvanceView() {
@@ -3281,20 +3283,17 @@ function dxpAvanceView() {
             onclick="editarMeta('${ind.clave}')"
             title="${propia ? 'Meta puesta por ti, sin publicar' : 'Clic para cambiarla'}"
             >${esc(metaTxt)}</span></td>
+      <td class="av-cerrado">${cerrado == null
+        ? '<span class="av-vacio">—</span>' : esc(fmtMeta(ind, cerrado))}</td>
       <td class="av-num">${
         curso != null ? esc(fmtMeta(ind, curso))
-        : (cerrado != null
-           ? `<span class="av-vacio">aún sin dato<br>${esc(fmtMeta(ind, cerrado))} en ${
-               esc(mesCerrado() || '')}</span>`
-           : '<span class="av-vacio">aún sin dato</span>')}${
+        : '<span class="av-vacio">aún sin dato</span>'}${
         sinSerie ? '<small class="av-vacio">del día</small>' : ''}</td>
+      <td>${triHtml}${compara.pie
+        ? `<small class="av-vacio">${esc(compara.pie)}</small>` : ''}</td>
       <td>${centro}</td>
       <td>${sinSerie ? '<span class="av-vacio">sin corte mensual</span>'
                      : chispaSerie(serie, col)}</td>
-      <td class="av-cerrado">${cerrado == null
-        ? '<span class="av-vacio">—</span>' : esc(fmtMeta(ind, cerrado))}</td>
-      <td>${triHtml}${compara.pie
-        ? `<small class="av-vacio">${esc(compara.pie)}</small>` : ''}</td>
       <td>${veredicto}</td>
     </tr>
     ${tieneSeg ? `<tbody class="av-hijas" id="seg-${ind.clave}" hidden>
@@ -3323,10 +3322,11 @@ function dxpAvanceView() {
   <div class="av-tabla-caja">
     <table class="av-tabla">
       <thead><tr>
-        <th>Indicador</th><th>Meta del mes</th><th>Va en</th>
-        <th>Ritmo / distancia</th><th>Tendencia 13 m</th>
+        <th>Indicador</th><th>Meta del mes</th>
         <th>${esc(nombreMesCerrado())}</th>
-        <th>vs ${esc(nombreMesCerrado())}</th><th>Lectura</th>
+        <th>${esc(nombreMes(mes.periodo) || 'mes en curso')}</th>
+        <th>vs ${esc(nombreMesCerrado())}</th>
+        <th>Ritmo / distancia</th><th>Tendencia 13 m</th><th>Lectura</th>
       </tr></thead>
       <tbody>${filas}</tbody>
     </table>
