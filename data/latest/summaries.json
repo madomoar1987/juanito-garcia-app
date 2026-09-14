@@ -466,6 +466,510 @@
               "costo": "S/21,376"
             }
           ],
+          "detalle_costos": [
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/3.99M",
+              "precio_kg": "S/4.84",
+              "costo_kg": "S/3.05",
+              "margen": "36.9%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/3.90M",
+              "precio_kg": "S/4.71",
+              "costo_kg": "S/2.94",
+              "margen": "37.5%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/3.81M",
+              "precio_kg": "S/4.78",
+              "costo_kg": "S/3.04",
+              "margen": "36.5%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/3.67M",
+              "precio_kg": "S/4.62",
+              "costo_kg": "S/2.92",
+              "margen": "36.8%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/3.65M",
+              "precio_kg": "S/4.61",
+              "costo_kg": "S/2.88",
+              "margen": "37.5%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/3.61M",
+              "precio_kg": "S/4.62",
+              "costo_kg": "S/2.92",
+              "margen": "36.8%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/3.48M",
+              "precio_kg": "S/4.80",
+              "costo_kg": "S/2.68",
+              "margen": "44.1%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/3.48M",
+              "precio_kg": "S/4.53",
+              "costo_kg": "S/2.86",
+              "margen": "36.8%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/3.39M",
+              "precio_kg": "S/4.53",
+              "costo_kg": "S/2.89",
+              "margen": "36.1%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/3.35M",
+              "precio_kg": "S/4.68",
+              "costo_kg": "S/2.93",
+              "margen": "37.4%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/3.35M",
+              "precio_kg": "S/4.76",
+              "costo_kg": "S/2.68",
+              "margen": "43.7%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/3.14M",
+              "precio_kg": "S/4.58",
+              "costo_kg": "S/2.91",
+              "margen": "36.5%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/3.02M",
+              "precio_kg": "S/4.75",
+              "costo_kg": "S/2.66",
+              "margen": "43.9%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/2.90M",
+              "precio_kg": "S/4.70",
+              "costo_kg": "S/2.66",
+              "margen": "43.4%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/2.89M",
+              "precio_kg": "S/4.56",
+              "costo_kg": "S/2.50",
+              "margen": "45.2%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": null,
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/2.76M",
+              "precio_kg": "S/4.49",
+              "costo_kg": "S/2.48",
+              "margen": "44.8%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": "BEBIBLE",
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/2.46M",
+              "precio_kg": "S/3.73",
+              "costo_kg": "S/2.44",
+              "margen": "34.5%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": "BEBIBLE",
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/2.35M",
+              "precio_kg": "S/3.61",
+              "costo_kg": "S/2.31",
+              "margen": "35.8%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": "BEBIBLE",
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/2.19M",
+              "precio_kg": "S/3.48",
+              "costo_kg": "S/2.26",
+              "margen": "35.0%"
+            },
+            {
+              "categoria": "B&D",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/2.18M",
+              "precio_kg": "S/5.57",
+              "costo_kg": "S/2.04",
+              "margen": "63.4%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": "BEBIBLE",
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/2.13M",
+              "precio_kg": "S/3.45",
+              "costo_kg": "S/2.28",
+              "margen": "34.0%"
+            },
+            {
+              "categoria": "B&D",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/2.12M",
+              "precio_kg": "S/5.79",
+              "costo_kg": "S/2.12",
+              "margen": "63.4%"
+            },
+            {
+              "categoria": "B&D",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/2.09M",
+              "precio_kg": "S/5.15",
+              "costo_kg": "S/1.83",
+              "margen": "64.4%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": "BEBIBLE",
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/2.04M",
+              "precio_kg": "S/3.59",
+              "costo_kg": "S/1.97",
+              "margen": "45.1%"
+            },
+            {
+              "categoria": "B&D",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/2.03M",
+              "precio_kg": "S/5.77",
+              "costo_kg": "S/2.18",
+              "margen": "62.3%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": "BEBIBLE",
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/2.02M",
+              "precio_kg": "S/3.59",
+              "costo_kg": "S/2.32",
+              "margen": "35.2%"
+            },
+            {
+              "categoria": "B&D",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/2.00M",
+              "precio_kg": "S/5.69",
+              "costo_kg": "S/2.01",
+              "margen": "64.7%"
+            },
+            {
+              "categoria": "B&D",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.95M",
+              "precio_kg": "S/5.49",
+              "costo_kg": "S/2.05",
+              "margen": "62.6%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": "BEBIBLE",
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/1.93M",
+              "precio_kg": "S/3.69",
+              "costo_kg": "S/2.00",
+              "margen": "45.7%"
+            },
+            {
+              "categoria": "TIGO",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.88M",
+              "precio_kg": "S/12.37",
+              "costo_kg": "S/5.86",
+              "margen": "52.7%"
+            },
+            {
+              "categoria": "B&D",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.87M",
+              "precio_kg": "S/5.11",
+              "costo_kg": "S/1.79",
+              "margen": "64.9%"
+            },
+            {
+              "categoria": "MAQUILA",
+              "subcategoria": "BEBIBLE",
+              "negocio": "MAQUILA YOGURT",
+              "venta": "S/1.86M",
+              "precio_kg": "S/3.66",
+              "costo_kg": "S/2.02",
+              "margen": "44.9%"
+            },
+            {
+              "categoria": "TIGO",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.78M",
+              "precio_kg": "S/12.48",
+              "costo_kg": "S/5.79",
+              "margen": "53.6%"
+            },
+            {
+              "categoria": "TIGO",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.70M",
+              "precio_kg": "S/11.99",
+              "costo_kg": "S/5.62",
+              "margen": "53.1%"
+            },
+            {
+              "categoria": "TIGO",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.67M",
+              "precio_kg": "S/12.76",
+              "costo_kg": "S/6.39",
+              "margen": "50.0%"
+            },
+            {
+              "categoria": "TIGO",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.64M",
+              "precio_kg": "S/12.19",
+              "costo_kg": "S/6.31",
+              "margen": "48.3%"
+            },
+            {
+              "categoria": "B&D",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.63M",
+              "precio_kg": "S/6.20",
+              "costo_kg": "S/2.16",
+              "margen": "65.1%"
+            },
+            {
+              "categoria": "TIGO",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.59M",
+              "precio_kg": "S/12.56",
+              "costo_kg": "S/5.99",
+              "margen": "52.3%"
+            },
+            {
+              "categoria": "TIGO",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.55M",
+              "precio_kg": "S/12.36",
+              "costo_kg": "S/6.08",
+              "margen": "50.8%"
+            },
+            {
+              "categoria": "TIGO",
+              "subcategoria": null,
+              "negocio": null,
+              "venta": "S/1.25M",
+              "precio_kg": "S/11.72",
+              "costo_kg": "S/6.07",
+              "margen": "48.2%"
+            }
+          ],
+          "por_producto": [
+            {
+              "producto": "FACTURA",
+              "venta": "S/1.77M",
+              "peso": 109.1,
+              "margen_previo": "46.9%",
+              "margen": "45.0%",
+              "delta_pp": -1.88,
+              "aporte_pp": -2.05
+            },
+            {
+              "producto": "NOTA DE CREDITO",
+              "venta": "S/-158,599",
+              "peso": -9.8,
+              "margen_previo": "52.0%",
+              "margen": "53.5%",
+              "delta_pp": 1.49,
+              "aporte_pp": -0.145
+            },
+            {
+              "producto": "BOLETA",
+              "venta": "S/17,794",
+              "peso": 1.1,
+              "margen_previo": "57.2%",
+              "margen": "54.6%",
+              "delta_pp": -2.61,
+              "aporte_pp": -0.029
+            },
+            {
+              "producto": "DESCUENTOS COM",
+              "venta": "S/-6,349",
+              "peso": -0.4,
+              "margen_previo": "100.0%",
+              "margen": "100.0%",
+              "delta_pp": 0.0,
+              "aporte_pp": -0.0
+            }
+          ],
+          "por_producto_meses": [
+            "2026-08",
+            "2026-09"
+          ],
+          "sku_por_uen": {
+            "MAQUILA": [
+              {
+                "producto": "NOTA DE CREDITO",
+                "venta": "S/-25,002",
+                "peso": -2.4,
+                "margen_previo": "35.4%",
+                "margen": "32.5%",
+                "precio_kg": "S/4.68",
+                "precio_kg_previo": "S/4.49",
+                "delta_pp": -2.9,
+                "aporte_pp": 0.07
+              },
+              {
+                "producto": "FACTURA",
+                "venta": "S/1.05M",
+                "peso": 102.4,
+                "margen_previo": "37.4%",
+                "margen": "42.9%",
+                "precio_kg": "S/5.11",
+                "precio_kg_previo": "S/4.85",
+                "delta_pp": 5.48,
+                "aporte_pp": 5.617
+              }
+            ],
+            "TIGO": [
+              {
+                "producto": "NOTA DE CREDITO",
+                "venta": "S/-65,599",
+                "peso": -17.2,
+                "margen_previo": "49.3%",
+                "margen": "53.8%",
+                "precio_kg": "S/12.92",
+                "precio_kg_previo": "S/12.40",
+                "delta_pp": 4.54,
+                "aporte_pp": -0.78
+              },
+              {
+                "producto": "BOLETA",
+                "venta": "S/7,500",
+                "peso": 2.0,
+                "margen_previo": "38.8%",
+                "margen": "43.3%",
+                "precio_kg": "S/11.59",
+                "precio_kg_previo": "S/10.97",
+                "delta_pp": 4.47,
+                "aporte_pp": 0.088
+              },
+              {
+                "producto": "FACTURA",
+                "venta": "S/439,703",
+                "peso": 115.2,
+                "margen_previo": "50.1%",
+                "margen": "54.5%",
+                "precio_kg": "S/13.26",
+                "precio_kg_previo": "S/12.77",
+                "delta_pp": 4.39,
+                "aporte_pp": 5.059
+              }
+            ],
+            "B&D": [
+              {
+                "producto": "FACTURA",
+                "venta": "S/246,476",
+                "peso": 130.6,
+                "margen_previo": "63.6%",
+                "margen": "60.5%",
+                "precio_kg": "S/6.04",
+                "precio_kg_previo": "S/5.88",
+                "delta_pp": -3.1,
+                "aporte_pp": -4.044
+              },
+              {
+                "producto": "BOLETA",
+                "venta": "S/10,277",
+                "peso": 5.4,
+                "margen_previo": "62.3%",
+                "margen": "62.9%",
+                "precio_kg": "S/4.60",
+                "precio_kg_previo": "S/6.39",
+                "delta_pp": 0.54,
+                "aporte_pp": 0.029
+              },
+              {
+                "producto": "NOTA DE CREDITO",
+                "venta": "S/-67,998",
+                "peso": -36.0,
+                "margen_previo": "66.7%",
+                "margen": "61.0%",
+                "precio_kg": "S/6.91",
+                "precio_kg_previo": "S/5.32",
+                "delta_pp": -5.72,
+                "aporte_pp": 2.059
+              }
+            ]
+          },
+          "sku_por_uen_meses": [
+            "2026-08",
+            "2026-09"
+          ],
           "por_uen": [
             {
               "uen": "B&D",
@@ -1363,7 +1867,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "red",
+          "estado": "yellow",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
@@ -1467,11 +1971,6 @@
   },
   "diagnostico": [
     {
-      "consulta": "detalle_costos",
-      "http": 0,
-      "error": "UnboundLocalError(\"cannot access local variable 'margen_ds_id' where it is not associated with a value\")"
-    },
-    {
       "consulta": "merma_total_incoherente",
       "http": 200,
       "error": "Merma Total = 4.87% es mayor que el peor segmento (4.27%); un total no puede superar a sus partes. Se publica sin dato."
@@ -1505,6 +2004,41 @@
       "campo": "pct_venta",
       "formula": "venta del cliente / venta total × 100",
       "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "detalle_costos",
+      "campo": "margen",
+      "formula": "(precio_kg − costo_kg) / precio_kg",
+      "razon": "el detalle publica precio y costo por kilo pero no el margen de cada línea; se deriva de sus dos cifras"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "por_producto",
+      "campo": "margen",
+      "formula": "(venta − costo) / venta por producto y mes",
+      "razon": "el detalle publica venta y costo por producto pero no el margen de cada uno"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "por_producto",
+      "campo": "aporte_pp",
+      "formula": "(margen_mes − margen_previo) × peso en la venta",
+      "razon": "cuántos puntos del margen total explica ese producto; ordena por impacto y no por caída porcentual, que premiaría a los irrelevantes"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "sku_por_uen",
+      "campo": "aporte_pp",
+      "formula": "(margen_mes − margen_previo) × peso del SKU en la venta de su unidad de negocio",
+      "razon": "cuántos puntos del margen de esa UEN explica el SKU; ordena por impacto y no por caída porcentual, que premiaría a los irrelevantes"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "sku_por_uen",
+      "campo": "precio_kg",
+      "formula": "venta del SKU / kilos del SKU",
+      "razon": "el cruce de SKU con unidad de negocio no existe en ningún visual: se arma con los filtros del reporte y el precio por kilo se deriva de venta y peso"
     },
     {
       "reporte": "margen_variable",
