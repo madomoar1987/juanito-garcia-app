@@ -2366,6 +2366,37 @@ def build_margen(found):
         if c is not None:
             fila["costo"] = fmt_soles(c)
 
+    # Detalle de costos por categoría. Se ordena por venta: lo que mueve el
+    # margen es donde hay volumen, no la categoría con el peor porcentaje.
+    det = []
+    for f in (found.get("__detalle_costos") or []):
+        cat = (f.get("categoria") or "").strip()
+        precio = to_float(f.get("precio_kg"))
+        costo = to_float(f.get("costo_kg"))
+        venta = to_float(f.get("venta"))
+        if not cat or precio is None or not precio:
+            continue
+        det.append({
+            "categoria": cat,
+            "subcategoria": (f.get("subcategoria") or "").strip() or None,
+            "negocio": (f.get("negocio") or "").strip() or None,
+            "venta": fmt_soles(venta) if venta is not None else None,
+            "precio_kg": f"S/{precio:.2f}",
+            "costo_kg": f"S/{costo:.2f}" if costo is not None else None,
+            "margen": (f"{(precio - costo) / precio * 100:.1f}%"
+                       if costo is not None else None),
+            "_v": abs(venta or 0),
+        })
+    if det:
+        anotar_derivado("margen_variable", "detalle_costos", "margen",
+                        "(precio_kg − costo_kg) / precio_kg",
+                        "el detalle publica precio y costo por kilo pero no el "
+                        "margen de cada línea; se deriva de sus dos cifras")
+        det.sort(key=lambda x: -x["_v"])
+        for x in det:
+            x.pop("_v", None)
+        res["detalle_costos"] = det[:40]
+
     return res, ventas_val, margen_pct
 
 def build_mermas(found):
@@ -3837,6 +3868,31 @@ def main():
                     print(f"    ✓ Margen total filtrado: precio=S/{p_tot:.2f} costo=S/{c_tot:.2f}")
                 else:
                     print("    ✗ Margen total filtrado — la consulta no devolvió valor")
+            # Detalle que explica el margen: precio y costo por kilo,
+            # abiertos por categoría y tipo de negocio. Es lo que permite
+            # pasar de "B&D cae" a "cae en esta categoría, y por precio o
+            # por costo". Hasta ahora la app se quedaba en la primera
+            # mitad de esa frase.
+            try:
+                det = desglose_desde_captura(
+                    token, ws_id, [margen_ds_id],
+                    "DETALLE ANÁLISIS DE COSTOS#5bb77c922cd9",
+                    {"categoria": "[Categoria]",
+                     "subcategoria": "[Subcategoria]",
+                     "negocio": "[TIPO DE NEGOCIO N2]",
+                     "peso": "[SumPeso_total]",
+                     "venta": "[SumMonto_Neto_Factura_TG_0]",
+                     "costo": "[SumCosto_Total]",
+                     "precio_kg": "[Precio_x_Kilo]",
+                     "costo_kg": "[Costo_x_Kilo]"})
+                if det:
+                    scanned.setdefault("margen", {})["__detalle_costos"] = det
+                    print(f"    ✓ Detalle de costos: {len(det)} filas")
+            except Exception as e:
+                print(f"    ✗ detalle de costos: {e}")
+                DIAGNOSTICO.append({"consulta": "detalle_costos", "http": 0,
+                                    "error": repr(e)[:300]})
+
             r, ventas, margen = build_margen(scanned["margen"])
             empresa_data["reportes"]["margen_variable"] = r
             if ventas:
@@ -3878,6 +3934,7 @@ def main():
                         print(f"    ✗ Margen UEN [{uen}] — la consulta filtrada no devolvió valor")
                 if uen_data:
                     empresa_data["reportes"]["margen_variable"]["por_uen"] = uen_data
+
                     anotar_derivado(
                         "margen_variable", "por_uen", "margen",
                         "(precio_kg − costo_kg) / precio_kg",
