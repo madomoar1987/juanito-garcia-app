@@ -289,13 +289,13 @@ def main():
     # alcance, y un aviso que no se puede resolver deja de mirarse.
     print("  (kilos de Consumo vs Productividad: no se comparan — "
           "Productividad filtra solo planta ATE)")
-    # Este sí queda como aviso: los dos son del mismo mes y difieren un 21%.
-    # Lo más probable es que Fill Rate siga solo a los clientes con acuerdo de
-    # nivel de servicio —su desglose lista ocho grupos— y Margen facture a
-    # todos. Mientras no esté confirmado, se avisa.
-    inf.comparar("Ventas del mes: Margen vs Fill Rate",
-                 kpi(mg, "Ventas mes"), kpi(fr, "Facturación"),
-                 "mismo mes, dos reportes: Fill Rate podría cubrir menos clientes")
+    # Tampoco se comparan las ventas de Margen contra la facturación de Fill
+    # Rate. Difieren 21% y durante semanas se avisó como posible descuadre;
+    # confirmado con gerencia el 14/09/2026: la venta del mes es la del
+    # reporte de Margen (agosto: S/7.69M) y la facturación de Fill Rate mide
+    # otra cosa — el cumplimiento del pedido, no la venta.
+    print("  (ventas de Margen vs facturación de Fill Rate: no se comparan — "
+          "la venta del mes es la de Margen; Fill Rate mide cumplimiento)")
 
 
     # ── La tarjeta contra la serie mensual ──────────────────────────────

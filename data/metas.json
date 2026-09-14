@@ -20,16 +20,17 @@
     "Un segmento puede llevar su propia unidad como tercer elemento: el costo unitario por UEN se mide en soles aunque su indicador padre sea un porcentaje.",
     "Un segmento puede llevar tambien su propia direccion como cuarto elemento: el costo unitario mejora cuando baja, al reves que el margen que lo contiene."
   ],
-  "actualizado": "2026-09-13",
+  "actualizado": "2026-09-14",
   "indicadores": [
     {
       "clave": "facturacion",
-      "label": "Facturación",
-      "reporte": "margen_variable_pag2",
+      "label": "Ventas del mes",
+      "reporte": "margen_variable",
       "serie": [
-        "fill_rate",
-        "Facturación"
+        "margen",
+        "Ventas (S/.)"
       ],
+      "_nota_serie": "La venta del mes es la del reporte de Margen. Antes esta fila leía la facturación del Fill Rate, que mide el cumplimiento del pedido y no la venta: agosto salía S/6.09M en vez de S/7.69M, y la meta de S/7.83M parecía incumplida por 22% cuando faltaba 2%. Confirmado con gerencia el 14/09/2026.",
       "meta": 7830000,
       "direccion": "mayor",
       "tipo": "acumula",
