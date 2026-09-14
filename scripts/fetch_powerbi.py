@@ -2565,9 +2565,17 @@ def build_margen(found):
                     continue
                 mg0, mg1 = (v0 - c0) / v0, (v - c) / v
                 peso = v / total if total else 0
+                # Un margen fuera de [-100%, 100%] no es un margen: es costo
+                # cargado sin su venta, una devolución o un ajuste contable.
+                # B&D KETCHUP CAJA SACHET salió en -283% con S/2,205 de venta
+                # y, por ponderación, se comía cuatro puntos del margen de toda
+                # la unidad. Se publica la fila —esconderla es peor— pero
+                # marcada, para que no encabece ninguna lectura.
+                sospechoso = not (-1 <= mg1 <= 1) or not (-1 <= mg0 <= 1)
                 filas.append({
                     "producto": nombre,
                     "subcategoria": sub or None,
+                    "sospechoso": sospechoso or None,
                     "venta": fmt_soles(v),
                     "peso": round(peso * 100, 1),
                     "margen_previo": f"{mg0 * 100:.1f}%",

@@ -3516,7 +3516,8 @@ function avBloqueSKU(uen) {
 
   const cuerpo = filas.map(p => `
     <tr${(p.aporte_pp || 0) < -0.05 ? ' class="av-an-foco"' : ''}>
-      <td>${esc(p.producto)}${p.subcategoria
+      <td>${p.sospechoso ? '<span title="Margen imposible: revisar el asiento" '
+        + 'style="color:var(--yellow);font-weight:600">⚠ </span>' : ''}${esc(p.producto)}${p.subcategoria
         ? `<small style="display:block;color:var(--text3)">${esc(p.subcategoria)}</small>` : ''}</td>
       <td>${esc(p.venta || '—')}</td>
       <td>${p.peso == null ? '—' : p.peso.toFixed(1) + '%'}</td>
@@ -3528,7 +3529,12 @@ function avBloqueSKU(uen) {
         ${avPP(p.aporte_pp, 2)}</td>
     </tr>`).join('');
 
-  const caen = filas.filter(p => (p.aporte_pp || 0) < 0);
+  // Las filas con margen imposible se muestran, pero no encabezan la lectura:
+  // un SKU de S/2,205 con -283% de margen no es el problema de la unidad, es
+  // un asiento que hay que revisar.
+  const sanas = filas.filter(p => !p.sospechoso);
+  const raras = filas.filter(p => p.sospechoso);
+  const caen = sanas.filter(p => (p.aporte_pp || 0) < 0);
   const lecturas = [];
   if (caen.length) {
     const top = caen.slice(0, 3);
@@ -3553,6 +3559,14 @@ function avBloqueSKU(uen) {
         `kilo: el margen se perdió por costo, no por precio. La conversación ` +
         `empieza en planta y en compras, no en comercial.</p>`);
     }
+  }
+
+  if (raras.length) {
+    lecturas.push(`<p class="av-an-lee"><b>${raras.length} fila` +
+      `${raras.length > 1 ? 's' : ''} marcada${raras.length > 1 ? 's' : ''} con ⚠:</b> ` +
+      `su margen cae fuera de lo posible (${raras.map(p => esc(p.margen)).join(', ')}), ` +
+      `así que no es margen sino costo cargado sin su venta, una devolución o un ` +
+      `ajuste. Queda fuera de la lectura de arriba y conviene revisar el asiento.</p>`);
   }
 
   return {
