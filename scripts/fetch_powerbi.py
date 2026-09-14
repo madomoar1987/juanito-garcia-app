@@ -4248,6 +4248,11 @@ def main():
                         print(f"    ✗ Margen UEN [{uen}] — la consulta filtrada no devolvió valor")
                 if uen_data:
                     empresa_data["reportes"]["margen_variable"]["por_uen"] = uen_data
+                    # Estas consultas colapsan el año entero en un solo número.
+                    # Sin decirlo, chocan con la tabla del avance: B&D sale
+                    # 65.3% acá y 62.3% en agosto, y parecen un error.
+                    empresa_data["reportes"]["margen_variable"]["por_uen_periodo"] = \
+                        f"acumulado {PREV_YEAR}"
 
                     anotar_derivado(
                         "margen_variable", "por_uen", "margen",
@@ -4307,6 +4312,8 @@ def main():
                         print(f"    ✗ Merma UEN [{uen}] — la consulta filtrada no devolvió valor")
                 if uen_merma:
                     empresa_data["reportes"]["mermas"]["por_uen"] = uen_merma
+                    empresa_data["reportes"]["mermas"]["por_uen_periodo"] = \
+                        f"acumulado {PREV_YEAR}"
                     print(f"  Mermas UEN: {uen_merma}")
 
                 # Por Planta (ATE / PACHACAMAC / TERCEROS) — filtro exacto confirmado con

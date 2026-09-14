@@ -2711,6 +2711,7 @@ function dxpStats() {
   // Si el margen por UEN es derivado nuestro y no la medida del reporte, se
   // advierte: en agosto el reporte marcaba B&D 62.30% y el cálculo, 65.3%.
   s.margenUenCalculado = umg.some(u => u.fuente === 'calculado');
+  s.margenUenPeriodo = rp.margen_variable?.por_uen_periodo || null;
   s.uenPeorMg = umg[0]; s.uenMejorMg = umg[umg.length-1];
 
   // Mermas por UEN / planta
@@ -5171,6 +5172,7 @@ function renderMcKinseyArea(empresa, tipo) {
           const rp_m = rp.mermas || {};
           const porUEN    = rp_m.por_uen    || [];
           const porPlanta = rp_m.por_planta || [];
+          const perUenM   = rp_m.por_uen_periodo || 'período sin confirmar';
           const colFn = v => {
             const n = parseFloat(v);
             return n > 3 ? 'var(--red)' : n > 2 ? 'var(--yellow)' : 'var(--green)';
@@ -5187,7 +5189,8 @@ function renderMcKinseyArea(empresa, tipo) {
           }
           // Por UEN (B&D / TIGO / MAQUILA)
           if (porUEN.length) {
-            html += `<div style="font-size:11px;font-weight:700;margin-bottom:6px">Por Unidad de Negocio</div>
+            html += `<div style="font-size:11px;font-weight:700;margin-bottom:6px">Por Unidad de Negocio
+              <span style="font-weight:500;color:var(--sub)">· ${perUenM}</span></div>
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px">`;
             porUEN.forEach(u => {
               const c = colFn(u.merma);
@@ -5689,7 +5692,11 @@ function renderVentasMcKinsey(empresa) {
         no resuelve esto por sí solo.
       </div>`);
     const colU = (p) => parseFloat(p||0) > 52 ? 'var(--green)' : parseFloat(p||0) > 46 ? 'var(--yellow)' : 'var(--red)';
-    return mcSection('III.b','Margen por Unidad de Negocio',`
+    // El período va en el título: sin él, este 65.3% de B&D y el 62.3% de la
+    // tabla del avance parecen contradecirse cuando miden meses distintos.
+    const perUen = rp2.margen_variable?.por_uen_periodo;
+    return mcSection('III.b', 'Margen por Unidad de Negocio' +
+        (perUen ? ` · ${perUen}` : ' · período sin confirmar'), `
       <div style="display:grid;grid-template-columns:repeat(${uenData.length},1fr);gap:10px">
         ${uenData.map(u => `<div style="padding:12px;background:${colU(parseFloat(u.margen))}11;border:1px solid ${colU(parseFloat(u.margen))}33;border-radius:8px;text-align:center">
           <div style="font-size:10px;font-weight:700;color:${colU(parseFloat(u.margen))};text-transform:uppercase;margin-bottom:4px">${u.uen}</div>
@@ -5879,7 +5886,8 @@ function dxpPalancas(tipo, s) {
         `Costo/kg ${dxpSigno(s.ckDelta,1)} en ${s.ckN} meses vs precio ${dxpSigno(s.pkDelta,1)}`,
         'Aislar cuánto del alza es materia prima, mano de obra o merma antes de tocar precio.'),
       s.uenPeorMg ? P(`Priorizar UEN de menor margen (${s.uenPeorMg.uen})`,'alta',
-        `${s.uenPeorMg.uen} ${s.uenPeorMg.margen} vs ${s.uenMejorMg.uen} ${s.uenMejorMg.margen}`,
+        `${s.uenPeorMg.uen} ${s.uenPeorMg.margen} vs ${s.uenMejorMg.uen} ${s.uenMejorMg.margen}` +
+          (s.margenUenPeriodo ? ` (${s.margenUenPeriodo})` : ''),
         `Revisar mezcla y costo de ${s.uenPeorMg.uen}: precio ${s.uenPeorMg.precio_kg} · costo ${s.uenPeorMg.costo_kg}.`) : null,
       P('Cruzar con Mermas','media', `Merma ${s.mermaTotal||'—'} — sobre meta 2%`,
         'La merma entra directo al costo/kg: bajarla mejora margen sin tocar precio.'),
