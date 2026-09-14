@@ -3423,8 +3423,17 @@ function avBloqueClientes() {
   const mv = avReporte('margen_variable');
   const cli = mv.por_cliente || [];
   if (cli.length < 3) return null;
-  const kMg = (mv.kpis || []).find(k => k.label === 'Margen variable');
-  const mgEmpresa = kMg ? avNum(kMg.valor) : null;
+  // La vara es el promedio ponderado de ESTA misma tabla, no el KPI de la
+  // tarjeta. Dos razones: la tarjeta trae el margen del mes cerrado, así que
+  // comparar clientes de setiembre contra agosto invierte el resultado —
+  // hizo aparecer al cliente más grande sumando +2.77 pp cuando resta —; y el
+  // margen por cliente sale de órdenes de venta mientras el KPI sale de
+  // facturación, que son dos bases distintas y no se restan entre sí.
+  const base = cli.reduce((a, c) => {
+    const m = avNum(c.margen), w = avNum(c.pct_venta);
+    return (m == null || w == null) ? a : { n: a.n + m * w, d: a.d + w };
+  }, { n: 0, d: 0 });
+  const mgEmpresa = base.d ? base.n / base.d : null;
   if (mgEmpresa == null) return null;
 
   const filas = cli.map(c => {
@@ -3479,8 +3488,9 @@ function avBloqueClientes() {
     titulo: 'Por cliente — quién arrastra el margen',
     por: `Los ${filas.length} clientes con más venta, que concentran el ` +
          `${cubre.toFixed(1)}% del total. La última columna es lo que cada uno le suma o ` +
-         `le quita al margen de la empresa: su diferencia contra el ${mgEmpresa.toFixed(1)}% ` +
-         `general, pesada por cuánto vende.`,
+         `le quita al margen: su diferencia contra el ${mgEmpresa.toFixed(1)}% que ` +
+         `promedian entre ellos, pesada por cuánto vende. La vara sale de esta misma ` +
+         `tabla y no del KPI del tablero, que es del mes cerrado y de otra base.`,
     cabecera: ['Cliente', 'Venta', '% venta', 'Margen', 'Impacto'],
     cuerpo, lecturas,
   };
