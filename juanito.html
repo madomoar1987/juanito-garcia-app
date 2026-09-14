@@ -1498,6 +1498,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .av-hijas .av-seg td { background:var(--card2); border-bottom:1px solid var(--border);
   font-size:12px; padding-top:7px; padding-bottom:7px; }
 .av-seg-n { padding-left:26px !important; color:var(--text2); }
+.av-cerrado { color:var(--text2); font-variant-numeric:tabular-nums; }
 .av-seg-nota { color:var(--text3); font-size:11.5px; text-align:left !important;
   padding-left:26px !important; font-style:italic; }
 
@@ -3161,14 +3162,26 @@ function avanceSegmentos(ind, meta, pct) {
         : esc(fmtMeta(fmt, curso))}</td>
       <td>${dist ? `<span class="av-num" style="color:${col}">${dist.txt}</span>` : ''}</td>
       <td>${chispaSerie(arr, col)}</td>
+      <td class="av-cerrado">${cerrado == null
+        ? '' : esc(fmtMeta(fmt, cerrado))}</td>
       <td>${tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>` : ''}</td>
       <td></td>
     </tr>`;
   }).join('');
   const nota = ind.segmentos_nota
-    ? `<tr class="av-seg"><td colspan="7" class="av-seg-nota">${esc(ind.segmentos_nota)}</td></tr>`
+    ? `<tr class="av-seg"><td colspan="8" class="av-seg-nota">${esc(ind.segmentos_nota)}</td></tr>`
     : '';
   return nota + filas;
+}
+
+// Nombre corto del mes cerrado ("agosto"), para encabezar su columna. Ver
+// "−4.0%" sin la cifra de contra qué obliga a ir a buscarla a otra pantalla.
+function nombreMesCerrado() {
+  const p = mesCerrado();
+  if (!p) return 'mes anterior';
+  const M = ['enero','febrero','marzo','abril','mayo','junio','julio',
+             'agosto','setiembre','octubre','noviembre','diciembre'];
+  return M[parseInt(p.slice(5, 7), 10) - 1] || p;
 }
 
 function dxpAvanceView() {
@@ -3261,6 +3274,8 @@ function dxpAvanceView() {
       <td>${centro}</td>
       <td>${sinSerie ? '<span class="av-vacio">sin corte mensual</span>'
                      : chispaSerie(serie, col)}</td>
+      <td class="av-cerrado">${cerrado == null
+        ? '<span class="av-vacio">—</span>' : esc(fmtMeta(ind, cerrado))}</td>
       <td>${triHtml}</td>
       <td>${veredicto}</td>
     </tr>
@@ -3292,7 +3307,8 @@ function dxpAvanceView() {
       <thead><tr>
         <th>Indicador</th><th>Meta del mes</th><th>Va en</th>
         <th>Ritmo / distancia</th><th>Tendencia 13 m</th>
-        <th>vs mes anterior</th><th>Lectura</th>
+        <th>${esc(nombreMesCerrado())}</th>
+        <th>vs ${esc(nombreMesCerrado())}</th><th>Lectura</th>
       </tr></thead>
       <tbody>${filas}</tbody>
     </table>
