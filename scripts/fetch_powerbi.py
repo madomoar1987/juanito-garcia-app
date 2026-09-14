@@ -1378,7 +1378,43 @@ EVALUATE
     __SKU
 """
 
-def desglose_desde_captura(token, ws, candidatos, visual, columnas, limite=None):
+def periodo_en_curso():
+    """El mes que corre, como "2026-09". Es el período del tablero."""
+    h = hoy_lima()
+    return f"{h.year}-{h.month:02d}"
+
+
+def dax_con_periodo(dax, periodo, columna="PERIODO"):
+    """Cambia el mes de una consulta capturada por el mes en curso.
+
+    Una exportación del Analizador guarda el filtro de página tal como estaba
+    al exportarla. La captura de clientes se hizo con julio seleccionado, así
+    que la app venía mostrando el margen por cliente de JULIO junto a un
+    análisis de setiembre — dos meses distintos en la misma pantalla.
+
+    Se reemplaza solo el valor del TREATAS sobre esa columna. El resto de la
+    consulta queda intacto: es un filtro de fecha, la parte que sí hay que
+    mover, y no los filtros de negocio, que no se tocan nunca.
+
+    Devuelve (dax, periodo_aplicado). Si no encuentra el filtro devuelve la
+    consulta como está y None, para que quien la use sepa que el mes no es el
+    que pidió y pueda decirlo en pantalla en vez de mentir.
+    """
+    patron = re.compile(
+        r'TREATAS\(\s*\{"(\d{4}-\d{2})"\}\s*,\s*\'([^\']+)\'\[' +
+        re.escape(columna) + r'\]\s*\)')
+    m = patron.search(dax or "")
+    if not m:
+        return dax, None
+    if m.group(1) == periodo:
+        return dax, periodo
+    nuevo = f'TREATAS({{"{periodo}"}}, \'{m.group(2)}\'[{columna}])'
+    return patron.sub(nuevo, dax), periodo
+
+
+
+def desglose_desde_captura(token, ws, candidatos, visual, columnas, limite=None,
+                           periodo=None):
     """Ejecuta una consulta capturada y devuelve sus filas como diccionarios.
 
     Se envía el DAX exportado SIN modificarlo: transcribir consultas a mano fue
@@ -1408,9 +1444,18 @@ def desglose_desde_captura(token, ws, candidatos, visual, columnas, limite=None)
     for ds in candidatos:
         if not ds:
             continue
+        dax = entrada["dax"]
+        if periodo:
+            dax, aplicado = dax_con_periodo(dax, periodo)
+            if aplicado is None:
+                DIAGNOSTICO.append({
+                    "consulta": f"captura:{visual}", "http": 200,
+                    "error": f"se pidió el período {periodo} pero la consulta no "
+                             f"tiene filtro de PERIODO; se usa el mes con que se "
+                             f"exportó"})
         tablas = tablas_de_captura(
             lambda q, lb: (_tablas_dax(token, ws, ds, q, lb) or [[]])[0],
-            entrada["dax"], f"captura:{visual}")
+            dax, f"captura:{visual}")
         if not tablas:
             continue
         todas = tablas
@@ -2410,6 +2455,7 @@ def build_margen(found):
         total_v = sum(t[1] for t in limpios) or None
         anotar_derivado("margen_variable", "por_cliente", "pct_venta",
                         "venta del cliente / venta total × 100", PART)
+        res["por_cliente_periodo"] = found.get("__por_cliente_periodo")
         res["por_cliente"] = [{
             "cliente": n,
             "venta": fmt_soles(v),
@@ -2436,8 +2482,20 @@ def build_margen(found):
 
     # Detalle de costos por categoría. Se ordena por venta: lo que mueve el
     # margen es donde hay volumen, no la categoría con el peor porcentaje.
+    crudo = found.get("__detalle_costos") or []
+    # La consulta agrupa por mes: sin filtrar, la misma subcategoría entraba
+    # una vez por cada mes del año y la tabla mezclaba períodos. Se toma el
+    # último mes con dato, que es el que mira el resto del tablero.
+    ultimo = None
+    for f in crudo:
+        a, m = to_float(f.get("anio")), to_float(f.get("mes"))
+        if a and m:
+            ultimo = max(ultimo or (0, 0), (int(a), int(m)))
+    if ultimo:
+        crudo = [f for f in crudo
+                 if (to_float(f.get("anio")), to_float(f.get("mes"))) == ultimo]
     det = []
-    for f in (found.get("__detalle_costos") or []):
+    for f in crudo:
         cat = (f.get("categoria") or "").strip()
         precio = to_float(f.get("precio_kg"))
         costo = to_float(f.get("costo_kg"))
@@ -2455,6 +2513,8 @@ def build_margen(found):
                        if costo is not None else None),
             "_v": abs(venta or 0),
         })
+    if det and ultimo:
+        res["detalle_costos_periodo"] = f"{ultimo[0]}-{ultimo[1]:02d}"
     if det:
         anotar_derivado("margen_variable", "detalle_costos", "margen",
                         "(precio_kg − costo_kg) / precio_kg",
@@ -4060,9 +4120,11 @@ def main():
                      "margen": "[v__Margen_Venta__]",
                      "margen_caida": "[v__MARGEN_CAIDA__]",
                      "venta": "[SumMonto_Neto_Venta]",
-                     "costo": "[SumCOSTO_TOTAL]"})
+                     "costo": "[SumCOSTO_TOTAL]"},
+                    periodo=periodo_en_curso())
                 if cli:
                     scanned.setdefault("margen", {})["__por_cliente"] = cli
+                    scanned["margen"]["__por_cliente_periodo"] = periodo_en_curso()
             except Exception as e:
                 print(f"    ✗ margen por cliente: {e}")
                 DIAGNOSTICO.append({"consulta": "margen_cliente", "http": 0,
@@ -4100,6 +4162,8 @@ def main():
                     {"categoria": "[Categoria]",
                      "subcategoria": "[Subcategoria]",
                      "negocio": "[TIPO DE NEGOCIO N2]",
+                     "anio": "[Año]",
+                     "mes": "[NroMes]",
                      "peso": "[SumPeso_total]",
                      "venta": "[SumMonto_Neto_Factura_TG_0]",
                      "costo": "[SumCosto_Total]",

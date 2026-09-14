@@ -1539,6 +1539,10 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .av-an-lee b { color:var(--text); }
 .av-an-falta { color:var(--text3); font-style:italic; font-size:12px;
   margin:8px 0 0; max-width:78ch; }
+.av-an-mes { font-size:10.5px; font-weight:500; letter-spacing:.04em;
+  color:var(--text3); border:1px solid var(--border); border-radius:3px;
+  padding:1px 6px; margin-left:6px; vertical-align:middle; white-space:nowrap; }
+.av-an-mes-ojo { color:var(--yellow); border-color:var(--yellow); font-weight:600; }
 
 .calc { font-size:10px; color:var(--yellow); white-space:nowrap; cursor:help; }
 .chat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
@@ -3276,6 +3280,18 @@ function avNum(s) {
   return (n == null || !isFinite(n)) ? null : n;
 }
 
+// Etiqueta del período de un bloque. Si el dato no es del mes en curso hay
+// que decirlo en el mismo renglón del título: la tabla de clientes venía de
+// julio mientras el resto del análisis hablaba de setiembre.
+function avPeriodoEtiqueta(periodo) {
+  const curso = mesParcial();
+  if (!periodo) return '<span class="av-an-mes av-an-mes-ojo">mes sin confirmar</span>';
+  const nom = nombreMes(periodo);
+  return periodo === curso
+    ? `<span class="av-an-mes">${esc(nom)}</span>`
+    : `<span class="av-an-mes av-an-mes-ojo">${esc(nom)} — no es el mes en curso</span>`;
+}
+
 function avPP(x, dec) {
   if (x == null) return '—';
   const d = dec == null ? 2 : dec;
@@ -3448,6 +3464,7 @@ function avBloqueClientes() {
   }
 
   return {
+    periodo: avReporte('margen_variable').por_cliente_periodo || null,
     titulo: 'Por cliente — quién arrastra el margen',
     por: `Los ${filas.length} clientes con más venta, que concentran el ` +
          `${cubre.toFixed(1)}% del total. La última columna es lo que cada uno le suma o ` +
@@ -3582,6 +3599,7 @@ function avBloqueSKU(uen) {
   }
 
   return {
+    periodo: meses.length === 2 ? meses[1] : null,
     titulo: `Por SKU — los productos de ${uen}`,
     por: `Los productos de ${uen} ordenados por los puntos de margen que le quitan ` +
       `a su unidad` +
@@ -3616,6 +3634,7 @@ function avBloqueSubcategorias(uen) {
     </tr>`;
   }).join('');
   return {
+    periodo: avReporte('margen_variable').detalle_costos_periodo || null,
     titulo: uen ? `Por subcategoría — el corte que sí es de ${uen}`
                 : 'Por subcategoría',
     por: uen
@@ -3703,6 +3722,7 @@ function avBloqueSegmentos(ind, meta, segsDadas, corte) {
       `indicador completo.</p>`);
   }
   return {
+    periodo: mesParcial(),
     titulo: corte ? `Por ${corte} — de dónde viene la desviación`
                   : 'Por segmento — de dónde viene la desviación',
     por: `Cada ${corte || 'segmento'} contra la meta del indicador, y cómo se movió ` +
@@ -3791,7 +3811,7 @@ function analisisDe(ind, meta, segNombre) {
 function avAnalisisHTML(an, id) {
   const blqs = an.bloques.map(b => `
     <div class="av-an-blq">
-      <h4>${b.titulo}</h4>
+      <h4>${b.titulo} ${b.periodo === undefined ? '' : avPeriodoEtiqueta(b.periodo)}</h4>
       <p class="av-an-por">${b.por}</p>
       <div style="overflow-x:auto">
         <table class="av-an-tabla">
