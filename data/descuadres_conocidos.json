@@ -15,8 +15,9 @@
     {
       "prueba": "Ventas del mes: Margen vs Fill Rate",
       "desde": "2026-09-13",
-      "explicacion": "Margen factura a todos los clientes (S/7.69M) y Fill Rate solo sigue a los que tienen acuerdo de nivel de servicio (S/6.09M). Su desglose lista ocho grupos: SPSA, CENCOSUD, TOTTUS, LIMA, CENTRO SUR, AJE y dos más. No es un error de extracción, son alcances distintos.",
-      "pendiente": "Confirmar con el área comercial que Fill Rate cubre solo esos ocho grupos. Si se confirma, conviene renombrar el KPI para que lo diga."
+      "resuelto": "2026-09-14",
+      "explicacion": "No era un descuadre. Confirmado por gerencia el 14/09/2026: la venta del mes es la del reporte de Margen (agosto S/7.69M) y la facturación de Fill Rate mide el cumplimiento del pedido, no la venta. La comparación se quitó de validar_datos.py y la fila del tablero pasó a leer la serie de Margen.",
+      "pendiente": null
     }
   ]
 }

@@ -329,13 +329,22 @@ def main():
             ("productividad", "Planilla S/. / KG Producido",
              ("productividad", "Planilla / kg producido"), False),
         ]
+        saldos = {(r, e) for r, e, _, _, _ in SALDOS}
         for rep_k, etiqueta, (ds, sk), es_pct in PARES:
             arr = (ser.get("datasets", {}).get(ds) or {}).get(sk)
-            if not arr or i >= len(arr) or arr[i] is None:
-                inf.saltados.append(f"{etiqueta}: sin serie para {cerrado}")
+            # Una cifra de saldo vale hoy, no el mes cerrado: la tarjeta de
+            # morosidad es la cartera de este momento y su punto en la serie
+            # es el del mes en curso. Compararla contra el cierre anterior
+            # marcaba un descuadre del 21% que no existía — son dos fechas.
+            es_saldo = (rep_k, etiqueta) in saldos
+            mes = parcial if (es_saldo and parcial in per) else cerrado
+            j = per.index(mes)
+            if not arr or j >= len(arr) or arr[j] is None:
+                inf.saltados.append(f"{etiqueta}: sin serie para {mes}")
                 continue
-            v_serie = arr[i] * 100 if es_pct else abs(arr[i])
-            inf.comparar(f"{etiqueta}: tarjeta vs serie de {cerrado}",
+            v_serie = arr[j] * 100 if es_pct else abs(arr[j])
+            inf.comparar(f"{etiqueta}: tarjeta vs serie de {mes}" +
+                         (" (saldo del día)" if es_saldo else ""),
                          kpi(rp.get(rep_k, {}), etiqueta), v_serie,
                          f"{rep_k} · {ds}/{sk}", tol=0.03)
     else:
