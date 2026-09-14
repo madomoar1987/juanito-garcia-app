@@ -1,15 +1,15 @@
 {
-  "fecha": "13/09/2026",
-  "fecha_actualizacion": "2026-09-13",
+  "fecha": "14/09/2026",
+  "fecha_actualizacion": "2026-09-14",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "yellow"
   },
   "semaforo_razon": {
-    "PAUNO": "Morosidad 17.8% — sobre meta"
+    "PAUNO": "Morosidad 17.4% — sobre meta"
   },
   "holding_ventas": "S/8.25M",
-  "holding_mora": "17.8%",
+  "holding_mora": "17.4%",
   "agenda_ceo": {
     "decidir_hoy": [],
     "escalar_semana": [],
@@ -20,11 +20,11 @@
       "reportes": {
         "cuentas_por_cobrar": {
           "estado": "yellow",
-          "alerta": "Morosidad 17.8% — sobre meta",
+          "alerta": "Morosidad 17.4% — sobre meta",
           "kpis": [
             {
               "label": "Morosidad · hoy",
-              "valor": "17.8%",
+              "valor": "17.4%",
               "meta": "15%",
               "estado": "yellow",
               "fuente": "reporte",
@@ -32,19 +32,19 @@
             },
             {
               "label": "CxC por vencer",
-              "valor": "S/3.51M",
+              "valor": "S/3.71M",
               "meta": "aging confirmado",
               "fuente": "reporte"
             },
             {
               "label": "CxC Total",
-              "valor": "S/4.27M",
+              "valor": "S/4.49M",
               "fuente": "reporte"
             },
             {
               "label": "CxC Vencido",
-              "valor": "S/761,563",
-              "meta": "17.8% de cartera",
+              "valor": "S/782,158",
+              "meta": "17.4% de cartera",
               "estado": "yellow",
               "fuente": "reporte"
             },
@@ -55,34 +55,34 @@
             },
             {
               "label": "Ventas del mes",
-              "valor": "S/1.60M",
+              "valor": "S/1.79M",
               "fuente": "reporte"
             }
           ],
           "tramos": [
             {
               "label": "Por Vencer",
-              "valor": "S/3.51M",
+              "valor": "S/3.71M",
               "estado": "green",
-              "pct": 82.2
+              "pct": 82.6
             },
             {
               "label": "0 a 15 días",
-              "valor": "S/177,204",
+              "valor": "S/193,449",
               "estado": "yellow",
-              "pct": 4.1
+              "pct": 4.3
             },
             {
               "label": "16 a 30 días",
-              "valor": "S/243,373",
+              "valor": "S/245,057",
               "estado": "yellow",
-              "pct": 5.7
+              "pct": 5.5
             },
             {
               "label": "Más de 30 días",
-              "valor": "S/340,986",
+              "valor": "S/343,652",
               "estado": "red",
-              "pct": 8.0
+              "pct": 7.7
             }
           ],
           "responsables": [
@@ -98,14 +98,14 @@
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
               "total": "S/838,160",
-              "vencido": "S/202,412"
+              "vencido": "S/212,412"
             },
             {
               "responsable": "JOSELYN ASTORAY",
               "nivel": "jefe",
               "canal": "HORECA",
               "total": "S/376,955",
-              "vencido": "S/103,776"
+              "vencido": "S/111,504"
             },
             {
               "responsable": "MORI COLLAZOS MARTIN",
@@ -125,7 +125,7 @@
               "responsable": "JUAN CHAVEZ",
               "nivel": "jefe",
               "canal": "CANAL MODERNO",
-              "total": "S/52,423",
+              "total": "S/55,636",
               "vencido": "S/45,741"
             },
             {
@@ -139,15 +139,15 @@
               "responsable": "JUAN CANCHARIS",
               "nivel": "jefe",
               "canal": "CANAL MODERNO",
-              "total": "S/1.64M",
-              "vencido": "S/16,745"
+              "total": "S/1.85M",
+              "vencido": "S/19,602"
             },
             {
               "responsable": "FABRICA",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
               "total": "S/52,398",
-              "vencido": "S/5,024"
+              "vencido": "S/5,033"
             },
             {
               "responsable": "OCTAVIO ESPINOZA",
@@ -180,8 +180,8 @@
             },
             {
               "label": "CxP Vencido",
-              "valor": "S/3.15M",
-              "meta": "32.2% de la deuda viva",
+              "valor": "S/3.19M",
+              "meta": "32.6% de la deuda viva",
               "estado": "red",
               "fuente": "reporte"
             },
@@ -201,8 +201,8 @@
           "tramos": [
             {
               "label": "Vigente",
-              "valor": "S/6.63M",
-              "pct": 67.8,
+              "valor": "S/6.59M",
+              "pct": 67.4,
               "estado": "green"
             },
             {
@@ -219,8 +219,8 @@
             },
             {
               "label": "0 a 7 días",
-              "valor": "S/634,183",
-              "pct": 6.5,
+              "valor": "S/673,613",
+              "pct": 6.9,
               "estado": "yellow"
             },
             {
@@ -231,7 +231,7 @@
             },
             {
               "label": "61 a 90 días",
-              "valor": "S/381,023",
+              "valor": "S/384,087",
               "pct": 3.9,
               "estado": "red"
             },
@@ -1114,7 +1114,8 @@
               "estado": "yellow",
               "fuente": "calculado"
             }
-          ]
+          ],
+          "por_uen_periodo": "acumulado 2026"
         },
         "consumo_materiales": {
           "estado": "green",
@@ -1130,14 +1131,14 @@
             },
             {
               "label": "Venta Neta (KG) · acumulado 2026",
-              "valor": "10,178,475 KG",
+              "valor": "10,207,813 KG",
               "validado": true,
               "fuente": "reporte",
               "nota_periodo": "la consulta filtra solo por año, sin mes"
             },
             {
               "label": "Costo x TN Vendida",
-              "valor": "S/144",
+              "valor": "S/143",
               "validado": true,
               "fuente": "reporte"
             },
@@ -1200,6 +1201,14 @@
               "estandar": 0.0,
               "consumido": 15966.0,
               "exceso": 15966.0,
+              "pct": null
+            },
+            {
+              "sku": "E001431",
+              "almacen": "Lacteos Producción",
+              "estandar": 0.0,
+              "consumido": 15501.0,
+              "exceso": 15501.0,
               "pct": null
             },
             {
@@ -1283,14 +1292,6 @@
               "pct": "8.6%"
             },
             {
-              "sku": "E001431",
-              "almacen": "Lacteos Producción",
-              "estandar": 11545.0,
-              "consumido": 15501.0,
-              "exceso": 3956.0,
-              "pct": "34.3%"
-            },
-            {
               "sku": "PP00441",
               "almacen": "Lacteos Producción",
               "estandar": 119256.0,
@@ -1334,12 +1335,12 @@
           "por_uen": [
             {
               "uen": "B&D",
-              "merma": "1.49%",
+              "merma": "1.47%",
               "estado": "green"
             },
             {
               "uen": "TIGO",
-              "merma": "4.27%",
+              "merma": "4.25%",
               "estado": "red"
             },
             {
@@ -1348,20 +1349,21 @@
               "estado": "yellow"
             }
           ],
+          "por_uen_periodo": "acumulado 2026",
           "por_planta": [
             {
               "planta": "ATE",
-              "merma": "3.11%",
+              "merma": "3.10%",
               "estado": "red"
             },
             {
               "planta": "PACHACAMAC",
-              "merma": "1.81%",
+              "merma": "1.80%",
               "estado": "green"
             },
             {
               "planta": "TERCEROS",
-              "merma": "0.68%",
+              "merma": "0.32%",
               "estado": "green"
             }
           ]
@@ -2092,7 +2094,7 @@
     {
       "consulta": "merma_total_incoherente",
       "http": 200,
-      "error": "Merma Total = 4.87% es mayor que el peor segmento (4.27%); un total no puede superar a sus partes. Se publica sin dato."
+      "error": "Merma Total = 4.87% es mayor que el peor segmento (4.25%); un total no puede superar a sus partes. Se publica sin dato."
     }
   ],
   "derivados": [
@@ -2240,15 +2242,7 @@
   ],
   "validacion": {
     "cuadran": 24,
-    "no_cuadran": [
-      {
-        "prueba": "Ventas del mes: Margen vs Fill Rate",
-        "publicado": 7690000.0,
-        "esperado": 6090000.0,
-        "diferencia_pct": 20.8,
-        "detalle": "mismo mes, dos reportes: Fill Rate podría cubrir menos clientes"
-      }
-    ],
+    "no_cuadran": [],
     "sin_datos": []
   },
   "validacion_tarjetas": {
