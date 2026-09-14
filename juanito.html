@@ -1503,6 +1503,43 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .av-seg-nota { color:var(--text3); font-size:11.5px; text-align:left !important;
   padding-left:26px !important; font-style:italic; }
 
+/* Análisis escrito de una fila. Se abre debajo de ella, sin salir de la tabla:
+   ver que el margen cae no dice dónde actuar, y mandar al usuario a otra
+   pantalla para averiguarlo hace que no lo averigüe. */
+.av-ver-link { cursor:pointer; }
+.av-ver-link::after { content:' ›'; font-weight:700; }
+.av-an-fila > td { padding:0 !important; background:var(--card2) !important; }
+.av-an { border-top:2px solid var(--yellow); padding:16px 18px; text-align:left;
+  font-size:13px; line-height:1.55;
+  /* La tabla del avance es más ancha que la pantalla y se desplaza. Sin esto
+     el análisis se desplaza con ella y hay que empujarlo para leer la frase. */
+  position:sticky; left:0; width:calc(100vw - 52px); max-width:980px;
+  box-sizing:border-box; }
+.av-an-k { font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--yellow); font-weight:600; margin-bottom:6px; }
+.av-an-t { font-size:16px; font-weight:600; margin:0 0 5px; line-height:1.35; }
+.av-an-p { margin:0 0 10px; color:var(--text2); max-width:78ch; }
+.av-an-p:last-child { margin-bottom:0; }
+.av-an-cerrar { float:right; font-size:11px; color:var(--text3); cursor:pointer; }
+.av-an-blq { border-top:1px solid var(--border); margin-top:14px; padding-top:14px; }
+.av-an-blq h4 { font-size:13.5px; margin:0 0 2px; }
+.av-an-por { color:var(--text2); font-size:12px; margin:0 0 10px; max-width:78ch; }
+.av-an-tabla { width:100%; border-collapse:collapse; font-size:12px; }
+.av-an-tabla th { font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--text3); font-weight:500; text-align:right; padding:6px 9px;
+  border-bottom:1px solid var(--border); white-space:nowrap; }
+.av-an-tabla th:first-child, .av-an-tabla td:first-child { text-align:left; }
+.av-an-tabla td { padding:6px 9px; border-bottom:1px solid var(--border);
+  text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.av-an-tabla tr:last-child td { border-bottom:none; }
+.av-an-foco td { background:var(--red-bg); }
+.av-an-lee { border-left:2px solid var(--yellow); padding-left:13px; margin:12px 0 0;
+  color:var(--text2); }
+.av-an-lee.rojo { border-left-color:var(--red); }
+.av-an-lee b { color:var(--text); }
+.av-an-falta { color:var(--text3); font-style:italic; font-size:12px;
+  margin:8px 0 0; max-width:78ch; }
+
 .calc { font-size:10px; color:var(--yellow); white-space:nowrap; cursor:help; }
 .chat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .chat-chip { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent); border-radius: 20px; padding: 5px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; }
@@ -3164,6 +3201,18 @@ function avanceSegmentos(ind, meta, pct) {
       ? triangulo(fmt, cerrado, previo)
       : triangulo(fmt, curso, cerrado);
     const col = dist ? (dist.bien ? 'var(--green)' : 'var(--red)') : 'var(--text3)';
+
+    // Análisis de la unidad de negocio. El segmento no tiene columna "Lectura"
+    // propia, así que el botón va donde estaría: al final de su fila.
+    const an = analisisDe(ind, meta, nombre);
+    const anId = 'an-' + ind.clave + '-' + nombre.replace(/[^A-Za-z0-9]/g, '');
+    const cae = tri && tri.cls === 't-peor';
+    const lectura = an
+      ? `<span class="av-ver ${cae ? 'av-mal' : 'av-na'} av-ver-link"
+           onclick="avanceAnalisis(event,'${anId}')"
+           title="Abre el análisis escrito de ${esc(nombre)}"
+           >${cae ? 'Cae · ver análisis' : 'Ver análisis'}</span>`
+      : '';
     return `<tr class="av-seg">
       <td class="av-seg-n">${esc(nombre)}</td>
       <td></td>
@@ -3173,8 +3222,9 @@ function avanceSegmentos(ind, meta, pct) {
       <td>${tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>` : ''}</td>
       <td>${dist ? `<span class="av-num" style="color:${col}">${dist.txt}</span>` : ''}</td>
       <td>${chispaSerie(arr, col)}</td>
-      <td></td>
-    </tr>`;
+      <td>${lectura}</td>
+    </tr>
+    ${an ? avAnalisisHTML(an, anId) : ''}`;
   }).join('');
   const nota = ind.segmentos_nota
     ? `<tr class="av-seg"><td colspan="8" class="av-seg-nota">${esc(ind.segmentos_nota)}</td></tr>`
@@ -3194,6 +3244,516 @@ function nombreMes(periodo) {
 
 function nombreMesCerrado() {
   return nombreMes(mesCerrado()) || 'mes anterior';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANÁLISIS ESCRITO DE UNA FILA
+//
+// La columna "Lectura" dice si un indicador está bien o mal. Eso no basta para
+// decidir: saber que el margen cae no dice a quién llamar. Estas funciones
+// arman, con los datos de la corrida, el diagnóstico y las tablas de detalle
+// que sí dicen dónde poner la semana.
+//
+// Regla que se respeta en todo el bloque: si un corte no existe en Power BI,
+// se dice, no se inventa. Clientes y productos vienen de toda la empresa —
+// no están partidos por unidad de negocio — y donde se muestran dentro de una
+// UEN se avisa en la misma pantalla.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function avReporte(clave) {
+  return (DATA && DATA.empresas && DATA.empresas.PAUNO &&
+          DATA.empresas.PAUNO.reportes && DATA.empresas.PAUNO.reportes[clave]) || {};
+}
+
+// "43.5%" → 43.5 · "S/4.64M" → 4640000 · null si no hay número.
+function avNum(s) {
+  if (s == null) return null;
+  if (typeof s === 'number') return isFinite(s) ? s : null;
+  const n = localNum(s);
+  return (n == null || !isFinite(n)) ? null : n;
+}
+
+function avPP(x, dec) {
+  if (x == null) return '—';
+  const d = dec == null ? 2 : dec;
+  return (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(d) + ' pp';
+}
+
+// fmtMeta redondea a tres decimales por debajo de S/1000, que sirve para un
+// costo unitario en una celda pero se lee mal en una frase: "S/15.536".
+function avSoles(v) {
+  if (v == null) return '—';
+  return Math.abs(v) >= 1000 ? fmtMeta({unidad: 'soles'}, v) : 'S/' + v.toFixed(2);
+}
+
+function avPct(x, dec) {
+  if (x == null) return '—';
+  return (x * 100).toFixed(dec == null ? 1 : dec) + '%';
+}
+
+// Valor del mes en curso y del cerrado de una serie suelta (no de un indicador).
+function avSerie(par) {
+  const arr = serieDe(par);
+  if (!arr) return null;
+  const per = periodos();
+  const iC = per.indexOf(mesParcial()), iX = per.indexOf(mesCerrado());
+  return {
+    arr,
+    curso:   iC >= 0 ? arr[iC] : null,
+    cerrado: iX >= 0 ? arr[iX] : null,
+  };
+}
+
+// ── Mecanismo del margen de una unidad de negocio.
+//
+// El margen no baja solo: baja porque el precio cae más rápido que el costo, o
+// porque el costo sube más rápido que el precio. Saber cuál de las dos es lo
+// que decide si la conversación es con comercial o con producción.
+//
+// El precio implícito es derivado: costo unitario / (1 − margen). Se marca como
+// tal en pantalla, porque el reporte no lo publica.
+function avMecanismoUEN(nombre) {
+  const mg = avSerie(['margen', '% Margen ' + nombre]);
+  const co = avSerie(['margen', 'Costo unitario ' + nombre]);
+  if (!mg || !co) return null;
+  const m0 = mg.cerrado, m1 = mg.curso, c0 = co.cerrado, c1 = co.curso;
+  if (m0 == null || m1 == null || c0 == null || c1 == null) return null;
+  if (!c0 || m0 >= 1 || m1 >= 1) return null;
+  const p0 = c0 / (1 - m0), p1 = c1 / (1 - m1);
+  if (!p0) return null;
+  return {
+    m0, m1, c0, c1, p0, p1,
+    dMargen: (m1 - m0) * 100,            // puntos de margen
+    dCosto: (c1 - c0) / c0 * 100,        // % de variación
+    dPrecio: (p1 - p0) / p0 * 100,
+    serieMargen: mg.arr, serieCosto: co.arr,
+  };
+}
+
+function avTextoMecanismo(nombre, m) {
+  const cae = m.dMargen < 0;
+  const fCosto = Math.abs(m.dCosto).toFixed(1) + '%';
+  const fPrecio = Math.abs(m.dPrecio).toFixed(1) + '%';
+  const vCosto = m.dCosto < 0 ? 'bajó' : 'subió';
+  const vPrecio = m.dPrecio < 0 ? 'bajó' : 'subió';
+  const brecha = Math.abs(m.dPrecio - m.dCosto).toFixed(1);
+  const tesis = `El costo ${vCosto} ${fCosto}. El precio ${vPrecio} ${fPrecio}. ` +
+    (cae ? 'Ahí está la caída.' : 'Por eso el margen sube.');
+  let cuerpo;
+  if (cae && m.dCosto < 0 && m.dPrecio < m.dCosto) {
+    cuerpo = `No es producción: el costo unitario mejoró de ${avSoles(m.c0)} ` +
+      `a ${avSoles(m.c1)}. ${esc(nombre)} vendió más barato de lo que se ` +
+      `abarató, y esa brecha de ${brecha} puntos son los ${Math.abs(m.dMargen).toFixed(1)} ` +
+      `puntos de margen perdidos. La conversación es comercial, no de planta.`;
+  } else if (cae && m.dCosto > 0) {
+    cuerpo = `El costo unitario pasó de ${avSoles(m.c0)} a ` +
+      `${avSoles(m.c1)} y el precio no lo siguió. Aquí la ` +
+      `conversación empieza en producción y en compras.`;
+  } else if (!cae && m.dCosto < 0) {
+    cuerpo = `El abaratamiento se quedó en la empresa en vez de trasladarse al precio: ` +
+      `${Math.abs(m.dMargen).toFixed(1)} puntos de margen ganados.`;
+  } else {
+    cuerpo = `El margen se movió ${Math.abs(m.dMargen).toFixed(1)} puntos entre ` +
+      `${nombreMesCerrado()} y ${nombreMes(mesParcial())}.`;
+  }
+  return { tesis, cuerpo };
+}
+
+// ── Volatilidad del precio implícito.
+//
+// Un precio que sube y baja 20% mes a mes no es una decisión de precios: es la
+// mezcla de lo que se vendió cambiando. Distinguirlo antes de ir a comercial
+// evita una conversación equivocada.
+function avVolatilidad(nombre) {
+  const mg = serieDe(['margen', '% Margen ' + nombre]);
+  const co = serieDe(['margen', 'Costo unitario ' + nombre]);
+  if (!mg || !co) return null;
+  const p = [];
+  for (let i = 0; i < mg.length; i++) {
+    if (mg[i] == null || co[i] == null || mg[i] >= 1) continue;
+    p.push(co[i] / (1 - mg[i]));
+  }
+  const ult = p.slice(-6);
+  if (ult.length < 4) return null;
+  let saltos = 0;
+  for (let i = 1; i < ult.length; i++) {
+    if (ult[i - 1] && Math.abs(ult[i] - ult[i - 1]) / ult[i - 1] > 0.10) saltos++;
+  }
+  const lo = Math.min(...ult), hi = Math.max(...ult);
+  return { saltos, lo, hi, n: ult.length,
+           inestable: saltos >= 2 && lo && (hi - lo) / lo > 0.20 };
+}
+
+// ── Clientes que arrastran el margen.
+//
+// El impacto es la diferencia del cliente contra el margen de la empresa,
+// pesada por cuánto vende: un cliente con 30% de margen que compra el 0.2% no
+// explica nada, y encabezaría la lista si se ordenara por margen.
+function avBloqueClientes() {
+  const mv = avReporte('margen_variable');
+  const cli = mv.por_cliente || [];
+  if (cli.length < 3) return null;
+  const kMg = (mv.kpis || []).find(k => k.label === 'Margen variable');
+  const mgEmpresa = kMg ? avNum(kMg.valor) : null;
+  if (mgEmpresa == null) return null;
+
+  const filas = cli.map(c => {
+    const m = avNum(c.margen), w = avNum(c.pct_venta);
+    return { nombre: c.cliente, venta: c.venta, pct: w, margen: m,
+             impacto: (m != null && w != null) ? (m - mgEmpresa) * w / 100 : null };
+  }).filter(f => f.impacto != null);
+  if (filas.length < 3) return null;
+  filas.sort((a, b) => a.impacto - b.impacto);
+
+  const malos = filas.filter(f => f.impacto < 0);
+  const arrastran = malos.slice(0, 3);
+  const sumaMal = arrastran.reduce((s, f) => s + f.impacto, 0);
+  const pesoMal = arrastran.reduce((s, f) => s + (f.pct || 0), 0);
+  const cubre = filas.reduce((s, f) => s + (f.pct || 0), 0);
+
+  const cuerpo = filas.map(f => `
+    <tr${f.impacto < -0.2 ? ' class="av-an-foco"' : ''}>
+      <td>${esc(avNombreCorto(f.nombre))}</td>
+      <td>${esc(f.venta || '—')}</td>
+      <td>${f.pct == null ? '—' : f.pct.toFixed(1) + '%'}</td>
+      <td style="color:${f.margen < mgEmpresa ? 'var(--red)' : 'var(--green)'}">
+        ${f.margen.toFixed(1)}%</td>
+      <td style="color:${f.impacto < 0 ? 'var(--red)' : 'var(--green)'}">
+        ${avPP(f.impacto)}</td>
+    </tr>`).join('');
+
+  const lecturas = [];
+  if (arrastran.length) {
+    const p = arrastran[0];
+    lecturas.push(`<p class="av-an-lee rojo"><b>Dónde enfocarse:</b> ` +
+      `${arrastran.length === 1 ? 'un cliente explica' : 'los ' + arrastran.length +
+        ' clientes que más arrastran explican'} ${avPP(sumaMal)} de margen y son el ` +
+      `${pesoMal.toFixed(0)}% de la venta. ${esc(avNombreCorto(p.nombre))} solo, con ` +
+      `${p.pct.toFixed(1)}% de la venta a ${p.margen.toFixed(1)}% de margen, pesa ` +
+      `${avPP(p.impacto)}.</p>`);
+  }
+  // Dos clientes de venta parecida y margen muy distinto son la comparación
+  // más accionable que hay: el peor no puede alegar que su tamaño lo explica.
+  const par = avParComparable(filas);
+  if (par) {
+    lecturas.push(`<p class="av-an-lee">${esc(avNombreCorto(par.a.nombre))} y ` +
+      `${esc(avNombreCorto(par.b.nombre))} venden casi lo mismo ` +
+      `(${esc(par.a.venta)} vs ${esc(par.b.venta)}) pero a ${par.a.margen.toFixed(1)}% ` +
+      `contra ${par.b.margen.toFixed(1)}%. Misma escala de cliente, ` +
+      `${Math.abs(par.a.margen - par.b.margen).toFixed(0)} puntos de diferencia: ahí hay ` +
+      `una conversación concreta que dar.</p>`);
+  }
+
+  return {
+    titulo: 'Por cliente — quién arrastra el margen',
+    por: `Los ${filas.length} clientes con más venta, que concentran el ` +
+         `${cubre.toFixed(1)}% del total. La última columna es lo que cada uno le suma o ` +
+         `le quita al margen de la empresa: su diferencia contra el ${mgEmpresa.toFixed(1)}% ` +
+         `general, pesada por cuánto vende.`,
+    cabecera: ['Cliente', 'Venta', '% venta', 'Margen', 'Impacto'],
+    cuerpo, lecturas,
+  };
+}
+
+// Dos clientes de tamaño parecido con la mayor diferencia de margen entre sí.
+function avParComparable(filas) {
+  let mejor = null;
+  for (let i = 0; i < filas.length; i++) {
+    for (let j = i + 1; j < filas.length; j++) {
+      const a = filas[i], b = filas[j];
+      if (!a.pct || !b.pct || a.pct < 2 || b.pct < 2) continue;
+      const rel = Math.abs(a.pct - b.pct) / Math.max(a.pct, b.pct);
+      if (rel > 0.25) continue;                    // tamaños comparables
+      const dif = Math.abs(a.margen - b.margen);
+      if (dif < 8) continue;                       // diferencia que importa
+      if (!mejor || dif > mejor.dif) {
+        mejor = { dif, a: a.margen > b.margen ? a : b, b: a.margen > b.margen ? b : a };
+      }
+    }
+  }
+  return mejor;
+}
+
+// Razones sociales completas no entran en una tabla y no aportan: "SUPERMERCADOS
+// PERUANOS SOCIEDAD ANONIMA 'O ' S.P.S.A." es SPSA para cualquiera que lo lea.
+function avNombreCorto(n) {
+  let s = (n || '').replace(/\s+/g, ' ').trim();
+  s = s.replace(/'[^']*'/g, ' ').replace(/\s{2,}/g, ' ').trim();
+  // Las formas societarias se apilan al final ("… SOCIEDAD ANONIMA S.P.S.A.");
+  // se quitan de a una hasta que no quede ninguna.
+  const forma = /\s*\.?\s*(SOCIEDAD ANONIMA CERRADA|SOCIEDAD ANONIMA ABIERTA|SOCIEDAD ANONIMA|SOCIEDAD COMERCIAL DE RESPONSABILIDAD LIMITADA|S\.?P\.?S\.?A\.?|S\.?A\.?C\.?|S\.?A\.?A\.?|S\.?R\.?L\.?|E\.?I\.?R\.?L\.?|E I R LTDA|LTDA|S\.?A\.?)\s*\.?$/i;
+  for (let i = 0; i < 4 && forma.test(s); i++) s = s.replace(forma, '').trim();
+  // Las razones sociales vienen en mayúsculas; una tabla entera gritando cansa.
+  // Una sigla no tiene vocales ("KL", "J", "R"); "LA", "RED" o "PIN" sí, y son
+  // palabras que deben quedar en minúscula como el resto del nombre.
+  const siglas = s.split(' ').filter(w =>
+    w.length <= 4 && w === w.toUpperCase() && !/[AEIOU]/.test(w));
+  s = s.toLowerCase().replace(/(^|[\s.(])([a-záéíóúñ])/g, (m, a, b) => a + b.toUpperCase());
+  // "KL Import Export" no es "Kl Import Export": las siglas cortas se respetan.
+  siglas.forEach(w => {
+    s = s.replace(new RegExp('(^|\\s)' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+      '(?=\\s|$)', 'i'), (m, a) => a + w);
+  });
+  if (s.length > 30) s = s.slice(0, 29).trim() + '…';
+  return s || n;
+}
+
+// ── Productos que movieron el margen entre los dos últimos meses con dato.
+function avBloqueProductos() {
+  const mv = avReporte('margen_variable');
+  const pr = mv.por_producto || [];
+  const meses = mv.por_producto_meses || [];
+  if (pr.length < 3) return null;
+  const orden = pr.slice().sort((a, b) => (a.aporte_pp || 0) - (b.aporte_pp || 0));
+  const cuerpo = orden.map(p => `
+    <tr${(p.aporte_pp || 0) < -0.05 ? ' class="av-an-foco"' : ''}>
+      <td>${esc(p.producto)}</td>
+      <td>${esc(p.venta || '—')}</td>
+      <td>${p.peso == null ? '—' : p.peso.toFixed(1) + '%'}</td>
+      <td>${esc(p.margen_previo || '—')}</td>
+      <td>${esc(p.margen || '—')}</td>
+      <td style="color:${(p.aporte_pp || 0) < 0 ? 'var(--red)' : 'var(--green)'}">
+        ${avPP(p.aporte_pp, 3)}</td>
+    </tr>`).join('');
+  const caen = orden.filter(p => (p.aporte_pp || 0) < 0);
+  const suma = caen.reduce((s, p) => s + p.aporte_pp, 0);
+  const lecturas = [];
+  if (caen.length) {
+    const top = caen.slice(0, 3);
+    const parte = top.reduce((s, p) => s + p.aporte_pp, 0);
+    lecturas.push(`<p class="av-an-lee rojo"><b>Dónde enfocarse:</b> ` +
+      `${top.length} productos explican ${avPP(parte)} de los ${avPP(suma)} que se ` +
+      `perdieron. El primero es ${esc(top[0].producto)}: pasó de ` +
+      `${esc(top[0].margen_previo)} a ${esc(top[0].margen)} pesando ` +
+      `${(top[0].peso || 0).toFixed(1)}% de la venta.</p>`);
+  }
+  lecturas.push(`<p class="av-an-lee">Cada fila trae su margen del mes anterior, ` +
+    `así que dice si el producto se está vendiendo más barato o si simplemente se ` +
+    `vendió menos. Eso confirma o descarta el cambio de mezcla.</p>`);
+  return {
+    titulo: 'Por producto — qué se está vendiendo más barato',
+    por: `Los productos ordenados por los puntos de margen que le quitan al total` +
+      (meses.length === 2 ? `, comparando ${nombreMes(meses[0])} contra ${nombreMes(meses[1])}` : '') +
+      `. El orden es por impacto y no por caída porcentual: un producto que se ` +
+      `desploma pero pesa el 0.3% de la venta no explica nada.`,
+    cabecera: ['Producto', 'Venta', '% venta', 'Margen previo', 'Margen', 'Impacto'],
+    cuerpo, lecturas,
+  };
+}
+
+// ── Subcategorías dentro de una unidad de negocio.
+//
+// Es el único corte del detalle de costos que sí viene partido por unidad de
+// negocio. Con producto y cliente no se puede hacer lo mismo.
+function avBloqueSubcategorias(uen) {
+  const det = (avReporte('margen_variable').detalle_costos) || [];
+  if (!det.length) return null;
+  const suyas = uen
+    ? det.filter(d => (d.negocio || '').toUpperCase().indexOf(uen.toUpperCase()) >= 0)
+    : det;
+  if (suyas.length < 2) return null;
+  const cuerpo = suyas.slice(0, 15).map(d => {
+    const m = avNum(d.margen);
+    return `<tr>
+      <td>${esc(d.subcategoria || d.categoria)}</td>
+      <td>${esc(d.venta || '—')}</td>
+      <td>${esc(d.precio_kg || '—')}</td>
+      <td>${esc(d.costo_kg || '—')}</td>
+      <td>${d.margen ? esc(d.margen) : '—'}</td>
+    </tr>`;
+  }).join('');
+  return {
+    titulo: uen ? `Por subcategoría — el corte que sí es de ${uen}`
+                : 'Por subcategoría',
+    por: uen
+      ? `Precio y costo por kilo de las subcategorías de ${uen}, ordenadas por venta. ` +
+        `Es el mayor detalle que el reporte entrega dentro de una unidad de negocio.`
+      : 'Precio y costo por kilo por subcategoría, ordenadas por venta.',
+    cabecera: ['Subcategoría', 'Venta', 'Precio/kg', 'Costo/kg', 'Margen'],
+    cuerpo, lecturas: [],
+  };
+}
+
+// ── Qué segmento explica la desviación de un indicador.
+//
+// Vale para cualquiera que tenga segmentos: merma, compras, margen. Compara
+// cada segmento contra la meta del padre y nombra al que más pesa.
+// "A y B y C" se lee como un error de tipeo. Una lista es "A, B y C".
+function avLista(xs) {
+  if (xs.length <= 1) return xs[0] || '';
+  return xs.slice(0, -1).join(', ') + ' y ' + xs[xs.length - 1];
+}
+
+// Los segmentos de un indicador pueden ser dos cortes distintos de lo mismo:
+// la merma viene por unidad de negocio Y por planta, que son la misma merma
+// mirada dos veces. Contarlos juntos daría "4 de 6 fuera de meta" cuando en
+// realidad son dos veces los mismos kilos. Se analizan por separado.
+function avCortes(segs) {
+  const planta = segs.filter(x => /^planta\b/i.test(x[0]));
+  const resto  = segs.filter(x => !/^planta\b/i.test(x[0]));
+  const grupos = [];
+  if (resto.length >= 2)  grupos.push({ corte: 'unidad de negocio', segs: resto });
+  if (planta.length >= 2) grupos.push({ corte: 'planta', segs: planta });
+  if (!grupos.length && segs.length >= 2) grupos.push({ corte: null, segs });
+  return grupos;
+}
+
+function avBloqueSegmentos(ind, meta, segsDadas, corte) {
+  const segs = (segsDadas || ind.segmentos || []).filter(s => !s[2] || s[2] === ind.unidad);
+  if (segs.length < 2) return null;
+  const filas = [];
+  segs.forEach(([nombre, par]) => {
+    const v = avSerie(par);
+    if (!v || v.curso == null) return;
+    const dist = distanciaMeta(ind, v.curso, meta);
+    const tri = triangulo(ind, v.curso, v.cerrado);
+    filas.push({ nombre, curso: v.curso, cerrado: v.cerrado, dist, tri });
+  });
+  if (filas.length < 2) return null;
+  // El peor primero: el que más lejos está de la meta en la dirección mala.
+  filas.sort((a, b) => {
+    const A = a.dist ? a.dist.d : 0, B = b.dist ? b.dist.d : 0;
+    return ind.direccion === 'menor' ? B - A : A - B;
+  });
+  const cuerpo = filas.map(f => `
+    <tr${f.dist && !f.dist.bien ? ' class="av-an-foco"' : ''}>
+      <td>${esc(f.nombre)}</td>
+      <td>${f.cerrado == null ? '—' : esc(fmtMeta(ind, f.cerrado))}</td>
+      <td>${esc(fmtMeta(ind, f.curso))}</td>
+      <td style="color:${f.dist ? (f.dist.bien ? 'var(--green)' : 'var(--red)') : 'var(--text3)'}">
+        ${f.dist ? esc(f.dist.txt) : '—'}</td>
+      <td>${f.tri ? `<span class="av-tri ${f.tri.cls}"><i></i>${f.tri.txt}</span>` : '—'}</td>
+    </tr>`).join('');
+
+  const malos = filas.filter(f => f.dist && !f.dist.bien);
+  const lecturas = [];
+  if (malos.length === 1) {
+    lecturas.push(`<p class="av-an-lee rojo"><b>Dónde enfocarse:</b> ` +
+      `${esc(malos[0].nombre)} es el único fuera de meta (${esc(malos[0].dist.txt)}). ` +
+      `El resto no necesita atención esta semana.</p>`);
+  } else if (malos.length > 1) {
+    lecturas.push(`<p class="av-an-lee rojo"><b>Dónde enfocarse:</b> ` +
+      `${esc(malos[0].nombre)} está ${esc(malos[0].dist.txt)} de la meta y encabeza; ` +
+      `${malos.length} de ${filas.length} están fuera.</p>`);
+  } else {
+    lecturas.push(`<p class="av-an-lee">Todos los segmentos están en meta. ` +
+      `El indicador no necesita apertura esta semana.</p>`);
+  }
+  const mejora = filas.filter(f => f.tri && f.tri.cls === 't-mejor');
+  const empeora = filas.filter(f => f.tri && f.tri.cls === 't-peor');
+  if (empeora.length === 1 && mejora.length >= 1) {
+    lecturas.push(`<p class="av-an-lee">${esc(empeora[0].nombre)} es el único que ` +
+      `empeora contra ${nombreMesCerrado()}, mientras ` +
+      `${avLista(mejora.map(f => esc(f.nombre)))} mejora` +
+      `${mejora.length > 1 ? 'n' : ''}. Es un problema de ese segmento, no del ` +
+      `indicador completo.</p>`);
+  }
+  return {
+    titulo: corte ? `Por ${corte} — de dónde viene la desviación`
+                  : 'Por segmento — de dónde viene la desviación',
+    por: `Cada ${corte || 'segmento'} contra la meta del indicador, y cómo se movió ` +
+         `desde ${nombreMesCerrado()}.`,
+    cabecera: [corte ? corte[0].toUpperCase() + corte.slice(1) : 'Segmento', nombreMesCerrado(), nombreMes(mesParcial()) || 'mes en curso',
+               'vs meta', 'vs ' + nombreMesCerrado()],
+    cuerpo, lecturas,
+  };
+}
+
+// ── El análisis completo de una fila. Devuelve null si no hay nada que decir:
+// una etiqueta que promete análisis y abre una caja vacía es peor que no
+// ofrecerlo.
+function analisisDe(ind, meta, segNombre) {
+  const bloques = [];
+  const parrafos = [];
+  let tesis = null;
+  const esUEN = !!segNombre;
+  const uen = segNombre || null;
+
+  if (ind.clave === 'margen' && esUEN) {
+    const m = avMecanismoUEN(uen);
+    if (m) {
+      const t = avTextoMecanismo(uen, m);
+      tesis = t.tesis;
+      parrafos.push(t.cuerpo);
+      parrafos.push(`Precio implícito: ${avSoles(m.p0)} en ` +
+        `${nombreMesCerrado()} y ${avSoles(m.p1)} en ` +
+        `${nombreMes(mesParcial())}. Es un valor <b>derivado</b> — costo unitario ` +
+        `dividido entre uno menos el margen —, no una cifra que publique el reporte.`);
+      const vol = avVolatilidad(uen);
+      if (vol && vol.inestable) {
+        parrafos.push(`El precio implícito salta de ${avSoles(vol.lo)} a ` +
+          `${avSoles(vol.hi)} en ${vol.n} meses, con ${vol.saltos} ` +
+          `saltos de más de 10%. Un descuento comercial no se comporta así: se parece ` +
+          `más a un cambio de mezcla, meses en que se vende más de un producto caro y ` +
+          `meses en que se vende más de uno barato. <b>Conviene descartarlo antes de ` +
+          `hablar de precios con comercial.</b>`);
+      }
+    }
+    const sub = avBloqueSubcategorias(uen);
+    if (sub) bloques.push(sub);
+  }
+
+  if (!esUEN) {
+    avCortes(ind.segmentos || []).forEach(g => {
+      const seg = avBloqueSegmentos(ind, meta, g.segs, g.corte);
+      if (seg) bloques.push(seg);
+    });
+  }
+
+  // Un segmento solo ofrece análisis si hay algo suyo que decir. "Costo
+  // unitario B&D" es una serie de apoyo del margen, no una unidad de negocio:
+  // ofrecerle un análisis que solo contiene la tabla de clientes de toda la
+  // empresa es prometer un detalle que esa fila no tiene.
+  if (esUEN && !tesis && !bloques.length) return null;
+
+  if (ind.clave === 'margen') {
+    const cli = avBloqueClientes();
+    if (cli) bloques.push(cli);
+    const prod = avBloqueProductos();
+    if (prod) bloques.push(prod);
+  }
+
+  if (!bloques.length && !tesis) return null;
+
+  // El aviso que evita la lectura equivocada: dentro de una UEN, clientes y
+  // productos siguen siendo los de toda la empresa.
+  let nota = null;
+  if (esUEN && bloques.some(b => /cliente|producto/i.test(b.titulo))) {
+    nota = `Clientes y productos <b>no vienen partidos por unidad de negocio</b> en el ` +
+      `reporte: esas dos tablas son de toda la empresa, no solo de ${esc(uen)}. ` +
+      `El único corte que sí es de ${esc(uen)} es el de subcategorías.`;
+  }
+
+  return { tesis, parrafos, bloques, nota, titulo: esUEN ? `${uen} · ${ind.label}` : ind.label };
+}
+
+function avAnalisisHTML(an, id) {
+  const blqs = an.bloques.map(b => `
+    <div class="av-an-blq">
+      <h4>${b.titulo}</h4>
+      <p class="av-an-por">${b.por}</p>
+      <div style="overflow-x:auto">
+        <table class="av-an-tabla">
+          <thead><tr>${b.cabecera.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead>
+          <tbody>${b.cuerpo}</tbody>
+        </table>
+      </div>
+      ${b.lecturas.join('')}
+    </div>`).join('');
+  return `<tr class="av-an-fila" id="${id}" hidden><td colspan="8"><div class="av-an">
+    <span class="av-an-cerrar" onclick="avanceAnalisis(event,'${id}')">cerrar ✕</span>
+    <div class="av-an-k">Análisis · ${esc(an.titulo)} · ${esc(nombreMes(mesParcial()) || '')}</div>
+    ${an.tesis ? `<p class="av-an-t">${an.tesis}</p>` : ''}
+    ${an.parrafos.map(p => `<p class="av-an-p">${p}</p>`).join('')}
+    ${an.nota ? `<p class="av-an-falta">${an.nota}</p>` : ''}
+    ${blqs}
+  </div></td></tr>`;
+}
+
+function avanceAnalisis(ev, id) {
+  if (ev) ev.stopPropagation();
+  const f = document.getElementById(id);
+  if (f) f.hidden = !f.hidden;
 }
 
 function dxpAvanceView() {
@@ -3270,6 +3830,19 @@ function dxpAvanceView() {
       veredicto = '<span class="av-ver av-na">Sin dato</span>';
     }
 
+    // Si hay análisis que dar, la Lectura deja de ser solo una etiqueta y pasa
+    // a ser el botón que lo abre. Donde no hay nada que decir se queda como
+    // está: una etiqueta clicable que abre una caja vacía enseña a no hacer
+    // clic en ninguna.
+    const an = analisisDe(ind, meta, null);
+    const anId = 'an-' + ind.clave;
+    if (an) {
+      const mala = / av-mal"/.test(veredicto);
+      veredicto = veredicto.replace('class="av-ver ', 'class="av-ver-link av-ver ')
+        .replace('>', ` onclick="avanceAnalisis(event,'${anId}')" title="Abre el análisis escrito">`)
+        .replace(/<\/span>$/, (mala ? ' · ver análisis' : ' · analizar') + '</span>');
+    }
+
     const metaTxt = meta == null ? '+ poner meta' : fmtMeta(ind, meta);
     const triHtml = tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>`
                         : '<span class="av-vacio">—</span>';
@@ -3296,6 +3869,7 @@ function dxpAvanceView() {
                      : chispaSerie(serie, col)}</td>
       <td>${veredicto}</td>
     </tr>
+    ${an ? avAnalisisHTML(an, anId) : ''}
     ${tieneSeg ? `<tbody class="av-hijas" id="seg-${ind.clave}" hidden>
       ${avanceSegmentos(ind, meta, pct)}</tbody>` : ''}`;
   }).join('');
