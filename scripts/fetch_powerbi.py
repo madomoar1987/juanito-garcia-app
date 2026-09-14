@@ -2397,6 +2397,60 @@ def build_margen(found):
             x.pop("_v", None)
         res["detalle_costos"] = det[:40]
 
+    # ── Qué producto movió el margen entre los dos últimos meses con dato.
+    #
+    # El orden es por PUNTOS DE MARGEN PERDIDOS SOBRE EL TOTAL, no por caída
+    # porcentual: un producto que se desploma pero pesa el 0.3% de la venta no
+    # explica nada, y encabezaría la lista si se ordenara por porcentaje.
+    porprod = found.get("__por_producto") or []
+    if porprod:
+        meses = {}
+        for f in porprod:
+            nombre = (f.get("producto") or "").strip()
+            v, c = to_float(f.get("venta")), to_float(f.get("costo"))
+            per = (to_float(f.get("anio")), to_float(f.get("mes")))
+            if not nombre or v is None or c is None or None in per or not v:
+                continue
+            meses.setdefault(per, {})[nombre] = (v, c)
+        orden = sorted(k for k in meses if k[0] and k[1])
+        if len(orden) >= 2:
+            ant, act = orden[-2], orden[-1]
+            venta_total = sum(v for v, _ in meses[act].values()) or None
+            filas = []
+            for nombre, (v, c) in meses[act].items():
+                if nombre not in meses[ant]:
+                    continue
+                v0, c0 = meses[ant][nombre]
+                if not v0:
+                    continue
+                mg0, mg1 = (v0 - c0) / v0, (v - c) / v
+                peso = v / venta_total if venta_total else 0
+                filas.append({
+                    "producto": nombre,
+                    "venta": fmt_soles(v),
+                    "peso": round(peso * 100, 1),
+                    "margen_previo": f"{mg0 * 100:.1f}%",
+                    "margen": f"{mg1 * 100:.1f}%",
+                    "delta_pp": round((mg1 - mg0) * 100, 2),
+                    # Cuánto del margen total explica este producto: su caída
+                    # ponderada por lo que pesa en la venta del mes.
+                    "aporte_pp": round((mg1 - mg0) * peso * 100, 3),
+                })
+            if filas:
+                anotar_derivado("margen_variable", "por_producto", "margen",
+                                "(venta − costo) / venta por producto y mes",
+                                "el detalle publica venta y costo por producto "
+                                "pero no el margen de cada uno")
+                anotar_derivado("margen_variable", "por_producto", "aporte_pp",
+                                "(margen_mes − margen_previo) × peso en la venta",
+                                "cuántos puntos del margen total explica ese "
+                                "producto; ordena por impacto y no por caída "
+                                "porcentual, que premiaría a los irrelevantes")
+                filas.sort(key=lambda x: x["aporte_pp"])
+                res["por_producto"] = filas[:15]
+                res["por_producto_meses"] = [f"{int(ant[0])}-{int(ant[1]):02d}",
+                                             f"{int(act[0])}-{int(act[1]):02d}"]
+
     return res, ventas_val, margen_pct
 
 def build_mermas(found):
@@ -3888,6 +3942,22 @@ def main():
                 if det:
                     scanned.setdefault("margen", {})["__detalle_costos"] = det
                     print(f"    ✓ Detalle de costos: {len(det)} filas")
+
+                # Margen por PRODUCTO y por mes. Es el nivel donde se puede
+                # poner foco: saber que el margen cae no dice a quién llamar;
+                # saber que cae en tres productos que son la mitad del
+                # volumen, sí.
+                prod = desglose_desde_captura(
+                    token, ws_id, [margen_ds_id],
+                    "DETALLE ANÁLISIS DE COSTOS#79ac633f8bdb",
+                    {"producto": "[DESCRIPCION]",
+                     "anio": "[Año]",
+                     "mes": "[NroMes]",
+                     "venta": "[SumMonto_Neto_Factura_TG_0]",
+                     "costo": "[SumCosto_Total]"})
+                if prod:
+                    scanned.setdefault("margen", {})["__por_producto"] = prod
+                    print(f"    ✓ Margen por producto: {len(prod)} filas")
             except Exception as e:
                 print(f"    ✗ detalle de costos: {e}")
                 DIAGNOSTICO.append({"consulta": "detalle_costos", "http": 0,
