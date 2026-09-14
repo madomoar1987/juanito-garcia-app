@@ -2668,13 +2668,15 @@ def build_mermas(found):
             continue
         real = to_float(f.get("real"))
         std = to_float(f.get("estandar"))
-        pct = to_float(f.get("pct"))
+        # No se llama `pct` a secas: en este mismo bloque hay una función
+        # pct() y el nombre la tapaba desde esta línea en adelante.
+        pct_sku = to_float(f.get("pct"))
         sk.append({"sku": nombre,
                    "almacen": (f.get("almacen") or "").strip() or None,
                    "estandar": round(abs(std), 1) if std is not None else None,
                    "consumido": round(abs(real), 1) if real is not None else None,
                    "exceso": round(abs(desvio), 1),
-                   "pct": (f"{abs(pct) * 100:.1f}%" if pct is not None else None),
+                   "pct": (f"{abs(pct_sku) * 100:.1f}%" if pct_sku is not None else None),
                    "_a": abs(desvio)})
     if sk:
         sk.sort(key=lambda x: -x["_a"])
@@ -4045,7 +4047,12 @@ def main():
 
         # ── Margen
         if scanned.get("margen"):
-            margen_ds_id_total = ids.get("margen")
+            # El dataset se resuelve UNA vez, al principio del bloque. Antes se
+            # asignaba más abajo y los desgloses de arriba lo usaban sin que
+            # existiera todavía: Python lo trataba como local sin asignar y el
+            # detalle de costos moría entero con UnboundLocalError.
+            margen_ds_id = ids.get("margen")
+            margen_ds_id_total = margen_ds_id
             if margen_ds_id_total:
                 # Sobrescribe Precio x Kilo / Costo x Kilo con el filtro exacto de
                 # 12 condiciones confirmado con Copiar consulta (2026-09-04) — el
@@ -4130,7 +4137,6 @@ def main():
             # bloque anterior que adivinaba nombres de tabla ("Maestro Productos",
             # "Productos", "DimProducto") y nunca encontraba dato — la tabla real
             # es 'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1].
-            margen_ds_id = ids.get("margen")
             if margen_ds_id:
                 uen_data = []
                 for uen in ["B&D", "MAQUILA", "TIGO"]:

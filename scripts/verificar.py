@@ -285,6 +285,81 @@ def test_sin_nombres_repetidos(src, archivo):
                else f"REPETIDAS: {', '.join(f'{k} (×{v})' for k, v in repes.items())}"))
 
 
+def test_variable_antes_de_asignar(src, archivo):
+    """Variables que se usan antes de la línea donde se asignan.
+
+    Python no avisa de esto al importar: falla recién cuando la ejecución llega
+    a esa línea. En una corrida nocturna eso significa perder el dato y verlo un
+    día después. Pasó con `margen_ds_id`, que se asignaba cien líneas más abajo
+    de donde el detalle de costos ya lo usaba, y se llevó por delante las tres
+    consultas de detalle.
+
+    Solo mira variables locales de cada función: si un nombre se asigna en
+    alguna parte de la función, deja de ser global, y usarlo antes de su primera
+    asignación es un error aunque el módulo tenga una global con ese nombre.
+    """
+    print(f"\n8. Variables usadas antes de asignarse ({archivo})")
+    try:
+        arbol = ast.parse(src)
+    except SyntaxError as e:
+        revisar(False, f"{archivo} no compila: {e}")
+        return
+
+    for fn in [n for n in ast.walk(arbol)
+               if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]:
+        # Los nombres declarados global/nonlocal no son locales de la función.
+        externos = set()
+        for n in ast.walk(fn):
+            if isinstance(n, (ast.Global, ast.Nonlocal)):
+                externos.update(n.names)
+        params = {a.arg for a in
+                  list(fn.args.args) + list(fn.args.posonlyargs) +
+                  list(fn.args.kwonlyargs)}
+        for a in (fn.args.vararg, fn.args.kwarg):
+            if a:
+                params.add(a.arg)
+
+        # Solo el cuerpo directo de la función. Una comprensión o un lambda
+        # tienen su propio ámbito y su variable de bucle se lee antes de
+        # escribirse en el texto ("[f(x) for x in xs]"), que es correcto:
+        # mirarlas daría decenas de falsas alarmas y el test se ignoraría.
+        ANIDADOS = (ast.Lambda, ast.ListComp, ast.SetComp, ast.DictComp,
+                    ast.GeneratorExp, ast.FunctionDef, ast.AsyncFunctionDef,
+                    ast.ClassDef)
+        asigna, usa = {}, {}
+        pila = list(ast.iter_child_nodes(fn))
+        while pila:
+            n = pila.pop()
+            if isinstance(n, ANIDADOS):
+                # Un `def` anidado no se recorre, pero sí ata su nombre: la
+                # función auxiliar existe desde su línea de definición.
+                nom = getattr(n, "name", None)
+                if nom:
+                    asigna[nom] = min(asigna.get(nom, n.lineno), n.lineno)
+                continue
+            pila.extend(ast.iter_child_nodes(n))
+            if isinstance(n, ast.Name):
+                d = asigna if isinstance(n.ctx, ast.Store) else usa
+                d[n.id] = min(d.get(n.id, n.lineno), n.lineno)
+            elif isinstance(n, ast.ExceptHandler) and n.name:
+                asigna[n.name] = min(asigna.get(n.name, n.lineno), n.lineno)
+
+        malas = []
+        for nombre, linea_uso in usa.items():
+            if nombre in params or nombre in externos or nombre not in asigna:
+                continue
+            if linea_uso < asigna[nombre]:
+                malas.append((nombre, linea_uso, asigna[nombre]))
+
+        if malas:
+            for nombre, uso, asg in sorted(malas, key=lambda x: x[1]):
+                revisar(False, f"{archivo}: en {fn.name}(), '{nombre}' se usa en la "
+                               f"línea {uso} pero se asigna recién en la {asg}")
+        else:
+            revisar(True, f"{fn.name}()")
+
+
+
 def main():
     src_pbi = leer("scripts", "fetch_powerbi.py")
     src_ser = leer("scripts", "fetch_series.py")
@@ -297,6 +372,8 @@ def main():
     test_sin_nombres_repetidos(leer('scripts', 'fetch_series.py'), 'fetch_series.py')
     test_funciones_usadas(src_pbi, "dax_", "fetch_powerbi.py")
     test_funciones_usadas(src_ser, "serie_", "fetch_series.py")
+    test_variable_antes_de_asignar(src_pbi, "fetch_powerbi.py")
+    test_variable_antes_de_asignar(src_ser, "fetch_series.py")
     salidas = test_construccion(cargar_fetch_powerbi())
     test_campos(salidas, html)
 
