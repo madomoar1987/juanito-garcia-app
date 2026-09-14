@@ -1499,6 +1499,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   font-size:12px; padding-top:7px; padding-bottom:7px; }
 .av-seg-n { padding-left:26px !important; color:var(--text2); }
 .av-cerrado { color:var(--text2); font-variant-numeric:tabular-nums; }
+.av-tri + small { display:block; font-size:10px; margin-top:2px; }
 .av-seg-nota { color:var(--text3); font-size:11.5px; text-align:left !important;
   padding-left:26px !important; font-style:italic; }
 
@@ -3045,17 +3046,21 @@ function distanciaMeta(ind, valor, meta) {
   return { d, bien, txt };
 }
 
-// Comparación contra el mes cerrado anterior: mejora, empeora o igual.
+// Comparación contra el mes anterior.
+//
+// El triángulo apunta según MEJORA, no según el signo del número: si la merma
+// sube, empeora. Por eso el número va sin signo — "▼ +24.9%" se lee como una
+// contradicción, con la flecha bajando y el número subiendo. La flecha y el
+// color dicen si va bien; el número, cuánto se movió.
 function triangulo(ind, act, ant) {
   if (act == null || ant == null || !ant) return null;
   const d = act - ant;
   const rel = Math.abs(d / ant);
   if (rel < 0.02) return { cls: 't-igual', txt: 'sin cambio' };
   const mejora = ind.direccion === 'menor' ? d < 0 : d > 0;
-  const pct = (d / Math.abs(ant) * 100);
   return {
     cls: mejora ? 't-mejor' : 't-peor',
-    txt: (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(1) + '%',
+    txt: (rel * 100).toFixed(1) + '%',
   };
 }
 
@@ -3133,12 +3138,14 @@ function exportarMetas() {
 function avanceSegmentos(ind, meta, pct) {
   const segs = ind.segmentos || [];
   if (!segs.length) return '';
-  const filas = segs.map(([nombre, par, unidad]) => {
+  const filas = segs.map(([nombre, par, unidad, direccion]) => {
     const arr = serieDe(par);
     if (!arr) return '';
     // Un segmento puede medir otra cosa que su indicador: el costo unitario
     // por UEN va en soles aunque el margen sea un porcentaje.
-    const fmt = unidad ? Object.assign({}, ind, { unidad }) : ind;
+    const fmt = (unidad || direccion)
+      ? Object.assign({}, ind, unidad ? { unidad } : {}, direccion ? { direccion } : {})
+      : ind;
     const per = periodos();
     const iC = per.indexOf(mesParcial());
     const iX = per.indexOf(mesCerrado());
@@ -3152,7 +3159,10 @@ function avanceSegmentos(ind, meta, pct) {
     // costo unitario de TIGO no.
     const mismaUnidad = !unidad || unidad === ind.unidad;
     const dist = mismaUnidad ? distanciaMeta(fmt, curso, meta) : null;
-    const tri = triangulo(ind, cerrado, previo);
+    // Con `fmt`, no con `ind`: el costo unitario mejora cuando baja.
+    const tri = ind.tipo === 'acumula'
+      ? triangulo(fmt, cerrado, previo)
+      : triangulo(fmt, curso, cerrado);
     const col = dist ? (dist.bien ? 'var(--green)' : 'var(--red)') : 'var(--text3)';
     return `<tr class="av-seg">
       <td class="av-seg-n">${esc(nombre)}</td>
@@ -3212,7 +3222,14 @@ function dxpAvanceView() {
     }
 
     const dist = distanciaMeta(ind, curso, meta);
-    const tri  = triangulo(ind, cerrado, previo);
+    // Una tasa se puede comparar aunque el mes vaya a medias: un porcentaje
+    // es un porcentaje. Lo que se acumula, no — comparar trece días contra un
+    // mes entero daría −60% en facturación sin que nada haya pasado. Para
+    // esos se comparan los dos últimos meses cerrados y se dice cuáles son.
+    const compara = ind.tipo === 'acumula'
+      ? { a: cerrado, b: previo, pie: `${nombreMesCerrado()} vs el mes previo` }
+      : { a: curso,   b: cerrado, pie: '' };
+    const tri = triangulo(ind, compara.a, compara.b);
     const col  = dist ? (dist.bien ? 'var(--green)' : 'var(--red)') : 'var(--text3)';
 
     // Columna del centro: ritmo para lo que se acumula, distancia para tasas.
@@ -3276,7 +3293,8 @@ function dxpAvanceView() {
                      : chispaSerie(serie, col)}</td>
       <td class="av-cerrado">${cerrado == null
         ? '<span class="av-vacio">—</span>' : esc(fmtMeta(ind, cerrado))}</td>
-      <td>${triHtml}</td>
+      <td>${triHtml}${compara.pie
+        ? `<small class="av-vacio">${esc(compara.pie)}</small>` : ''}</td>
       <td>${veredicto}</td>
     </tr>
     ${tieneSeg ? `<tbody class="av-hijas" id="seg-${ind.clave}" hidden>

@@ -17,7 +17,8 @@
     "           'tasa'    = ya viene promediado, se mide por distancia a la meta.",
     "",
     "segmentos: series por unidad de negocio, planta o categoría que explican el indicador. La app las muestra al desplegar la fila, para poder ver de dónde viene el atraso en vez de solo que existe.",
-    "Un segmento puede llevar su propia unidad como tercer elemento: el costo unitario por UEN se mide en soles aunque su indicador padre sea un porcentaje."
+    "Un segmento puede llevar su propia unidad como tercer elemento: el costo unitario por UEN se mide en soles aunque su indicador padre sea un porcentaje.",
+    "Un segmento puede llevar tambien su propia direccion como cuarto elemento: el costo unitario mejora cuando baja, al reves que el margen que lo contiene."
   ],
   "actualizado": "2026-09-13",
   "indicadores": [
@@ -134,7 +135,8 @@
             "margen",
             "Costo unitario B&D"
           ],
-          "soles"
+          "soles",
+          "menor"
         ],
         [
           "Costo unitario TIGO",
@@ -142,7 +144,8 @@
             "margen",
             "Costo unitario TIGO"
           ],
-          "soles"
+          "soles",
+          "menor"
         ],
         [
           "Costo unitario MAQUILA",
@@ -150,7 +153,8 @@
             "margen",
             "Costo unitario MAQUILA"
           ],
-          "soles"
+          "soles",
+          "menor"
         ]
       ]
     },
