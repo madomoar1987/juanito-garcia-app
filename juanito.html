@@ -3287,9 +3287,20 @@ function avPeriodoEtiqueta(periodo) {
   const curso = mesParcial();
   if (!periodo) return '<span class="av-an-mes av-an-mes-ojo">mes sin confirmar</span>';
   const nom = nombreMes(periodo);
-  return periodo === curso
-    ? `<span class="av-an-mes">${esc(nom)}</span>`
-    : `<span class="av-an-mes av-an-mes-ojo">${esc(nom)} — no es el mes en curso</span>`;
+  if (periodo !== curso) {
+    return `<span class="av-an-mes av-an-mes-ojo">${esc(nom)} — no es el mes en curso</span>`;
+  }
+  // El mes en curso va siempre con su fecha de corte: "setiembre" a secas
+  // invita a leerlo como el mes completo, y son trece días.
+  const m = avanceDelMes();
+  return `<span class="av-an-mes">${esc(nom)}${m ? ' · al día ' + m.dia : ''}</span>`;
+}
+
+// "setiembre al día 13 de 30" — la vara contra la que se lee todo el panel.
+function avCorteTexto() {
+  const m = avanceDelMes();
+  const nom = nombreMes(mesParcial()) || '';
+  return m ? `${nom} al día ${m.dia} de ${m.dias}` : nom;
 }
 
 function avPP(x, dec) {
@@ -3823,7 +3834,7 @@ function avAnalisisHTML(an, id) {
     </div>`).join('');
   return `<tr class="av-an-fila" id="${id}" hidden><td colspan="8"><div class="av-an">
     <span class="av-an-cerrar" onclick="avanceAnalisis(event,'${id}')">cerrar ✕</span>
-    <div class="av-an-k">Análisis · ${esc(an.titulo)} · ${esc(nombreMes(mesParcial()) || '')}</div>
+    <div class="av-an-k">Análisis · ${esc(an.titulo)} · ${esc(avCorteTexto())}</div>
     ${an.tesis ? `<p class="av-an-t">${an.tesis}</p>` : ''}
     ${an.parrafos.map(p => `<p class="av-an-p">${p}</p>`).join('')}
     ${an.nota ? `<p class="av-an-falta">${an.nota}</p>` : ''}
