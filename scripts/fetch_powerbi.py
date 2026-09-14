@@ -1310,6 +1310,67 @@ def _tablas_dax(token, ws, dataset_id, query, label):
     return []
 
 
+def dax_sku_por_uen():
+    """Arma la consulta que cruza SKU con unidad de negocio.
+
+    Ninguna captura del Analizador de rendimiento hace ese cruce: la que trae
+    productos (86 filas) los da sin unidad de negocio, y la que sí trae unidad
+    de negocio (113 filas) llega solo hasta subcategoría. Pero las dos salen
+    del MISMO modelo y de la misma tabla de facturas, así que el cruce existe
+    en el modelo aunque no exista en ningún visual.
+
+    Lo único que se escribe a mano es la lista de columnas por las que se
+    agrupa. Los FILTROS —que son la parte delicada, y la causa del error de
+    septiembre con 'Peso total'— se copian literalmente de la captura, sin
+    tocarlos: si el reporte excluye chatarra, servicios y facturas anuladas,
+    esta consulta excluye exactamente lo mismo. Reescribirlos a mano sería
+    repetir aquel error.
+
+    Devuelve None si la captura no está disponible, para que la corrida siga
+    sin este detalle en vez de morirse.
+    """
+    # El índice por hash guarda una lista: el mismo visual puede haberse
+    # exportado varias veces. Cualquiera de esas copias sirve.
+    copias = _catalogo_por_hash().get("5bb77c922cd9") or []
+    if not copias:
+        return None
+    dax = (copias[0].get("dax") or "")
+    corte = dax.find("VAR __DS0Core")
+    if corte < 0 or "DEFINE" not in dax:
+        return None
+    cabecera = dax[:corte].rstrip()          # DEFINE + todos los VAR de filtro
+
+    # Los nombres de los filtros del reporte, en el orden en que los define.
+    filtros = [m for m in re.findall(r"VAR (__DS0FilterTable\d*)", cabecera)]
+    if not filtros:
+        return None
+
+    # La tabla de fechas es local del modelo y su nombre lleva un GUID: se lee
+    # de la propia captura en vez de fijarlo, porque cambia si republican.
+    m = re.search(r"'(LocalDateTable_[0-9a-f-]+)'", dax)
+    if not m:
+        return None
+    fecha = m.group(1)
+
+    cols = ",\n        ".join(f"{f}" for f in filtros)
+    return f"""{cabecera}
+
+    VAR __SKU =
+        SUMMARIZECOLUMNS(
+        'Exl A Maestra de Facturas de Venta'[DESCRIPCION],
+        'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],
+        '{fecha}'[Año],
+        '{fecha}'[NroMes],
+        {cols},
+        "Venta", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura TG 0])),
+        "Costo", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Costo Total])),
+        "Peso", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Peso total]))
+        )
+
+EVALUATE
+    __SKU
+"""
+
 def desglose_desde_captura(token, ws, candidatos, visual, columnas, limite=None):
     """Ejecuta una consulta capturada y devuelve sus filas como diccionarios.
 
@@ -2450,6 +2511,81 @@ def build_margen(found):
                 res["por_producto"] = filas[:15]
                 res["por_producto_meses"] = [f"{int(ant[0])}-{int(ant[1]):02d}",
                                              f"{int(act[0])}-{int(act[1]):02d}"]
+
+    # ── SKU por unidad de negocio: qué producto mueve el margen DENTRO de
+    # cada UEN. Mismo criterio de orden que por_producto: puntos de margen
+    # sobre el total de su unidad, no caída porcentual.
+    sku = found.get("__sku_por_uen") or []
+    if sku:
+        def _busca(f, suf):
+            for k, v in f.items():
+                if k.endswith(suf):
+                    return v
+            return None
+        por_uen_mes = {}
+        for f in sku:
+            nombre = (_busca(f, "[DESCRIPCION]") or "").strip()
+            uen = (_busca(f, "[TIPO DE NEGOCIO N1]") or "").strip()
+            v = to_float(_busca(f, "[Venta]"))
+            c = to_float(_busca(f, "[Costo]"))
+            pe = to_float(_busca(f, "[Peso]"))
+            anio, mes = to_float(_busca(f, "[Año]")), to_float(_busca(f, "[NroMes]"))
+            if not nombre or not uen or v is None or c is None or not v:
+                continue
+            if not anio or not mes:
+                continue
+            por_uen_mes.setdefault(uen, {}).setdefault((int(anio), int(mes)), {})[nombre] = (v, c, pe)
+        salida = {}
+        for uen, meses in por_uen_mes.items():
+            orden = sorted(meses)
+            if len(orden) < 2:
+                continue
+            ant, act = orden[-2], orden[-1]
+            total = sum(v for v, _, _ in meses[act].values()) or None
+            filas = []
+            for nombre, (v, c, pe) in meses[act].items():
+                if nombre not in meses[ant]:
+                    continue
+                v0, c0, pe0 = meses[ant][nombre]
+                if not v0:
+                    continue
+                mg0, mg1 = (v0 - c0) / v0, (v - c) / v
+                peso = v / total if total else 0
+                filas.append({
+                    "producto": nombre,
+                    "venta": fmt_soles(v),
+                    "peso": round(peso * 100, 1),
+                    "margen_previo": f"{mg0 * 100:.1f}%",
+                    "margen": f"{mg1 * 100:.1f}%",
+                    "precio_kg": f"S/{v / pe:.2f}" if pe else None,
+                    "precio_kg_previo": f"S/{v0 / pe0:.2f}" if pe0 else None,
+                    "delta_pp": round((mg1 - mg0) * 100, 2),
+                    "aporte_pp": round((mg1 - mg0) * peso * 100, 3),
+                })
+            if filas:
+                filas.sort(key=lambda x: x["aporte_pp"])
+                salida[uen] = filas[:12]
+        if salida:
+            anotar_derivado("margen_variable", "sku_por_uen", "aporte_pp",
+                            "(margen_mes − margen_previo) × peso del SKU en la "
+                            "venta de su unidad de negocio",
+                            "cuántos puntos del margen de esa UEN explica el SKU; "
+                            "ordena por impacto y no por caída porcentual, que "
+                            "premiaría a los irrelevantes")
+            anotar_derivado("margen_variable", "sku_por_uen", "precio_kg",
+                            "venta del SKU / kilos del SKU",
+                            "el cruce de SKU con unidad de negocio no existe en "
+                            "ningún visual: se arma con los filtros del reporte "
+                            "y el precio por kilo se deriva de venta y peso")
+            res["sku_por_uen"] = salida
+            res["sku_por_uen_meses"] = None
+            for uen, meses in por_uen_mes.items():
+                orden = sorted(meses)
+                if len(orden) >= 2:
+                    res["sku_por_uen_meses"] = [
+                        f"{orden[-2][0]}-{orden[-2][1]:02d}",
+                        f"{orden[-1][0]}-{orden[-1][1]:02d}"]
+                    break
 
     return res, ventas_val, margen_pct
 
@@ -3958,6 +4094,21 @@ def main():
                 if prod:
                     scanned.setdefault("margen", {})["__por_producto"] = prod
                     print(f"    ✓ Margen por producto: {len(prod)} filas")
+
+                # SKU cruzado con unidad de negocio. Ningún visual del reporte
+                # hace ese cruce, pero el modelo sí lo permite: es la única
+                # forma de responder "qué producto de B&D está cayendo" en vez
+                # de "algún producto de la empresa está cayendo".
+                q = dax_sku_por_uen()
+                if q:
+                    sku = _tablas_dax(token, ws_id, margen_ds_id, q,
+                                      "sku_por_uen")
+                    filas = (sku or [[]])[0]
+                    if filas:
+                        scanned.setdefault("margen", {})["__sku_por_uen"] = filas
+                        print(f"    ✓ SKU por unidad de negocio: {len(filas)} filas")
+                    else:
+                        print("    ✗ SKU por unidad de negocio: sin filas")
             except Exception as e:
                 print(f"    ✗ detalle de costos: {e}")
                 DIAGNOSTICO.append({"consulta": "detalle_costos", "http": 0,

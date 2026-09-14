@@ -3574,6 +3574,75 @@ function avBloqueSubcategorias(uen) {
   };
 }
 
+// ── Los SKU de una unidad de negocio.
+//
+// Es el nivel donde se puede poner foco de verdad. No sale de ningún visual
+// del reporte —ninguno cruza producto con unidad de negocio—; se arma con una
+// consulta propia que reusa los filtros del reporte sin tocarlos.
+function avBloqueSKU(uen) {
+  const mv = avReporte('margen_variable');
+  const todo = mv.sku_por_uen || {};
+  const meses = mv.sku_por_uen_meses || [];
+  // El nombre de la unidad en el tablero y en el modelo puede no coincidir
+  // exactamente ("B&D" / "B & D"), así que se compara sin espacios.
+  const llano = x => (x || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const clave = Object.keys(todo).find(k => llano(k) === llano(uen));
+  const filas = clave ? todo[clave] : null;
+  if (!filas || filas.length < 2) return null;
+
+  const cuerpo = filas.map(p => `
+    <tr${(p.aporte_pp || 0) < -0.05 ? ' class="av-an-foco"' : ''}>
+      <td>${esc(p.producto)}</td>
+      <td>${esc(p.venta || '—')}</td>
+      <td>${p.peso == null ? '—' : p.peso.toFixed(1) + '%'}</td>
+      <td>${esc(p.precio_kg_previo || '—')}</td>
+      <td>${esc(p.precio_kg || '—')}</td>
+      <td>${esc(p.margen_previo || '—')}</td>
+      <td>${esc(p.margen || '—')}</td>
+      <td style="color:${(p.aporte_pp || 0) < 0 ? 'var(--red)' : 'var(--green)'}">
+        ${avPP(p.aporte_pp, 2)}</td>
+    </tr>`).join('');
+
+  const caen = filas.filter(p => (p.aporte_pp || 0) < 0);
+  const lecturas = [];
+  if (caen.length) {
+    const top = caen.slice(0, 3);
+    const parte = top.reduce((a, p) => a + p.aporte_pp, 0);
+    const suma = caen.reduce((a, p) => a + p.aporte_pp, 0);
+    lecturas.push(`<p class="av-an-lee rojo"><b>Dónde enfocarse:</b> ` +
+      `${top.length} SKU explican ${avPP(parte)} de los ${avPP(suma)} que ` +
+      `${esc(uen)} perdió. El primero es <b>${esc(top[0].producto)}</b>: pasó de ` +
+      `${esc(top[0].margen_previo)} a ${esc(top[0].margen)} pesando ` +
+      `${(top[0].peso || 0).toFixed(1)}% de la venta de ${esc(uen)}.</p>`);
+    // Precio contra volumen: es la pregunta que decide con quién hablar.
+    const baja = caen.filter(p => avNum(p.precio_kg) != null &&
+                                  avNum(p.precio_kg_previo) != null &&
+                                  avNum(p.precio_kg) < avNum(p.precio_kg_previo));
+    if (baja.length) {
+      lecturas.push(`<p class="av-an-lee">De esos SKU, <b>${baja.length} bajaron su ` +
+        `precio por kilo</b> y el resto perdió margen por costo o por mezcla. ` +
+        `La columna de precio dice cuál es cuál: si el precio cayó, la ` +
+        `conversación es comercial; si no, es de planta o de compras.</p>`);
+    } else {
+      lecturas.push(`<p class="av-an-lee">Ninguno de esos SKU bajó su precio por ` +
+        `kilo: el margen se perdió por costo, no por precio. La conversación ` +
+        `empieza en planta y en compras, no en comercial.</p>`);
+    }
+  }
+
+  return {
+    titulo: `Por SKU — los productos de ${uen}`,
+    por: `Los productos de ${uen} ordenados por los puntos de margen que le quitan ` +
+      `a su unidad` +
+      (meses.length === 2 ? `, comparando ${nombreMes(meses[0])} contra ${nombreMes(meses[1])}` : '') +
+      `. Ningún visual del reporte cruza producto con unidad de negocio: esta tabla ` +
+      `se arma con una consulta propia que reusa los filtros del reporte sin cambiarlos.`,
+    cabecera: ['Producto', 'Venta', '% venta', 'Precio/kg previo', 'Precio/kg',
+               'Margen previo', 'Margen', 'Impacto'],
+    cuerpo, lecturas,
+  };
+}
+
 // ── Qué segmento explica la desviación de un indicador.
 //
 // Vale para cualquiera que tenga segmentos: merma, compras, margen. Compara
@@ -3689,6 +3758,8 @@ function analisisDe(ind, meta, segNombre) {
           `hablar de precios con comercial.</b>`);
       }
     }
+    const sku = avBloqueSKU(uen);
+    if (sku) bloques.push(sku);
     const sub = avBloqueSubcategorias(uen);
     if (sub) bloques.push(sub);
   }
@@ -3706,7 +3777,11 @@ function analisisDe(ind, meta, segNombre) {
   // empresa es prometer un detalle que esa fila no tiene.
   if (esUEN && !tesis && !bloques.length) return null;
 
-  if (ind.clave === 'margen') {
+  // Clientes y productos son de TODA la empresa: el reporte no los parte por
+  // unidad de negocio. Ponerlos dentro del panel de B&D los hacía leer como
+  // si fueran de B&D, que es exactamente lo que no son. Van solo en el nivel
+  // del indicador, donde sí corresponden.
+  if (ind.clave === 'margen' && !esUEN) {
     const cli = avBloqueClientes();
     if (cli) bloques.push(cli);
     const prod = avBloqueProductos();
@@ -3718,10 +3793,13 @@ function analisisDe(ind, meta, segNombre) {
   // El aviso que evita la lectura equivocada: dentro de una UEN, clientes y
   // productos siguen siendo los de toda la empresa.
   let nota = null;
-  if (esUEN && bloques.some(b => /cliente|producto/i.test(b.titulo))) {
-    nota = `Clientes y productos <b>no vienen partidos por unidad de negocio</b> en el ` +
-      `reporte: esas dos tablas son de toda la empresa, no solo de ${esc(uen)}. ` +
-      `El único corte que sí es de ${esc(uen)} es el de subcategorías.`;
+  if (esUEN && !bloques.length) {
+    nota = `Todavía no hay detalle publicado de ${esc(uen)}. Las tablas por SKU y ` +
+      `por subcategoría entran con la próxima corrida.`;
+  } else if (!esUEN && ind.clave === 'margen') {
+    nota = `Las tablas de clientes y productos son de <b>toda la empresa</b>: el ` +
+      `reporte no las parte por unidad de negocio. Para ver qué pasa dentro de una ` +
+      `unidad, abre su fila y su propio análisis.`;
   }
 
   return { tesis, parrafos, bloques, nota, titulo: esUEN ? `${uen} · ${ind.label}` : ind.label };
