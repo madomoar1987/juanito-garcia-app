@@ -759,12 +759,12 @@
             },
             {
               "label": "Consumo Prom 3M",
-              "valor": "13,714,985",
+              "valor": "13,610,597",
               "fuente": "reporte"
             },
             {
               "label": "Consumo Prom 6M",
-              "valor": "13,827,313",
+              "valor": "13,768,122",
               "fuente": "reporte"
             },
             {
@@ -1363,7 +1363,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "yellow",
+          "estado": "red",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
@@ -1466,6 +1466,11 @@
     "pct": 96.8
   },
   "diagnostico": [
+    {
+      "consulta": "detalle_costos",
+      "http": 0,
+      "error": "UnboundLocalError(\"cannot access local variable 'margen_ds_id' where it is not associated with a value\")"
+    },
     {
       "consulta": "merma_total_incoherente",
       "http": 200,

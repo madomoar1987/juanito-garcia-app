@@ -116,7 +116,7 @@
           "medida": "% Avance",
           "valores_distintos": 3,
           "meses_con_dato": 21,
-          "amplitud_relativa_pct": 115.9846,
+          "amplitud_relativa_pct": 116.2125,
           "repeticiones_del_valor_mas_comun": 15,
           "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
         }
@@ -1007,7 +1007,7 @@
         114.14468752325386,
         109.7840709882918,
         107.00593039310002,
-        106.07034837698936
+        106.37959137517299
       ]
     },
     "consumo": {
