@@ -1533,6 +1533,23 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
 .av-an-tabla tr:last-child td { border-bottom:none; }
 .av-an-foco td { background:var(--red-bg); }
+.av-an-ene { color:var(--text3); }
+.av-pr { margin:0 0 16px; }
+.av-pr-k { font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--yellow); font-weight:600; margin-bottom:8px; }
+.av-pr-g { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:10px; }
+.av-pr .pr-item { border:1px solid var(--border); border-left:3px solid var(--text3);
+  border-radius:5px; padding:10px 12px; background:var(--card); }
+.av-pr .pr-item.pr-grave { border-left-color:var(--red); }
+.av-pr .pr-item.pr-ok { border-left-color:var(--green); }
+.av-pr .pr-n { font-size:19px; font-weight:700; color:var(--red);
+  font-variant-numeric:tabular-nums; }
+.av-pr .pr-q { font-size:12.5px; margin-top:3px; line-height:1.35; }
+.av-pr .pr-r { font-size:11px; color:var(--text3); margin-top:5px;
+  font-variant-numeric:tabular-nums; }
+/* Con todos los SKU la tabla se hace larga: la cabecera se queda a la vista. */
+.av-an-tabla thead th { position:sticky; top:0; background:var(--card2); z-index:1; }
 .av-an-lee { border-left:2px solid var(--yellow); padding-left:13px; margin:12px 0 0;
   color:var(--text2); }
 .av-an-lee.rojo { border-left-color:var(--red); }
@@ -3304,6 +3321,54 @@ function avCorteTexto() {
   return m ? `${nom} al día ${m.dia} de ${m.dias}` : nom;
 }
 
+// Soles con signo, cortos. "−S/18,400" se lee de un vistazo; "-18400.35" no.
+function avSoles0(v) {
+  if (v == null) return '—';
+  const a = Math.abs(v);
+  const t = a >= 1e6 ? 'S/' + (a / 1e6).toFixed(2) + 'M'
+          : a >= 1000 ? 'S/' + Math.round(a).toLocaleString('es-PE')
+          : 'S/' + Math.round(a);
+  return (v < 0 ? '−' : '+') + t;
+}
+
+// Lo que hay que atender primero, ordenado por dinero y no por porcentaje.
+// Un CEO no prioriza puntos: prioriza soles, y necesita saber si la cosa
+// viene cayendo desde enero o si se movió una sola vez.
+function avPrioridad(filas, nombreCol, uen) {
+  const con = filas.filter(f => f.soles_mes != null && f.soles_mes < 0);
+  if (!con.length) return '';
+  const orden = con.slice().sort((a, b) => a.soles_mes - b.soles_mes);
+  const total = orden.reduce((s, f) => s + f.soles_mes, 0);
+  const top = orden.slice(0, 3);
+  const parte = top.reduce((s, f) => s + f.soles_mes, 0);
+  const fichas = top.map(f => {
+    // Enero → previo → hoy: dice si es una tendencia o un tropiezo.
+    const e = avNum(f.margen_enero), p = avNum(f.margen_previo), h = avNum(f.margen);
+    let ruta = '', clase = '';
+    if (e != null && p != null && h != null) {
+      if (h < p && p < e) { ruta = 'cae desde enero'; clase = 'pr-grave'; }
+      else if (h < p && p >= e) { ruta = 'venía bien, cayó este mes'; }
+      else if (h > p && p < e) { ruta = 'se está recuperando'; clase = 'pr-ok'; }
+      else { ruta = 'estable'; }
+    }
+    return `<div class="pr-item ${clase}">
+      <div class="pr-n">${avSoles0(f.soles_mes)}</div>
+      <div class="pr-q">${esc(f[nombreCol] || '')}</div>
+      <div class="pr-r">${esc(f.margen_enero || '—')} → ${esc(f.margen_previo || '—')}
+        → <b>${esc(f.margen || '—')}</b>${ruta ? ' · ' + ruta : ''}</div>
+    </div>`;
+  }).join('');
+  return `<div class="av-pr">
+    <div class="av-pr-k">Dónde priorizar${uen ? ' en ' + esc(uen) : ''} · por dinero</div>
+    <div class="av-pr-g">${fichas}</div>
+    <p class="av-an-lee rojo" style="margin-top:12px">Estos ${top.length} explican
+      <b>${avSoles0(parte)}</b> de los ${avSoles0(total)} de margen que se perdieron
+      contra el mes previo — el ${Math.round(parte / total * 100)}% del problema en
+      ${top.length} decisiones. Los otros ${orden.length - top.length} suman
+      ${avSoles0(total - parte)}.</p>
+  </div>`;
+}
+
 function avPP(x, dec) {
   if (x == null) return '—';
   const d = dec == null ? 2 : dec;
@@ -3579,10 +3644,13 @@ function avBloqueSKU(uen) {
       <td>${p.peso == null ? '—' : p.peso.toFixed(1) + '%'}</td>
       <td>${esc(p.precio_kg_previo || '—')}</td>
       <td>${esc(p.precio_kg || '—')}</td>
+      <td class="av-an-ene">${esc(p.margen_enero || '—')}</td>
       <td>${esc(p.margen_previo || '—')}</td>
       <td>${esc(p.margen || '—')}</td>
       <td style="color:${(p.aporte_pp || 0) < 0 ? 'var(--red)' : 'var(--green)'}">
         ${avPP(p.aporte_pp, 2)}</td>
+      <td style="color:${(p.soles_mes || 0) < 0 ? 'var(--red)' : 'var(--green)'};font-weight:600">
+        ${avSoles0(p.soles_mes)}</td>
     </tr>`).join('');
 
   const caen = sanas.filter(p => (p.aporte_pp || 0) < 0);
@@ -3622,14 +3690,18 @@ function avBloqueSKU(uen) {
 
   return {
     periodo: meses.length === 2 ? meses[1] : null,
+    prioridad: avPrioridad(sanas, 'producto', uen),
     titulo: `Por SKU — los productos de ${uen}`,
     por: `Los productos de ${uen} ordenados por los puntos de margen que le quitan ` +
       `a su unidad` +
       (meses.length === 2 ? `, comparando ${nombreMes(meses[0])} contra ${nombreMes(meses[1])}` : '') +
-      `. Ningún visual del reporte cruza producto con unidad de negocio: esta tabla ` +
-      `se arma con una consulta propia que reusa los filtros del reporte sin cambiarlos.`,
+      `. Están los ${filas.length} SKU de la unidad, no solo los peores: la cola larga ` +
+      `es donde se acumulan las fugas que nadie mira. La columna de enero muestra el ` +
+      `recorrido del año, no solo el último salto. Ningún visual del reporte cruza ` +
+      `producto con unidad de negocio: esta tabla se arma con una consulta propia que ` +
+      `reusa los filtros del reporte sin cambiarlos.`,
     cabecera: ['Producto', 'Venta', '% venta', 'Precio/kg previo', 'Precio/kg',
-               'Margen previo', 'Margen', 'Impacto'],
+               'Margen enero', 'Margen previo', 'Margen', 'Impacto', 'S/ del mes'],
     cuerpo, lecturas,
   };
 }
@@ -3645,26 +3717,54 @@ function avBloqueSubcategorias(uen) {
     ? det.filter(d => (d.negocio || '').toUpperCase().indexOf(uen.toUpperCase()) >= 0)
     : det;
   if (suyas.length < 2) return null;
-  const cuerpo = suyas.slice(0, 15).map(d => {
-    const m = avNum(d.margen);
-    return `<tr>
+  const mv2 = avReporte('margen_variable');
+  const mm = mv2.detalle_costos_meses || [];
+  const cuerpo = suyas.map(d => `
+    <tr${(d.aporte_pp || 0) < -0.05 ? ' class="av-an-foco"' : ''}>
       <td>${esc(d.subcategoria || d.categoria)}</td>
       <td>${esc(d.venta || '—')}</td>
+      <td>${d.peso == null ? '—' : d.peso.toFixed(1) + '%'}</td>
       <td>${esc(d.precio_kg || '—')}</td>
       <td>${esc(d.costo_kg || '—')}</td>
-      <td>${d.margen ? esc(d.margen) : '—'}</td>
-    </tr>`;
-  }).join('');
+      <td class="av-an-ene">${esc(d.margen_enero || '—')}</td>
+      <td>${esc(d.margen_previo || '—')}</td>
+      <td>${esc(d.margen || '—')}</td>
+      <td style="color:${(d.aporte_pp || 0) < 0 ? 'var(--red)' : 'var(--green)'}">
+        ${d.aporte_pp == null ? '—' : avPP(d.aporte_pp)}</td>
+      <td style="color:${(d.soles_mes || 0) < 0 ? 'var(--red)' : 'var(--green)'};font-weight:600">
+        ${avSoles0(d.soles_mes)}</td>
+    </tr>`).join('');
+
+  // El recorrido del año, en una frase: cuántas subcategorías están peor que
+  // en enero. Un margen que cae dos meses seguidos no es lo mismo que uno que
+  // se movió una vez.
+  const lecturas = [];
+  const conEne = suyas.filter(d => avNum(d.margen_enero) != null && avNum(d.margen) != null);
+  if (conEne.length >= 2) {
+    const peor = conEne.filter(d => avNum(d.margen) < avNum(d.margen_enero));
+    const p0 = conEne.slice().sort((a, b) =>
+      (avNum(a.margen) - avNum(a.margen_enero)) - (avNum(b.margen) - avNum(b.margen_enero)))[0];
+    lecturas.push(`<p class="av-an-lee ${peor.length > conEne.length / 2 ? 'rojo' : ''}">` +
+      `<b>Contra enero:</b> ${peor.length} de ${conEne.length} subcategorías están ` +
+      `por debajo de como empezaron el año. La que más retrocedió es ` +
+      `${esc(p0.subcategoria || p0.categoria)}: ${esc(p0.margen_enero)} en enero, ` +
+      `${esc(p0.margen)} hoy.</p>`);
+  }
+
   return {
     periodo: avReporte('margen_variable').detalle_costos_periodo || null,
+    prioridad: avPrioridad(suyas, 'subcategoria', uen),
     titulo: uen ? `Por subcategoría — el corte que sí es de ${uen}`
                 : 'Por subcategoría',
     por: uen
-      ? `Precio y costo por kilo de las subcategorías de ${uen}, ordenadas por venta. ` +
-        `Es el mayor detalle que el reporte entrega dentro de una unidad de negocio.`
+      ? `Precio y costo por kilo de las subcategorías de ${uen}, ordenadas por venta, ` +
+        `con su margen en enero y en el mes previo al lado del actual para ver si ` +
+        `vienen avanzando o retrocediendo. Es el mayor detalle que el reporte entrega ` +
+        `dentro de una unidad de negocio.`
       : 'Precio y costo por kilo por subcategoría, ordenadas por venta.',
-    cabecera: ['Subcategoría', 'Venta', 'Precio/kg', 'Costo/kg', 'Margen'],
-    cuerpo, lecturas: [],
+    cabecera: ['Subcategoría', 'Venta', '% venta', 'Precio/kg', 'Costo/kg',
+               'Margen enero', 'Margen previo', 'Margen', 'Impacto', 'S/ del mes'],
+    cuerpo, lecturas,
   };
 }
 
@@ -3835,6 +3935,7 @@ function avAnalisisHTML(an, id) {
     <div class="av-an-blq">
       <h4>${b.titulo} ${b.periodo === undefined ? '' : avPeriodoEtiqueta(b.periodo)}</h4>
       <p class="av-an-por">${b.por}</p>
+      ${b.prioridad || ''}
       <div style="overflow-x:auto">
         <table class="av-an-tabla">
           <thead><tr>${b.cabecera.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead>

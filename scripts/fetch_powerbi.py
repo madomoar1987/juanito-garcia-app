@@ -2483,47 +2483,92 @@ def build_margen(found):
     # Detalle de costos por categoría. Se ordena por venta: lo que mueve el
     # margen es donde hay volumen, no la categoría con el peor porcentaje.
     crudo = found.get("__detalle_costos") or []
-    # La consulta agrupa por mes: sin filtrar, la misma subcategoría entraba
-    # una vez por cada mes del año y la tabla mezclaba períodos. Se toma el
-    # último mes con dato, que es el que mira el resto del tablero.
-    ultimo = None
-    for f in crudo:
-        a, m = to_float(f.get("anio")), to_float(f.get("mes"))
-        if a and m:
-            ultimo = max(ultimo or (0, 0), (int(a), int(m)))
-    if ultimo:
-        crudo = [f for f in crudo
-                 if (to_float(f.get("anio")), to_float(f.get("mes"))) == ultimo]
-    det = []
+    # La consulta agrupa por mes. En vez de quedarse solo con el último, se
+    # arma la línea de tiempo de cada subcategoría: enero, el mes previo y el
+    # mes en curso. Ver "43.0%" a secas no dice si esa subcategoría viene
+    # mejorando o cayendo desde principio de año, que es la pregunta.
+    linea = {}
     for f in crudo:
         cat = (f.get("categoria") or "").strip()
-        precio = to_float(f.get("precio_kg"))
-        costo = to_float(f.get("costo_kg"))
+        precio, costo = to_float(f.get("precio_kg")), to_float(f.get("costo_kg"))
         venta = to_float(f.get("venta"))
-        if not cat or precio is None or not precio:
+        a, m = to_float(f.get("anio")), to_float(f.get("mes"))
+        if not cat or precio is None or not precio or not a or not m:
             continue
+        clave = (cat, (f.get("subcategoria") or "").strip() or None,
+                 (f.get("negocio") or "").strip() or None)
+        linea.setdefault(clave, {})[(int(a), int(m))] = (venta, precio, costo)
+
+    meses_todos = sorted({k for v in linea.values() for k in v})
+    ultimo = meses_todos[-1] if meses_todos else None
+    previo = meses_todos[-2] if len(meses_todos) > 1 else None
+    enero = next((k for k in meses_todos if ultimo and k[0] == ultimo[0] and k[1] == 1), None)
+
+    def _mg(t):
+        if not t:
+            return None
+        _, pr, co = t
+        return None if (pr is None or not pr or co is None) else (pr - co) / pr
+
+    # El peso de cada línea dentro de su unidad de negocio: sin él, una
+    # subcategoría chica que cae mucho parece más grave que una grande que
+    # cae poco.
+    total_neg = {}
+    for (cat, sub, neg), v in linea.items():
+        t = v.get(ultimo)
+        if t and t[0]:
+            total_neg[neg] = total_neg.get(neg, 0) + abs(t[0])
+
+    det = []
+    for (cat, sub, neg), v in linea.items():
+        act = v.get(ultimo)
+        if not act:
+            continue
+        venta, precio, costo = act
+        mg, mg0, mg_ene = _mg(act), _mg(v.get(previo)), _mg(v.get(enero))
+        peso = (abs(venta or 0) / total_neg[neg]) if total_neg.get(neg) else 0
         det.append({
             "categoria": cat,
-            "subcategoria": (f.get("subcategoria") or "").strip() or None,
-            "negocio": (f.get("negocio") or "").strip() or None,
+            "subcategoria": sub,
+            "negocio": neg,
             "venta": fmt_soles(venta) if venta is not None else None,
+            "peso": round(peso * 100, 1),
             "precio_kg": f"S/{precio:.2f}",
             "costo_kg": f"S/{costo:.2f}" if costo is not None else None,
-            "margen": (f"{(precio - costo) / precio * 100:.1f}%"
-                       if costo is not None else None),
+            "margen_enero": f"{mg_ene * 100:.1f}%" if mg_ene is not None else None,
+            "margen_previo": f"{mg0 * 100:.1f}%" if mg0 is not None else None,
+            "margen": f"{mg * 100:.1f}%" if mg is not None else None,
+            "delta_pp": (round((mg - mg0) * 100, 2)
+                         if mg is not None and mg0 is not None else None),
+            "aporte_pp": (round((mg - mg0) * peso * 100, 3)
+                          if mg is not None and mg0 is not None else None),
+            "soles_mes": (round((mg - mg0) * (venta or 0))
+                          if mg is not None and mg0 is not None else None),
+            "soles_enero": (round((mg - mg_ene) * (venta or 0))
+                            if mg is not None and mg_ene is not None else None),
             "_v": abs(venta or 0),
         })
     if det and ultimo:
         res["detalle_costos_periodo"] = f"{ultimo[0]}-{ultimo[1]:02d}"
+        res["detalle_costos_meses"] = [
+            f"{x[0]}-{x[1]:02d}" if x else None for x in (enero, previo, ultimo)]
     if det:
         anotar_derivado("margen_variable", "detalle_costos", "margen",
                         "(precio_kg − costo_kg) / precio_kg",
                         "el detalle publica precio y costo por kilo pero no el "
                         "margen de cada línea; se deriva de sus dos cifras")
+        anotar_derivado("margen_variable", "detalle_costos", "soles_mes",
+                        "(margen del mes − margen del mes previo) × venta del mes",
+                        "traduce el cambio de margen a dinero, que es por lo que se prioriza")
+        anotar_derivado("margen_variable", "detalle_costos", "aporte_pp",
+                        "(margen − margen del mes previo) × peso en la venta "
+                        "de su unidad de negocio",
+                        "cuántos puntos del margen de esa unidad explica la "
+                        "subcategoría")
         det.sort(key=lambda x: -x["_v"])
         for x in det:
             x.pop("_v", None)
-        res["detalle_costos"] = det[:40]
+        res["detalle_costos"] = det
 
     # ── Qué producto movió el margen entre los dos últimos meses con dato.
     #
@@ -2615,6 +2660,10 @@ def build_margen(found):
             if len(orden) < 2:
                 continue
             ant, act = orden[-2], orden[-1]
+            # Enero del mismo año, para ver el recorrido completo del SKU y no
+            # solo el último salto. La consulta ya trae el año entero: enero
+            # estaba llegando y se descartaba.
+            ene = next((k for k in orden if k[0] == act[0] and k[1] == 1), None)
             total = sum(v for v, _, _, _ in meses[act].values()) or None
             filas = []
             for nombre, (v, c, pe, sub) in meses[act].items():
@@ -2624,6 +2673,11 @@ def build_margen(found):
                 if not v0:
                     continue
                 mg0, mg1 = (v0 - c0) / v0, (v - c) / v
+                mg_ene = None
+                if ene and nombre in meses[ene]:
+                    ve, ce, _, _ = meses[ene][nombre]
+                    if ve:
+                        mg_ene = (ve - ce) / ve
                 peso = v / total if total else 0
                 # Un margen fuera de [-100%, 100%] no es un margen: es costo
                 # cargado sin su venta, una devolución o un ajuste contable.
@@ -2638,17 +2692,41 @@ def build_margen(found):
                     "sospechoso": sospechoso or None,
                     "venta": fmt_soles(v),
                     "peso": round(peso * 100, 1),
+                    "margen_enero": (f"{mg_ene * 100:.1f}%"
+                                     if mg_ene is not None else None),
                     "margen_previo": f"{mg0 * 100:.1f}%",
                     "margen": f"{mg1 * 100:.1f}%",
                     "precio_kg": f"S/{v / pe:.2f}" if pe else None,
                     "precio_kg_previo": f"S/{v0 / pe0:.2f}" if pe0 else None,
                     "delta_pp": round((mg1 - mg0) * 100, 2),
                     "aporte_pp": round((mg1 - mg0) * peso * 100, 3),
+                    # Lo que ese cambio de margen vale en dinero sobre la venta
+                    # del mes. Es la cifra por la que se prioriza: los puntos
+                    # ordenan mal — 20 puntos sobre S/2,000 no valen la reunión
+                    # que sí vale 3 puntos sobre S/500,000.
+                    "soles_mes": round((mg1 - mg0) * v),
+                    "soles_enero": (round((mg1 - mg_ene) * v)
+                                    if mg_ene is not None else None),
                 })
             if filas:
                 filas.sort(key=lambda x: x["aporte_pp"])
-                salida[uen] = filas[:12]
+                # Sin recorte: el pedido es ver TODOS los SKU. Un tope de doce
+                # esconde justo la cola larga, que es donde se acumulan las
+                # fugas chicas que nadie mira.
+                salida[uen] = filas
         if salida:
+            n = sum(len(v) for v in salida.values())
+            print(f"    · SKU publicados: {n} en {len(salida)} unidades "
+                  f"({', '.join(f'{k} {len(v)}' for k, v in salida.items())})")
+            anotar_derivado("margen_variable", "sku_por_uen", "margen_enero",
+                            "(venta − costo) / venta del SKU en enero",
+                            "enero del mismo año, para ver el recorrido "
+                            "completo y no solo el último salto")
+            anotar_derivado("margen_variable", "sku_por_uen", "soles_mes",
+                            "(margen del mes − margen del mes previo) × venta "
+                            "del mes",
+                            "traduce el cambio de margen a dinero, que es por "
+                            "lo que se prioriza")
             anotar_derivado("margen_variable", "sku_por_uen", "aporte_pp",
                             "(margen_mes − margen_previo) × peso del SKU en la "
                             "venta de su unidad de negocio",
