@@ -1319,6 +1319,12 @@ def dax_sku_por_uen():
     del MISMO modelo y de la misma tabla de facturas, así que el cruce existe
     en el modelo aunque no exista en ningún visual.
 
+    Se agrupa por [producto], que es el SKU. NO por [DESCRIPCION]: esa columna
+    parece un nombre de producto y no lo es — guarda el tipo de documento
+    (FACTURA, BOLETA, NOTA DE CREDITO). La primera versión de esta consulta se
+    agrupó por ahí y devolvió tres "productos" por unidad de negocio, que era
+    la pista de que la columna no era la correcta.
+
     Lo único que se escribe a mano es la lista de columnas por las que se
     agrupa. Los FILTROS —que son la parte delicada, y la causa del error de
     septiembre con 'Peso total'— se copian literalmente de la captura, sin
@@ -1357,7 +1363,8 @@ def dax_sku_por_uen():
 
     VAR __SKU =
         SUMMARIZECOLUMNS(
-        'Exl A Maestra de Facturas de Venta'[DESCRIPCION],
+        'Exl A Maestra de Facturas de Venta'[producto],
+        'Exl A Maestra de Facturas de Venta'[Subcategoria],
         'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],
         '{fecha}'[Año],
         '{fecha}'[NroMes],
@@ -2508,8 +2515,13 @@ def build_margen(found):
                                 "producto; ordena por impacto y no por caída "
                                 "porcentual, que premiaría a los irrelevantes")
                 filas.sort(key=lambda x: x["aporte_pp"])
-                res["por_producto"] = filas[:15]
-                res["por_producto_meses"] = [f"{int(ant[0])}-{int(ant[1]):02d}",
+                # NO se publica: la captura agrupa por [DESCRIPCION], que es el
+                # tipo de documento (FACTURA, BOLETA, NOTA DE CREDITO), no el
+                # producto. Se conserva el cálculo porque la consulta sí sirve
+                # para vigilar el margen por tipo de documento, pero publicarlo
+                # como "por producto" era decir algo falso.
+                res["por_documento"] = filas[:15]
+                res["por_documento_meses"] = [f"{int(ant[0])}-{int(ant[1]):02d}",
                                              f"{int(act[0])}-{int(act[1]):02d}"]
 
     # ── SKU por unidad de negocio: qué producto mueve el margen DENTRO de
@@ -2524,8 +2536,9 @@ def build_margen(found):
             return None
         por_uen_mes = {}
         for f in sku:
-            nombre = (_busca(f, "[DESCRIPCION]") or "").strip()
+            nombre = (_busca(f, "[producto]") or "").strip()
             uen = (_busca(f, "[TIPO DE NEGOCIO N1]") or "").strip()
+            sub = (_busca(f, "[Subcategoria]") or "").strip()
             v = to_float(_busca(f, "[Venta]"))
             c = to_float(_busca(f, "[Costo]"))
             pe = to_float(_busca(f, "[Peso]"))
@@ -2534,25 +2547,27 @@ def build_margen(found):
                 continue
             if not anio or not mes:
                 continue
-            por_uen_mes.setdefault(uen, {}).setdefault((int(anio), int(mes)), {})[nombre] = (v, c, pe)
+            por_uen_mes.setdefault(uen, {}).setdefault(
+                (int(anio), int(mes)), {})[nombre] = (v, c, pe, sub)
         salida = {}
         for uen, meses in por_uen_mes.items():
             orden = sorted(meses)
             if len(orden) < 2:
                 continue
             ant, act = orden[-2], orden[-1]
-            total = sum(v for v, _, _ in meses[act].values()) or None
+            total = sum(v for v, _, _, _ in meses[act].values()) or None
             filas = []
-            for nombre, (v, c, pe) in meses[act].items():
+            for nombre, (v, c, pe, sub) in meses[act].items():
                 if nombre not in meses[ant]:
                     continue
-                v0, c0, pe0 = meses[ant][nombre]
+                v0, c0, pe0, _ = meses[ant][nombre]
                 if not v0:
                     continue
                 mg0, mg1 = (v0 - c0) / v0, (v - c) / v
                 peso = v / total if total else 0
                 filas.append({
                     "producto": nombre,
+                    "subcategoria": sub or None,
                     "venta": fmt_soles(v),
                     "peso": round(peso * 100, 1),
                     "margen_previo": f"{mg0 * 100:.1f}%",
