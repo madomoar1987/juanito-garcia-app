@@ -2211,7 +2211,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "yellow",
+          "estado": "red",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
