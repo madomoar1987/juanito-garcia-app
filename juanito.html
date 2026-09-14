@@ -3460,6 +3460,27 @@ function avTextoMecanismo(nombre, m) {
 // Un precio que sube y baja 20% mes a mes no es una decisión de precios: es la
 // mezcla de lo que se vendió cambiando. Distinguirlo antes de ir a comercial
 // evita una conversación equivocada.
+// El recorrido del año de una unidad de negocio: enero, el mes cerrado y el
+// mes en curso, más cuántos meses seguidos lleva cayendo. Responde "¿venimos
+// avanzando?", que es distinto de "¿cómo cerró el mes?".
+function avRecorridoUEN(nombre) {
+  const arr = serieDe(['margen', '% Margen ' + nombre]);
+  const per = periodos();
+  if (!arr || !per.length) return null;
+  const anio = (mesParcial() || '').slice(0, 4);
+  const iEne = per.indexOf(anio + '-01');
+  const ene = iEne >= 0 ? arr[iEne] : null;
+  const hoy = arr[per.indexOf(mesParcial())];
+  const cerr = arr[per.indexOf(mesCerrado())];
+  if (ene == null || hoy == null) return null;
+  // Meses seguidos cayendo, contando hacia atrás desde el último dato.
+  const desde = iEne >= 0 ? iEne : 0;
+  const v = arr.slice(desde, per.indexOf(mesParcial()) + 1).filter(x => x != null);
+  let seguidos = 0;
+  for (let i = v.length - 1; i > 0 && v[i] < v[i - 1]; i--) seguidos++;
+  return { ene, cerr, hoy, seguidos, meses: v.length };
+}
+
 function avVolatilidad(nombre) {
   const mg = serieDe(['margen', '% Margen ' + nombre]);
   const co = serieDe(['margen', 'Costo unitario ' + nombre]);
@@ -3713,9 +3734,13 @@ function avBloqueSKU(uen) {
 function avBloqueSubcategorias(uen) {
   const det = (avReporte('margen_variable').detalle_costos) || [];
   if (!det.length) return null;
-  const suyas = uen
+  // Las filas sin subcategoría son subtotales del ROLLUP (el total de la
+  // unidad, el de su tipo de negocio). Tienen dato bueno, pero no son
+  // subcategorías: en esta tabla se leerían como una linea más y duplicarían
+  // la venta.
+  const suyas = (uen
     ? det.filter(d => (d.negocio || '').toUpperCase().indexOf(uen.toUpperCase()) >= 0)
-    : det;
+    : det).filter(d => d.subcategoria);
   if (suyas.length < 2) return null;
   const mv2 = avReporte('margen_variable');
   const mm = mv2.detalle_costos_meses || [];
@@ -3875,6 +3900,21 @@ function analisisDe(ind, meta, segNombre) {
         `${nombreMesCerrado()} y ${avSoles(m.p1)} en ` +
         `${nombreMes(mesParcial())}. Es un valor <b>derivado</b> — costo unitario ` +
         `dividido entre uno menos el margen —, no una cifra que publique el reporte.`);
+      const rec = avRecorridoUEN(uen);
+      if (rec) {
+        const dif = (rec.hoy - rec.ene) * 100;
+        parrafos.push(`<b>El recorrido del año:</b> ${avPct(rec.ene)} en enero, ` +
+          `${avPct(rec.cerr)} en ${nombreMesCerrado()}, ${avPct(rec.hoy)} hoy — ` +
+          `${dif < 0 ? 'son ' + Math.abs(dif).toFixed(1) + ' puntos menos que como '
+             + 'empezó el año' : 'son ' + dif.toFixed(1) + ' puntos más que en enero'}. ` +
+          (rec.seguidos >= 2
+            ? `Lleva <b>${rec.seguidos} meses seguidos bajando</b>: no es un mes malo, ` +
+              `es una tendencia.`
+            : rec.seguidos === 1
+              ? `Cayó este mes después de venir estable: conviene ver si se repite ` +
+                `antes de mover algo.`
+              : `Viene subiendo en el último tramo.`));
+      }
       const vol = avVolatilidad(uen);
       if (vol && vol.inestable) {
         parrafos.push(`El precio implícito salta de ${avSoles(vol.lo)} a ` +
