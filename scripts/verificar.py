@@ -21,6 +21,7 @@ Uso:  python3 scripts/verificar.py
 import importlib.util
 import os
 import ast
+from collections import Counter
 import collections
 import re
 import sys
@@ -360,6 +361,26 @@ def test_variable_antes_de_asignar(src, archivo):
 
 
 
+def test_js_sin_nombres_repetidos(html):
+    """Funciones definidas dos veces en juanito.html.
+
+    En JavaScript la segunda definición gana en silencio: la app sigue
+    funcionando, pero ejecuta la versión vieja. Pasó al restaurar un bloque
+    borrado por error — el arreglo que se acababa de hacer dejó de aplicarse y
+    la pantalla mostraba lo de antes sin ningún aviso.
+
+    El equivalente en Python ya se revisa; faltaba el del navegador, que es
+    donde el fallo es mudo.
+    """
+    print("\n9. Funciones repetidas en juanito.html")
+    nombres = re.findall(r"^function\s+([A-Za-z_$][\w$]*)\s*\(", html, re.M)
+    repes = {n: c for n, c in Counter(nombres).items() if c > 1}
+    revisar(not repes,
+            f"{len(nombres)} funciones, ninguna repetida" if not repes
+            else "REPETIDAS: " + ", ".join(f"{n} (×{c})" for n, c in repes.items()))
+
+
+
 def main():
     src_pbi = leer("scripts", "fetch_powerbi.py")
     src_ser = leer("scripts", "fetch_series.py")
@@ -374,6 +395,7 @@ def main():
     test_funciones_usadas(src_ser, "serie_", "fetch_series.py")
     test_variable_antes_de_asignar(src_pbi, "fetch_powerbi.py")
     test_variable_antes_de_asignar(src_ser, "fetch_series.py")
+    test_js_sin_nombres_repetidos(html)
     salidas = test_construccion(cargar_fetch_powerbi())
     test_campos(salidas, html)
 

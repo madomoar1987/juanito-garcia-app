@@ -1900,6 +1900,15 @@ const KPI_DECISION = {
 
 // ── Utilidades de serie ─────────────────────────────────────
 function serieDe(dsKey, medida) {
+  // Dos formas de llamarla, porque conviven dos estilos en la app:
+  //   serieDe('margen', '% Margen Variable')   ← KPI_SOURCE
+  //   serieDe(['margen', '% Margen Variable']) ← metas.json
+  // Hubo un tiempo dos funciones con este nombre y la segunda tapaba a la
+  // primera: analizar() devolvía null para todos los KPIs, en silencio.
+  if (Array.isArray(dsKey)) {
+    medida = dsKey[1];
+    dsKey = dsKey[0];
+  }
   if (!SERIES || !SERIES.datasets) return null;
   const ds = SERIES.datasets[dsKey];
   if (!ds) return null;
@@ -1914,7 +1923,8 @@ function serieDe(dsKey, medida) {
       return (pv - cv) / pv;
     });
   }
-  return ds[medida] || null;
+  const arr = ds[medida];
+  return Array.isArray(arr) ? arr : null;
 }
 
 function periodos() { return (SERIES && SERIES.periodos) || []; }
@@ -3026,13 +3036,6 @@ function avanceDelMes() {
   return { periodo: per, anio: a, mes: m, dias, dia, fraccion: dia / dias };
 }
 
-function serieDe(par) {
-  if (!par || !SERIES || !SERIES.datasets) return null;
-  const [ds, clave] = par;
-  const arr = SERIES.datasets[ds] && SERIES.datasets[ds][clave];
-  return Array.isArray(arr) ? arr : null;
-}
-
 // Valor del mes en curso y del último mes cerrado, de una serie.
 function valoresDe(ind) {
   const per = periodos();
@@ -3514,9 +3517,23 @@ function avBloqueSKU(uen) {
   const filas = clave ? todo[clave] : null;
   if (!filas || filas.length < 2) return null;
 
+  // Las filas con margen imposible se muestran, pero no encabezan la lectura:
+  // un SKU de S/2,205 con -283% de margen no es el problema de la unidad, es
+  // un asiento que hay que revisar.
+  //
+  // La marca se decide acá y no solo en la extracción: así vale también para
+  // los datos ya publicados, sin esperar otra corrida contra Power BI.
+  const raro = p => {
+    if (p.sospechoso) return true;
+    const a = avNum(p.margen), b = avNum(p.margen_previo);
+    return (a != null && Math.abs(a) > 100) || (b != null && Math.abs(b) > 100);
+  };
+  const sanas = filas.filter(p => !raro(p));
+  const raras = filas.filter(raro);
+
   const cuerpo = filas.map(p => `
     <tr${(p.aporte_pp || 0) < -0.05 ? ' class="av-an-foco"' : ''}>
-      <td>${p.sospechoso ? '<span title="Margen imposible: revisar el asiento" '
+      <td>${raro(p) ? '<span title="Margen imposible: revisar el asiento" '
         + 'style="color:var(--yellow);font-weight:600">⚠ </span>' : ''}${esc(p.producto)}${p.subcategoria
         ? `<small style="display:block;color:var(--text3)">${esc(p.subcategoria)}</small>` : ''}</td>
       <td>${esc(p.venta || '—')}</td>
@@ -3529,11 +3546,6 @@ function avBloqueSKU(uen) {
         ${avPP(p.aporte_pp, 2)}</td>
     </tr>`).join('');
 
-  // Las filas con margen imposible se muestran, pero no encabezan la lectura:
-  // un SKU de S/2,205 con -283% de margen no es el problema de la unidad, es
-  // un asiento que hay que revisar.
-  const sanas = filas.filter(p => !p.sospechoso);
-  const raras = filas.filter(p => p.sospechoso);
   const caen = sanas.filter(p => (p.aporte_pp || 0) < 0);
   const lecturas = [];
   if (caen.length) {
@@ -3581,6 +3593,40 @@ function avBloqueSKU(uen) {
     cuerpo, lecturas,
   };
 }
+
+// ── Subcategorías dentro de una unidad de negocio.
+//
+// Es el único corte del detalle de costos que sí viene partido por unidad de
+// negocio. Con producto y cliente no se puede hacer lo mismo.
+function avBloqueSubcategorias(uen) {
+  const det = (avReporte('margen_variable').detalle_costos) || [];
+  if (!det.length) return null;
+  const suyas = uen
+    ? det.filter(d => (d.negocio || '').toUpperCase().indexOf(uen.toUpperCase()) >= 0)
+    : det;
+  if (suyas.length < 2) return null;
+  const cuerpo = suyas.slice(0, 15).map(d => {
+    const m = avNum(d.margen);
+    return `<tr>
+      <td>${esc(d.subcategoria || d.categoria)}</td>
+      <td>${esc(d.venta || '—')}</td>
+      <td>${esc(d.precio_kg || '—')}</td>
+      <td>${esc(d.costo_kg || '—')}</td>
+      <td>${d.margen ? esc(d.margen) : '—'}</td>
+    </tr>`;
+  }).join('');
+  return {
+    titulo: uen ? `Por subcategoría — el corte que sí es de ${uen}`
+                : 'Por subcategoría',
+    por: uen
+      ? `Precio y costo por kilo de las subcategorías de ${uen}, ordenadas por venta. ` +
+        `Es el mayor detalle que el reporte entrega dentro de una unidad de negocio.`
+      : 'Precio y costo por kilo por subcategoría, ordenadas por venta.',
+    cabecera: ['Subcategoría', 'Venta', 'Precio/kg', 'Costo/kg', 'Margen'],
+    cuerpo, lecturas: [],
+  };
+}
+
 
 // ── Qué segmento explica la desviación de un indicador.
 //
