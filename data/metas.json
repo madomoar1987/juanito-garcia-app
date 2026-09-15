@@ -61,8 +61,9 @@
       ],
       "meta": 1.0,
       "direccion": "mayor",
-      "tipo": "acumula",
+      "tipo": "tasa",
       "unidad": "ratio",
+      "_nota_tipo": "Es una tasa, no algo que se acumule. Estaba marcado como acumulado y la vista ejecutiva lo proyectaba dividiendo entre la fracción del mes transcurrida: 124% al día 14 se convertía en un cierre proyectado de 267%, que no significa nada. Un ratio de consumo sobre compra no crece con los días.",
       "origen": "sobre 100% jala inventario; por debajo, se está sobre-comprando",
       "segmentos": [
         [

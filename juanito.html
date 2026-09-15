@@ -483,8 +483,13 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .dxp .back-link:hover{text-decoration:underline}
 
 /* Tabs */
-.dxp .top-tabs{display:flex;gap:4px;margin:14px 0 22px;border-bottom:1px solid var(--border)}
-.dxp .tt{font-family:var(--fm);font-size:11.5px;letter-spacing:.03em;background:none;border:none;border-bottom:2px solid transparent;padding:9px 4px;margin-right:22px;color:var(--sub);cursor:pointer;text-transform:uppercase}
+/* Las pestañas no se parten nunca: en pantalla angosta se desplazan a lo
+   ancho. Envueltas en tres líneas, "AVANCE DEL MES" ocupaba más alto que el
+   contenido que anunciaba. */
+.dxp .top-tabs{display:flex;gap:4px;margin:14px 0 22px;border-bottom:1px solid var(--border);
+  overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.dxp .top-tabs::-webkit-scrollbar{display:none}
+.dxp .tt{font-family:var(--fm);font-size:11.5px;letter-spacing:.03em;background:none;border:none;border-bottom:2px solid transparent;padding:9px 4px;margin-right:22px;color:var(--sub);cursor:pointer;text-transform:uppercase;white-space:nowrap;flex:0 0 auto}
 .dxp .tt:hover{color:var(--ink)}
 .dxp .tt.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
 
@@ -679,7 +684,11 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   .dxp .stat-mini,.dxp .comp-line{flex-wrap:wrap;gap:2px 10px}
   .dxp .roman-grid{grid-template-columns:1fr;gap:12px}
   .dxp .roman-grid>div{grid-column:1 !important;grid-row:auto !important;padding:18px}
-  .dxp .masthead{flex-direction:column;align-items:flex-start}
+  .dxp .masthead{flex-direction:column;align-items:flex-start;padding:14px 18px;gap:6px}
+  .dxp .masthead h1{font-size:22px;line-height:1.15}
+  .dxp .masthead .meta-block{font-size:11px;line-height:1.4}
+  .dxp .top-tabs{margin:10px 0 14px}
+  .dxp .tt{margin-right:16px;font-size:11px}
   .dxp .meta-block{text-align:left}
   .dxp .detail-title{font-size:21px}
   .dxp .hero-v{font-size:32px}
@@ -1534,6 +1543,163 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .av-an-tabla tr:last-child td { border-bottom:none; }
 .av-an-foco td { background:var(--red-bg); }
 .av-an-ene { color:var(--text3); }
+
+/* ═══ VISTA EJECUTIVA ═══════════════════════════════════════════════════════
+   Una sola rejilla que se adapta sola. Las tarjetas se miden por su contenido
+   (minmax + auto-fit) en vez de por cuántas columnas caben en un tamaño
+   concreto: así no hay un punto de quiebre que deje huecos en una pantalla
+   intermedia, que era el problema de las rejillas anteriores. */
+.eje-top { display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start;
+  justify-content:space-between; padding:20px 0 16px; border-bottom:1px solid var(--border); }
+.eje-top-l { flex:1 1 420px; min-width:0; }
+.eje-top h2 { margin:0 0 4px; font-size:22px; letter-spacing:-.01em; }
+.eje-top p { margin:0 0 12px; color:var(--text2); font-size:13.5px; max-width:62ch; }
+.eje-chips { display:flex; flex-wrap:wrap; gap:8px; }
+.eje-chip { font-size:12px; font-weight:600; padding:3px 10px; border-radius:20px;
+  border:1px solid; white-space:nowrap; }
+.eje-chip-crit { color:var(--red); border-color:var(--red); background:var(--red-bg); }
+.eje-chip-warn { color:var(--yellow); border-color:var(--yellow); background:rgba(234,179,8,.08); }
+.eje-chip-ok { color:var(--green); border-color:var(--green); background:var(--green-bg); }
+.eje-chip-na { color:var(--text3); border-color:var(--border); }
+.eje-top-r { flex:0 0 auto; text-align:right; }
+.eje-upd-k { font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--text3); }
+.eje-upd-v { font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; }
+.eje-upd-n { font-size:11px; color:var(--text3); margin-top:2px; }
+
+.eje-sec { margin-top:26px; }
+.eje-sec-h { font-size:15px; margin:0 0 12px; display:flex; flex-wrap:wrap;
+  align-items:baseline; gap:10px; }
+.eje-sec-h small { font-weight:400; color:var(--text3); font-size:12px; }
+
+.eje-cards { display:grid; gap:14px;
+  grid-template-columns:repeat(auto-fit, minmax(330px, 1fr)); }
+.eje-card { position:relative; background:var(--card); border:1px solid var(--border);
+  border-left:3px solid var(--text3); border-radius:8px; padding:14px 16px 12px;
+  cursor:pointer; display:flex; flex-direction:column; gap:10px;
+  transition:border-color .12s, transform .12s; }
+.eje-card:hover, .eje-card:focus-visible { transform:translateY(-1px);
+  border-color:var(--text3); outline:none; }
+.eje-card:focus-visible { box-shadow:0 0 0 2px var(--accent); }
+.eje-ok   { border-left-color:var(--green); }
+.eje-warn { border-left-color:var(--yellow); }
+.eje-crit { border-left-color:var(--red); }
+.eje-na   { border-left-color:var(--border); }
+
+.eje-head { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.eje-head h3 { margin:0; font-size:15px; line-height:1.25; }
+.eje-src { font-size:11px; color:var(--text3); }
+.eje-pill { font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:20px;
+  white-space:nowrap; border:1px solid; }
+.eje-pill-ok   { color:var(--green); border-color:var(--green); background:var(--green-bg); }
+.eje-pill-warn { color:var(--yellow); border-color:var(--yellow); background:rgba(234,179,8,.08); }
+.eje-pill-crit { color:var(--red); border-color:var(--red); background:var(--red-bg); }
+.eje-pill-na   { color:var(--text3); border-color:var(--border); }
+
+/* Las cuatro columnas de cada fila se alinean entre tarjetas porque comparten
+   la misma plantilla, no porque se les haya puesto un ancho fijo. */
+.eje-grid { display:flex; flex-direction:column; }
+.eje-row { display:grid; grid-template-columns:minmax(88px,1.1fr) minmax(70px,1fr) minmax(76px,1.1fr) 46px;
+  gap:8px; align-items:baseline; padding:6px 0; border-bottom:1px solid var(--border2, var(--border)); }
+.eje-row:last-child { border-bottom:none; }
+.eje-row-k { font-size:11.5px; color:var(--text2); min-width:0; }
+.eje-row-k small { display:block; font-size:10px; color:var(--text3); }
+.eje-row-v { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;
+  text-align:right; min-width:0; overflow-wrap:anywhere; }
+.eje-row-v small { display:block; font-size:9.5px; font-weight:400; }
+.eje-row-m { font-size:11px; color:var(--text3); text-align:right;
+  font-variant-numeric:tabular-nums; min-width:0; }
+.eje-row-m small { display:block; font-size:9.5px; }
+.eje-row-c { font-size:13px; font-weight:700; text-align:right;
+  font-variant-numeric:tabular-nums; }
+.eje-row-prev .eje-row-v { font-size:13px; font-weight:600; color:var(--text2); }
+.eje-row-proy { background:rgba(127,127,127,.05); }
+.eje-calc { color:var(--yellow); cursor:help; }
+.eje-falta { color:var(--yellow); border:1px dashed var(--yellow); border-radius:4px;
+  padding:1px 6px; cursor:pointer; font-size:10.5px; }
+.eje-na { color:var(--text3); font-size:11px; font-weight:400; }
+.flt { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:flex-end;
+  justify-content:space-between; padding:12px 14px; margin:14px 0;
+  background:var(--card2); border:1px solid var(--border); border-radius:8px; }
+.flt-campos { display:flex; flex-wrap:wrap; gap:12px; }
+.flt-lab { display:flex; flex-direction:column; gap:4px; font-size:10.5px;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--text3); }
+.flt-in { font:inherit; font-size:13px; text-transform:none; letter-spacing:0;
+  color:var(--text); background:var(--card); border:1px solid var(--border);
+  border-radius:6px; padding:6px 9px; min-width:190px; max-width:100%; }
+.flt-in:focus { outline:2px solid var(--accent); outline-offset:1px; }
+.flt-estado { display:flex; flex-wrap:wrap; gap:7px; align-items:center; }
+.flt-none { font-size:12px; color:var(--text3); }
+.flt-chip { display:inline-flex; align-items:center; gap:6px; font-size:12px;
+  background:var(--accent-bg); color:var(--accent); border:1px solid var(--accent);
+  border-radius:20px; padding:3px 6px 3px 11px; }
+.flt-chip button { border:none; background:none; color:inherit; cursor:pointer;
+  font-size:12px; line-height:1; padding:2px 4px; }
+.flt-reset { font:inherit; font-size:12px; background:none; color:var(--text2);
+  border:1px solid var(--border); border-radius:20px; padding:4px 11px; cursor:pointer; }
+.flt-reset:hover { color:var(--text); border-color:var(--text3); }
+@media (max-width: 560px) {
+  .flt { flex-direction:column; align-items:stretch; padding:11px 12px; }
+  .flt-campos { flex-direction:column; }
+  .flt-in { min-width:0; width:100%; }
+}
+
+.eje-warn { margin:0; font-size:11.5px; color:var(--yellow); line-height:1.4;
+  background:rgba(234,179,8,.07); border-radius:5px; padding:7px 9px; }
+
+.eje-barra { position:relative; height:5px; background:var(--card2);
+  border-radius:3px; overflow:hidden; }
+.eje-barra-f { position:absolute; left:0; top:0; bottom:0; border-radius:3px; }
+.eje-barra-t { position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--text); opacity:.55; }
+
+.eje-foot { display:flex; justify-content:space-between; align-items:flex-end; gap:10px; }
+.eje-var { font-size:12px; min-width:0; }
+.eje-var b { font-variant-numeric:tabular-nums; }
+.eje-var span { color:var(--text2); }
+.eje-var small { display:block; font-size:10px; color:var(--text3); }
+.eje-spark { flex:0 0 auto; }
+.eje-go { font-size:11px; color:var(--text3); text-align:right; }
+.eje-card:hover .eje-go { color:var(--accent); }
+
+.eje-hall { display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); }
+.eje-h { background:var(--card); border:1px solid var(--border); border-left:3px solid var(--text3);
+  border-radius:7px; padding:12px 14px; cursor:pointer; }
+.eje-h:hover { border-color:var(--text3); }
+.eje-h-crit { border-left-color:var(--red); }
+.eje-h-warn { border-left-color:var(--yellow); }
+.eje-h-top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.eje-h-kpi { font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); }
+.eje-h-seg { font-size:13.5px; font-weight:600; margin-top:4px; line-height:1.3; }
+.eje-h-num { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; margin-top:5px; }
+.eje-h-des { font-size:12px; color:var(--text2); font-variant-numeric:tabular-nums; }
+.eje-h-sol { font-size:15px; font-weight:700; color:var(--red); font-variant-numeric:tabular-nums; }
+.eje-h-ten { font-size:11px; color:var(--text3); margin-top:3px; }
+.eje-h-acc { font-size:12px; color:var(--text2); margin:7px 0 0; line-height:1.45; }
+.eje-legal { font-size:11.5px; color:var(--text3); margin:22px 0 0; max-width:86ch;
+  border-top:1px solid var(--border); padding-top:12px; }
+.eje-vacio { padding:24px; color:var(--text2); }
+
+/* iPad vertical y pantallas intermedias: la rejilla ya baja sola a dos y una
+   columna. Acá solo se aprieta el interlineado para que quepa más contenido
+   útil sin scroll. */
+@media (max-width: 900px) {
+  .eje-top h2 { font-size:19px; }
+  .eje-top-r { text-align:left; }
+  .eje-cards, .eje-hall { gap:11px; }
+}
+/* iPhone: una columna, tarjetas compactas y la fila de cumplimiento debajo
+   del valor para que no se apriete a 46px. */
+@media (max-width: 560px) {
+  .eje-cards, .eje-hall { grid-template-columns:1fr; }
+  .eje-card { padding:12px 13px 10px; }
+  .eje-row { grid-template-columns:1fr auto; grid-template-areas:'k v' 'm c';
+    row-gap:2px; padding:7px 0; }
+  .eje-row-k { grid-area:k; } .eje-row-v { grid-area:v; }
+  .eje-row-m { grid-area:m; text-align:left; } .eje-row-c { grid-area:c; }
+  .eje-foot { flex-direction:column; align-items:stretch; }
+  .eje-spark { align-self:flex-end; }
+  .eje-top { padding:14px 0 12px; }
+}
+
 .kpi-per { display:block; margin-top:4px; font-size:10px; letter-spacing:.03em;
   color:var(--text3); }
 .kpi-per-ojo { color:var(--yellow); font-weight:600; }
@@ -3591,6 +3757,10 @@ function avBloqueClientes() {
   }
 
   return {
+    // Las filas ya calculadas viajan con el bloque: la vista ejecutiva las
+    // reusa para sus hallazgos en vez de recalcular el mismo ranking con otro
+    // criterio, que es como se terminan contradiciendo dos pantallas.
+    __filas: filas,
     periodo: avReporte('margen_variable').por_cliente_periodo || null,
     titulo: 'Por cliente — quién arrastra el margen',
     por: `Los ${filas.length} clientes con más venta, que concentran el ` +
@@ -3659,8 +3829,17 @@ function avBloqueSKU(uen) {
   // exactamente ("B&D" / "B & D"), así que se compara sin espacios.
   const llano = x => (x || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const clave = Object.keys(todo).find(k => llano(k) === llano(uen));
-  const filas = clave ? todo[clave] : null;
-  if (!filas || filas.length < 2) return null;
+  const todas = clave ? todo[clave] : null;
+  if (!todas || !todas.length) return null;
+  // El filtro se aplica ANTES de calcular: prioridad, lecturas y tabla salen
+  // todas del mismo conjunto y no se contradicen.
+  const filas = filtrarFilas(todas, 'producto');
+  if (!filas.length) return {
+    periodo: meses.length === 2 ? meses[1] : null,
+    titulo: `Por SKU — los productos de ${uen}`,
+    por: `Ningún SKU de ${uen} pasa los filtros activos.`,
+    cabecera: ['Producto'], cuerpo: '', lecturas: [],
+  };
 
   // Las filas con margen imposible se muestran, pero no encabezan la lectura:
   // un SKU de S/2,205 con -283% de margen no es el problema de la unidad, es
@@ -3761,10 +3940,12 @@ function avBloqueSubcategorias(uen) {
   const suyas = (uen
     ? det.filter(d => (d.negocio || '').toUpperCase().indexOf(uen.toUpperCase()) >= 0)
     : det).filter(d => d.subcategoria);
+  const suyasTodas = suyas;
   if (suyas.length < 2) return null;
   const mv2 = avReporte('margen_variable');
   const mm = mv2.detalle_costos_meses || [];
-  const cuerpo = suyas.map(d => `
+  const suyasFiltradas = filtrarFilas(suyasTodas, 'subcategoria');
+  const cuerpo = suyasFiltradas.map(d => `
     <tr${(d.aporte_pp || 0) < -0.05 ? ' class="av-an-foco"' : ''}>
       <td>${esc(d.subcategoria || d.categoria)}</td>
       <td>${esc(d.venta || '—')}</td>
@@ -3784,7 +3965,7 @@ function avBloqueSubcategorias(uen) {
   // en enero. Un margen que cae dos meses seguidos no es lo mismo que uno que
   // se movió una vez.
   const lecturas = [];
-  const conEne = suyas.filter(d => avNum(d.margen_enero) != null && avNum(d.margen) != null);
+  const conEne = suyasFiltradas.filter(d => avNum(d.margen_enero) != null && avNum(d.margen) != null);
   if (conEne.length >= 2) {
     const peor = conEne.filter(d => avNum(d.margen) < avNum(d.margen_enero));
     const p0 = conEne.slice().sort((a, b) =>
@@ -3798,7 +3979,7 @@ function avBloqueSubcategorias(uen) {
 
   return {
     periodo: avReporte('margen_variable').detalle_costos_periodo || null,
-    prioridad: avPrioridad(suyas, 'subcategoria', uen),
+    prioridad: avPrioridad(suyasFiltradas, 'subcategoria', uen),
     titulo: uen ? `Por subcategoría — el corte que sí es de ${uen}`
                 : 'Por subcategoría',
     por: uen
@@ -4020,6 +4201,534 @@ function avanceAnalisis(ev, id) {
   if (f) f.hidden = !f.hidden;
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VISTA EJECUTIVA
+//
+// Una sola pantalla con todos los indicadores y, en cada uno, lo mismo y en el
+// mismo orden: cómo cerró el mes anterior, cómo va el que corre, dónde va a
+// terminar si sigue así, y qué tan lejos está de su meta.
+//
+// Los tres cuidados que se toman acá, porque son los que hacían que las
+// pantallas anteriores se leyeran mal:
+//
+//   1. Un mes a medias no se compara contra un mes entero. Lo que se acumula
+//      —ventas, producción— se compara contra el mismo tramo del mes anterior
+//      cuando hay dato diario, y contra nada cuando no lo hay: antes de dar
+//      un número que engaña se dice que falta.
+//   2. La proyección se marca SIEMPRE como proyección. Es la única cifra de
+//      la pantalla que no salió de Power BI.
+//   3. Cada cifra dice de qué período es. Ninguna tarjeta queda sin fecha.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Días del mes que ya pasaron y los que tiene, para el mes en curso.
+function ejeDias() {
+  const m = avanceDelMes();
+  return m ? { dia: m.dia, dias: m.dias, frac: m.fraccion } : null;
+}
+
+// Serie diaria acumulada de un indicador, si el reporte la publica. Sin esto
+// no hay forma honesta de comparar trece días contra treinta.
+function ejeSerieDiaria(clave) {
+  const dim = (DATA && DATA.empresas && DATA.empresas.PAUNO &&
+               DATA.empresas.PAUNO.dimensiones) || {};
+  const mapa = { merma: 'merma_dia', produccion: 'produccion_dia' };
+  const d = dim[mapa[clave]];
+  return (d && Array.isArray(d.dias) && d.dias.length) ? d : null;
+}
+
+// Proyección de cierre del mes en curso.
+//   · lo que se acumula  → lo que va, dividido entre la fracción del mes que
+//     pasó. Supone que el resto del mes va al mismo ritmo.
+//   · lo que es una tasa → el valor de hoy. Un margen o una merma no se
+//     "acumulan" hacia arriba; lo que ya lleva el mes es la mejor estimación.
+function ejeProyeccion(ind, curso, dias) {
+  if (curso == null || !dias || !dias.frac) return null;
+  // Un porcentaje o un ratio no se acumulan con los días, diga lo que diga su
+  // ficha: el ratio consumo/compra estaba marcado como acumulado y se
+  // proyectaba a 267%. La unidad manda sobre la etiqueta.
+  const acumulable = ind.tipo === 'acumula' &&
+                     ind.unidad !== 'pct' && ind.unidad !== 'ratio';
+  if (acumulable) {
+    return { valor: curso / dias.frac, metodo: 'ritmo',
+             nota: `lo que va del mes dividido entre el ${(dias.frac * 100).toFixed(0)}% ` +
+                   `transcurrido; supone que el resto del mes va al mismo ritmo` };
+  }
+  return { valor: curso, metodo: 'tasa',
+           nota: 'una tasa no se acumula: lo que lleva el mes es la mejor estimación de cierre' };
+}
+
+// Cumplimiento contra la meta, con el signo correcto para cada indicador.
+// En los que conviene que bajen, cumplir es quedarse por debajo: 100% es
+// justo en la meta y más de 100% es haberla batido, igual que en los otros.
+function ejeCumplimiento(ind, valor, meta) {
+  if (valor == null || meta == null) return null;
+  const v = escalaMeta(ind, valor), m = escalaMeta(ind, meta);
+  if (!m) return null;
+  return ind.direccion === 'menor' ? (m / v) * 100 : (v / m) * 100;
+}
+
+// Semáforo único para toda la app. Antes cada pantalla decidía su color con
+// su propio criterio y el mismo indicador salía ámbar en una y rojo en otra.
+function ejeSemaforo(cumpl) {
+  if (cumpl == null) return { k: 'na', txt: 'Sin meta' };
+  if (cumpl >= 100) return { k: 'ok', txt: 'Favorable' };
+  if (cumpl >= 90) return { k: 'warn', txt: 'En riesgo' };
+  return { k: 'crit', txt: 'Crítico' };
+}
+
+// Comparación contra el mismo tramo del mes anterior. Devuelve null cuando no
+// hay dato diario: es preferible una celda que dice "no hay dato diario" a un
+// porcentaje que compara trece días contra treinta.
+function ejeComparable(ind, dias) {
+  const d = ejeSerieDiaria(ind.clave);
+  if (!d || !dias) return null;
+  const hasta = dias.dia;
+  const idx = d.dias.filter(x => x <= hasta);
+  if (idx.length < 2) return null;
+  const vals = idx.map(x => d.valor[d.dias.indexOf(x)]).filter(v => v != null);
+  if (!vals.length) return null;
+  const v = ind.tipo === 'acumula'
+    ? vals.reduce((a, b) => a + b, 0)
+    : vals.reduce((a, b) => a + b, 0) / vals.length;
+  return { valor: v, dias: idx.length };
+}
+
+// Todo lo que la pantalla necesita saber de un indicador, calculado una vez.
+function ejeMetrica(ind) {
+  const borr = metasBorrador();
+  const propia = Object.prototype.hasOwnProperty.call(borr, ind.clave);
+  const meta = propia ? borr[ind.clave] : ind.meta;
+  const val = valoresDe(ind);
+  const dias = ejeDias();
+
+  let curso = val ? val.curso : null;
+  let cerrado = val ? val.cerrado : null;
+  const previo = val ? val.previo : null;
+  const serie = val ? val.serie : null;
+  let sinSerie = !val;
+  if (sinSerie) {
+    const rd = (DATA?.empresas?.PAUNO?.reportes || {})[ind.reporte] || {};
+    const k = (rd.kpis || []).find(x => x.label === ind.kpi);
+    curso = k ? localNum(k.valor) : null;
+    if (curso != null && ind.unidad === 'pct' && curso > 1) curso = curso / 100;
+  }
+
+  const proy = ejeProyeccion(ind, curso, dias);
+  // El cumplimiento del mes en curso se mide contra lo que debería llevar a
+  // estas alturas, no contra la meta entera: exigirle el mes completo el día
+  // 14 pinta de rojo a todo lo que se acumula.
+  const metaAlDia = (meta != null && dias && proy && proy.metodo === 'ritmo')
+    ? meta * dias.frac : meta;
+  const cumplCurso = ejeCumplimiento(ind, curso, metaAlDia);
+  const cumplCierre = ejeCumplimiento(ind, cerrado, meta);
+  const cumplProy = proy ? ejeCumplimiento(ind, proy.valor, meta) : null;
+
+  // El semáforo mira hacia dónde va, no dónde está: para lo que se acumula
+  // manda la proyección de cierre; para una tasa, el valor de hoy.
+  const sem = ejeSemaforo(ind.tipo === 'acumula' ? cumplProy : cumplCurso);
+
+  const comp = ejeComparable(ind, dias);
+  // Variación contra el mes anterior. Para lo que se acumula solo tiene
+  // sentido contra el mismo tramo o contra la proyección; nunca el parcial
+  // contra el cierre entero.
+  let variacion = null;
+  if (ind.tipo === 'acumula') {
+    if (comp && cerrado != null) {
+      variacion = { base: comp.valor, actual: curso,
+                    pie: `mismo tramo (${comp.dias} días) de ${nombreMesCerrado()}` };
+    } else if (proy && cerrado != null) {
+      variacion = { base: cerrado, actual: proy.valor,
+                    pie: `proyección de cierre vs ${nombreMesCerrado()} cerrado`,
+                    proyectada: true };
+    }
+  } else if (curso != null && cerrado != null) {
+    variacion = { base: cerrado, actual: curso, pie: `vs ${nombreMesCerrado()}` };
+  }
+  if (variacion && (variacion.base == null || variacion.actual == null || !variacion.base)) {
+    variacion = null;
+  }
+
+  const tri = variacion
+    ? triangulo(ind, variacion.actual, variacion.base) : null;
+  const dist = distanciaMeta(ind, ind.tipo === 'acumula' && proy ? proy.valor : curso, meta);
+
+  // Aviso de dato incompleto. Si lo que va del mes implica un ritmo diario
+  // muy por debajo del mes cerrado, lo más probable no es que el negocio se
+  // haya derrumbado sino que las facturas del mes todavía no están todas
+  // cargadas. Se avisa en vez de pintar un rojo que puede ser del sistema.
+  let sospecha = null;
+  if (ind.tipo === 'acumula' && curso != null && cerrado && dias && dias.frac) {
+    const ritmoHoy = curso / dias.dia;
+    const ritmoAnt = cerrado / dias.dias;
+    if (ritmoAnt && ritmoHoy / ritmoAnt < 0.6) {
+      sospecha = `El ritmo diario va ${(ritmoHoy / ritmoAnt * 100).toFixed(0)}% del de ` +
+        `${nombreMesCerrado()}. Antes de leerlo como caída conviene confirmar que el ` +
+        `mes en curso ya tiene todo cargado.`;
+    }
+  }
+
+  return { ind, meta, metaPropia: propia, metaAlDia, curso, cerrado, previo, serie,
+           sinSerie, dias, proy, cumplCurso, cumplCierre, cumplProy, sem, comp,
+           variacion, tri, dist, sospecha };
+}
+
+
+// ── Formatos. Uno solo para toda la app: antes cada pantalla formateaba a su
+// manera y el mismo número salía "S/7.69M" en una y "7,689,609" en otra.
+function ejeFmt(ind, v) { return v == null ? '—' : fmtMeta(ind, v); }
+function ejePct(v, dec) { return v == null ? '—' : v.toFixed(dec == null ? 0 : dec) + '%'; }
+
+// Barra de cumplimiento. La marca vertical es dónde debería ir hoy: sin ella,
+// un 45% el día 14 parece un desastre cuando es exactamente el ritmo.
+function ejeBarra(cumpl, marca, color) {
+  if (cumpl == null) return '';
+  const w = Math.max(0, Math.min(cumpl, 130)) / 130 * 100;
+  return `<div class="eje-barra"><span class="eje-barra-f" style="width:${w}%;background:${color}"></span>
+    ${marca != null ? `<span class="eje-barra-t" style="left:${Math.min(marca, 130) / 130 * 100}%"></span>` : ''}
+  </div>`;
+}
+
+const EJE_COLOR = { ok: 'var(--green)', warn: 'var(--yellow)', crit: 'var(--red)', na: 'var(--text3)' };
+
+function ejeTarjeta(m) {
+  const ind = m.ind;
+  const col = EJE_COLOR[m.sem.k];
+  const acum = ind.tipo === 'acumula';
+
+  // Fila del mes en curso: lo que va, contra lo que debería llevar hoy.
+  const filaCurso = `
+    <div class="eje-row">
+      <div class="eje-row-k">${esc(nombreMes(mesParcial()) || 'mes en curso')}
+        <small>al día ${m.dias ? m.dias.dia + ' de ' + m.dias.dias : '—'}</small></div>
+      <div class="eje-row-v">${esc(ejeFmt(ind, m.curso))}
+        ${m.sinSerie ? '<small class="eje-na">saldo del día</small>' : ''}</div>
+      <div class="eje-row-m">${m.meta == null ? '<span class="eje-falta" ' +
+          `onclick="event.stopPropagation();editarMeta('${ind.clave}')">poner meta</span>`
+        : 'meta ' + esc(ejeFmt(ind, acum ? m.metaAlDia : m.meta)) +
+          (acum ? '<small>al día ' + (m.dias ? m.dias.dia : '') + '</small>' : '')}</div>
+      <div class="eje-row-c" style="color:${col}">${ejePct(m.cumplCurso)}</div>
+    </div>`;
+
+  const filaCierre = `
+    <div class="eje-row eje-row-prev">
+      <div class="eje-row-k">${esc(nombreMesCerrado())}<small>cerrado</small></div>
+      <div class="eje-row-v">${m.cerrado == null
+        ? '<span class="eje-na">sin corte mensual</span>'
+        : esc(ejeFmt(ind, m.cerrado))}</div>
+      <div class="eje-row-m">${m.meta == null ? '—' : 'meta ' + esc(ejeFmt(ind, m.meta))}</div>
+      <div class="eje-row-c">${ejePct(m.cumplCierre)}</div>
+    </div>`;
+
+  // La proyección solo se muestra cuando dice algo nuevo. En una tasa el
+  // cierre proyectado ES el valor de hoy, y repetir la misma cifra dos filas
+  // seguidas hacía dudar de si eran la misma o dos distintas.
+  const filaProy = (m.proy && m.proy.metodo === 'ritmo') ? `
+    <div class="eje-row eje-row-proy">
+      <div class="eje-row-k">cierre de ${esc(nombreMes(mesParcial()) || 'mes')}
+        <small class="eje-calc" title="${esc(m.proy.nota)}">proyección</small></div>
+      <div class="eje-row-v">${esc(ejeFmt(ind, m.proy.valor))}</div>
+      <div class="eje-row-m">${m.dist ? 'vs meta ' + esc(m.dist.txt) : '—'}</div>
+      <div class="eje-row-c" style="color:${col}">${ejePct(m.cumplProy)}</div>
+    </div>` : '';
+
+  // Variación: solo la que es metodológicamente comparable.
+  const varTxt = (() => {
+    if (!m.variacion) {
+      return acum
+        ? `<span class="eje-na">sin dato diario para comparar el mismo tramo</span>`
+        : `<span class="eje-na">sin comparación</span>`;
+    }
+    const d = m.variacion.actual - m.variacion.base;
+    const rel = m.variacion.base ? d / Math.abs(m.variacion.base) * 100 : null;
+    return `<b>${d >= 0 ? '+' : '−'}${esc(ejeFmt(ind, Math.abs(d)))}</b>
+      ${rel != null ? `<span>(${d >= 0 ? '+' : '−'}${Math.abs(rel).toFixed(1)}%)</span>` : ''}
+      <small>${esc(m.variacion.pie)}${m.variacion.proyectada ? ' · proyectado' : ''}</small>`;
+  })();
+
+  return `<article class="eje-card eje-${m.sem.k}" tabindex="0"
+      onclick="ejeAbrir('${ind.clave}')"
+      onkeydown="if(event.key==='Enter')ejeAbrir('${ind.clave}')"
+      aria-label="${esc(ind.label)} — ${esc(m.sem.txt)}">
+    <header class="eje-head">
+      <div>
+        <h3>${esc(ind.label)}</h3>
+        <span class="eje-src">${esc(DXP_NOMBRE[ind.reporte] || ind.reporte)}</span>
+      </div>
+      <span class="eje-pill eje-pill-${m.sem.k}">${esc(m.sem.txt)}</span>
+    </header>
+    <div class="eje-grid">${filaCurso}${filaProy}${filaCierre}</div>
+    ${ejeBarra(acum ? m.cumplProy : m.cumplCurso, acum && m.dias ? 100 : null, col)}
+    ${m.sospecha ? `<p class="eje-warn">⚠ ${esc(m.sospecha)}</p>` : ''}
+    <footer class="eje-foot">
+      <div class="eje-var">${varTxt}
+        ${(m.dist && !(m.proy && m.proy.metodo === 'ritmo'))
+          ? `<small>vs meta ${esc(m.dist.txt)}</small>` : ''}</div>
+      <div class="eje-spark">${m.sinSerie
+        ? '<span class="eje-na">sin serie mensual</span>'
+        : chispaSerie(m.serie, col)}</div>
+    </footer>
+    <div class="eje-go">Ver análisis ›</div>
+  </article>`;
+}
+
+// ── Oportunidades y alertas: los hallazgos ordenados por lo que valen.
+//
+// Se arman con los datos publicados, no con texto fijo. Cada uno dice el
+// indicador, el segmento responsable, cuánto se desvía, qué vale en dinero
+// cuando se puede calcular, hacia dónde va, y qué conviene hacer.
+function ejeHallazgos() {
+  const out = [];
+  const mv = avReporte('margen_variable');
+
+  // 1. Indicadores fuera de meta, por su distancia.
+  (METAS?.indicadores || []).forEach(ind => {
+    const m = ejeMetrica(ind);
+    if (m.sem.k !== 'crit' && m.sem.k !== 'warn') return;
+    if (m.dist == null) return;
+    out.push({
+      kpi: ind.label, clave: ind.clave,
+      segmento: 'total de la empresa',
+      desvio: m.dist.txt + ' vs meta',
+      soles: null,
+      tendencia: m.tri ? (m.tri.cls === 't-peor' ? 'empeora' :
+                          m.tri.cls === 't-mejor' ? 'mejora' : 'estable') : null,
+      prioridad: m.sem.k,
+      // La acción sale de lo que dice el propio dato, no de una plantilla.
+      accion: ind.tipo === 'acumula'
+        ? `Va al ${ejePct(m.cumplCurso)} de lo que debería llevar el día ${m.dias?.dia}. ` +
+          `Si sigue este ritmo cierra en ${ejeFmt(ind, m.proy?.valor)}.`
+        : `Está ${m.dist.txt} de la meta. ` +
+          ((ind.segmentos || []).length ? 'Abrir sus segmentos para ver cuál lo arrastra.' : ''),
+      orden: Math.abs(m.dist.d) * (m.sem.k === 'crit' ? 10 : 1),
+    });
+  });
+
+  // 2. SKU que más margen pierden, en soles, dentro de cada unidad.
+  Object.entries(mv.sku_por_uen || {}).forEach(([uen, filas]) => {
+    (filas || []).filter(f => f.soles_mes != null && f.soles_mes < 0 && !f.sospechoso)
+      .sort((a, b) => a.soles_mes - b.soles_mes).slice(0, 2)
+      .forEach(f => out.push({
+        kpi: 'Margen variable', clave: 'margen',
+        segmento: `${uen} · ${f.producto}`,
+        desvio: `${f.margen_previo} → ${f.margen}`,
+        soles: f.soles_mes,
+        tendencia: (avNum(f.margen_enero) != null && avNum(f.margen) < avNum(f.margen_enero))
+          ? 'cae desde enero' : 'cayó este mes',
+        prioridad: f.soles_mes < -1000 ? 'crit' : 'warn',
+        accion: (avNum(f.precio_kg) != null && avNum(f.precio_kg_previo) != null &&
+                 avNum(f.precio_kg) < avNum(f.precio_kg_previo))
+          ? `El precio por kilo bajó de ${f.precio_kg_previo} a ${f.precio_kg}: es precio, ` +
+            `no costo. La conversación es comercial.`
+          : `El precio por kilo se mantuvo: el margen se perdió por costo. ` +
+            `La conversación es de planta o compras.`,
+        orden: Math.abs(f.soles_mes),
+      }));
+  });
+
+  // 3. Clientes que arrastran el margen del mes.
+  const cli = avBloqueClientes();
+  if (cli && cli.__filas) {
+    cli.__filas.filter(f => f.impacto < -0.2).slice(0, 3).forEach(f => out.push({
+      kpi: 'Margen variable', clave: 'margen',
+      segmento: `Cliente · ${avNombreCorto(f.nombre)}`,
+      desvio: `${f.margen.toFixed(1)}% de margen con ${f.pct.toFixed(1)}% de la venta`,
+      soles: null,
+      tendencia: null,
+      prioridad: f.impacto < -0.5 ? 'crit' : 'warn',
+      accion: `Le quita ${avPP(f.impacto)} al margen. Comparar su precio contra un ` +
+              `cliente de tamaño parecido antes de negociar.`,
+      orden: Math.abs(f.impacto) * 500,
+    }));
+  }
+
+  // 4. Cartera vencida por responsable.
+  const cart = (DATA?.empresas?.PAUNO?.dimensiones || {}).cartera_responsable || [];
+  cart.filter(c => (c.pct_t30mas || 0) > 10).slice(0, 3).forEach(c => out.push({
+    kpi: 'Morosidad', clave: 'morosidad',
+    segmento: `${c.ejecutivo}${c.canal ? ' · ' + c.canal : ''}`,
+    desvio: `${c.pct_t30mas}% de su cartera con más de 30 días`,
+    soles: -Math.abs(localNum(c.t30mas) || 0),
+    tendencia: null,
+    prioridad: c.pct_t30mas > 20 ? 'crit' : 'warn',
+    accion: `${c.t30mas} vencidos a más de 30 días sobre ${c.total} de cartera. ` +
+            `Es el tramo que se vuelve incobrable.`,
+    orden: Math.abs(localNum(c.t30mas) || 0),
+  }));
+
+  return out.sort((a, b) => (b.orden || 0) - (a.orden || 0));
+}
+
+
+function ejeVista() {
+  if (!METAS || !SERIES) return '<div class="eje-vacio">Cargando datos…</div>';
+  const inds = (METAS.indicadores || []);
+  const metricas = inds.map(ejeMetrica);
+
+  // Orden: primero lo que está peor. Un tablero que ordena por el orden en que
+  // se programaron los indicadores obliga a buscar el problema.
+  const rank = { crit: 0, warn: 1, na: 2, ok: 3 };
+  const orden = metricas.slice().sort((a, b) =>
+    (rank[a.sem.k] - rank[b.sem.k]) ||
+    ((a.cumplCurso ?? 999) - (b.cumplCurso ?? 999)));
+
+  const cuenta = k => metricas.filter(m => m.sem.k === k).length;
+  const mesC = nombreMes(mesParcial()) || 'mes en curso';
+  const d = ejeDias();
+  const act = (DATA && (DATA.fecha_actualizacion || DATA.fecha)) || '';
+
+  const hall = ejeHallazgos();
+  const chip = (k, txt) => `<span class="eje-chip eje-chip-${k}">${cuenta(k)} ${txt}</span>`;
+
+  return `
+  <section class="eje-top">
+    <div class="eje-top-l">
+      <h2>${esc(mesC.charAt(0).toUpperCase() + mesC.slice(1))} al día ${d ? d.dia : '—'} de ${d ? d.dias : '—'}</h2>
+      <p>Cada indicador contra su meta, con el cierre de ${esc(nombreMesCerrado())} al lado
+        y la proyección de cómo termina el mes si sigue este ritmo.</p>
+      <div class="eje-chips">${chip('crit', 'críticos')}${chip('warn', 'en riesgo')}${chip('ok', 'favorables')}${
+        cuenta('na') ? chip('na', 'sin meta') : ''}</div>
+    </div>
+    <div class="eje-top-r">
+      <div class="eje-upd-k">Última actualización</div>
+      <div class="eje-upd-v">${esc(act)}</div>
+      <div class="eje-upd-n">Power BI · corre todos los días a las 7:00</div>
+    </div>
+  </section>
+
+  ${hall.length ? `
+  <section class="eje-sec">
+    <h3 class="eje-sec-h">Oportunidades y alertas
+      <small>${hall.length} hallazgos, ordenados por lo que valen</small></h3>
+    <div class="eje-hall">
+      ${hall.slice(0, 8).map(h => `
+        <article class="eje-h eje-h-${h.prioridad}" onclick="ejeAbrir('${h.clave}')">
+          <div class="eje-h-top">
+            <span class="eje-h-kpi">${esc(h.kpi)}</span>
+            <span class="eje-h-pri eje-pill-${h.prioridad}">${h.prioridad === 'crit' ? 'Alta' : 'Media'}</span>
+          </div>
+          <div class="eje-h-seg">${esc(h.segmento)}</div>
+          <div class="eje-h-num">
+            <span class="eje-h-des">${esc(h.desvio)}</span>
+            ${h.soles != null ? `<span class="eje-h-sol">${avSoles0(h.soles)}</span>` : ''}
+          </div>
+          ${h.tendencia ? `<div class="eje-h-ten">${esc(h.tendencia)}</div>` : ''}
+          <p class="eje-h-acc">${esc(h.accion)}</p>
+        </article>`).join('')}
+    </div>
+  </section>` : ''}
+
+  <section class="eje-sec">
+    <h3 class="eje-sec-h">Indicadores
+      <small>clic en cualquiera para abrir su análisis</small></h3>
+    <div class="eje-cards">${orden.map(ejeTarjeta).join('')}</div>
+  </section>
+
+  <p class="eje-legal">La proyección de cierre es la única cifra de esta pantalla que no sale
+    de Power BI: se calcula con el ritmo del mes. Todo lo demás viene del reporte.
+    Donde falta el dato diario para comparar el mismo tramo de ${esc(nombreMesCerrado())},
+    se dice en vez de comparar un mes a medias contra uno entero.</p>`;
+}
+
+// Abre el análisis de un indicador desde la vista ejecutiva.
+function ejeAbrir(clave) {
+  dxpTab('avance');
+  setTimeout(() => {
+    const f = document.getElementById('an-' + clave);
+    if (f) {
+      f.hidden = false;
+      f.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    } else {
+      const fila = document.querySelector(`[onclick*="avanceAbrir('${clave}')"]`);
+      if (fila) fila.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, 60);
+}
+
+
+// ── FILTROS DEL ANÁLISIS ───────────────────────────────────────────────────
+//
+// Un filtro que solo afecta a la tabla y no al texto de arriba es peor que no
+// tener filtro: la lectura sigue hablando del total mientras la tabla muestra
+// un pedazo. Acá el filtro se aplica ANTES de calcular nada, así que las
+// fichas de prioridad, las lecturas y la tabla salen todas del mismo conjunto.
+const FILTROS = { texto: '', min: 0 };
+
+function filtrosActivos() {
+  const a = [];
+  if (FILTROS.texto) a.push({ k: 'texto', txt: `contiene «${FILTROS.texto}»` });
+  if (FILTROS.min) a.push({ k: 'min', txt: `pierde más de ${avSoles0(-FILTROS.min)}` });
+  return a;
+}
+
+function filtrarFilas(filas, campoNombre) {
+  const t = (FILTROS.texto || '').trim().toLowerCase();
+  return (filas || []).filter(f => {
+    if (t) {
+      const heno = [f[campoNombre], f.subcategoria, f.canal, f.producto]
+        .filter(Boolean).join(' ').toLowerCase();
+      if (heno.indexOf(t) < 0) return false;
+    }
+    if (FILTROS.min && !(f.soles_mes != null && f.soles_mes <= -FILTROS.min)) return false;
+    return true;
+  });
+}
+
+function filtroSet(campo, valor) {
+  FILTROS[campo] = campo === 'min' ? Number(valor) || 0 : String(valor || '');
+  filtroRepintar();
+}
+
+function filtroLimpiar() {
+  FILTROS.texto = ''; FILTROS.min = 0;
+  filtroRepintar();
+}
+
+// Repinta la pestaña de avance conservando qué análisis estaban abiertos: sin
+// esto, tocar un filtro cerraba el panel que se estaba mirando.
+function filtroRepintar() {
+  const abiertos = [...document.querySelectorAll('.av-an-fila')]
+    .filter(f => !f.hidden).map(f => f.id);
+  const segs = [...document.querySelectorAll('.av-hijas')]
+    .filter(f => !f.hidden).map(f => f.id);
+  const v = document.getElementById('dxp-view-avance');
+  if (!v) return;
+  v.innerHTML = dxpAvanceView();
+  segs.forEach(id => { const e = document.getElementById(id); if (e) e.hidden = false; });
+  abiertos.forEach(id => { const e = document.getElementById(id); if (e) e.hidden = false; });
+  const foco = document.getElementById('filtro-texto');
+  if (foco && FILTROS.texto) { foco.focus(); foco.setSelectionRange(foco.value.length, foco.value.length); }
+}
+
+function filtroBarra() {
+  const act = filtrosActivos();
+  return `<div class="flt">
+    <div class="flt-campos">
+      <label class="flt-lab">Buscar
+        <input id="filtro-texto" class="flt-in" type="search" placeholder="producto, subcategoría…"
+          value="${esc(FILTROS.texto)}" oninput="filtroSet('texto', this.value)"
+          aria-label="Filtrar por nombre">
+      </label>
+      <label class="flt-lab">Pierde más de
+        <select class="flt-in" onchange="filtroSet('min', this.value)" aria-label="Filtrar por impacto">
+          <option value="0"${FILTROS.min === 0 ? ' selected' : ''}>cualquier monto</option>
+          <option value="100"${FILTROS.min === 100 ? ' selected' : ''}>S/100</option>
+          <option value="500"${FILTROS.min === 500 ? ' selected' : ''}>S/500</option>
+          <option value="1000"${FILTROS.min === 1000 ? ' selected' : ''}>S/1,000</option>
+        </select>
+      </label>
+    </div>
+    <div class="flt-estado">
+      ${act.length
+        ? act.map(a => `<span class="flt-chip">${esc(a.txt)}
+            <button onclick="filtroSet('${a.k}', ${a.k === 'min' ? 0 : "''"})"
+              aria-label="Quitar filtro">✕</button></span>`).join('') +
+          `<button class="flt-reset" onclick="filtroLimpiar()">Quitar todos</button>`
+        : '<span class="flt-none">Sin filtros — se ve todo</span>'}
+    </div>
+  </div>`;
+}
+
 function dxpAvanceView() {
   if (!METAS || !SERIES) return '<div class="av-nota">Cargando datos…</div>';
   const mes = avanceDelMes();
@@ -4157,6 +4866,8 @@ function dxpAvanceView() {
     </div>
   </div>
 
+  ${filtroBarra()}
+
   <div class="av-tabla-caja">
     <table class="av-tabla">
       <thead><tr>
@@ -4188,10 +4899,12 @@ function dxpTab(tab) {
   const v = root.querySelector('#dxp-view-' + tab); if (v) v.classList.add('active');
   root.querySelectorAll('.tt').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   if (tab === 'avance' && v) v.innerHTML = dxpAvanceView();
+  if (tab === 'ejecutivo' && v) v.innerHTML = ejeVista();
   const ctx = root.querySelector('#dxp-context');
   if (ctx) ctx.textContent = tab === 'roadmap' ? 'Plan de Acción'
-    : (tab === 'avance' ? 'Avance del mes en curso'
-    : `Resumen · ${DXP_ORDEN.length} reportes`);
+    : tab === 'avance' ? 'Avance del mes en curso'
+    : tab === 'ejecutivo' ? `Vista ejecutiva · ${(METAS?.indicadores || []).length} indicadores`
+    : `Resumen · ${DXP_ORDEN.length} reportes`;
   const sc = document.getElementById('screens-container'); if (sc) sc.scrollTop = 0;
 }
 function dxpOpen(tipo) {
@@ -4226,12 +4939,15 @@ function renderHome() {
     </div>
 
     <div class="top-tabs">
-      <button class="tt active" data-tab="resumen" onclick="dxpTab('resumen')">Resumen</button>
+      <button class="tt active" data-tab="ejecutivo" onclick="dxpTab('ejecutivo')">Ejecutivo</button>
+      <button class="tt" data-tab="resumen" onclick="dxpTab('resumen')">Resumen</button>
       <button class="tt" data-tab="avance" onclick="dxpTab('avance')">Avance del mes</button>
       <button class="tt" data-tab="roadmap" onclick="dxpTab('roadmap')">Plan de Acción</button>
     </div>
 
-    <div class="view active" id="dxp-view-resumen">
+    <div class="view active" id="dxp-view-ejecutivo"></div>
+
+    <div class="view" id="dxp-view-resumen">
       ${dxpExecSummary(s)}
       ${dxpNoteBanner(s)}
       ${dxpCausal(s)}
@@ -4250,6 +4966,12 @@ function renderHome() {
     <div class="view" id="dxp-view-avance"></div>
     <div class="view" id="dxp-view-roadmap">${dxpRoadmapView()}</div>
   </div>`;
+
+  // La vista ejecutiva arranca activa pero se pinta acá y no dentro de la
+  // plantilla: así se arma una sola vez con los datos ya cargados, y el mismo
+  // camino sirve cuando se vuelve a ella desde otra pestaña.
+  const eje = document.getElementById('dxp-view-ejecutivo');
+  if (eje) eje.innerHTML = ejeVista();
 }
 
 function renderAgendaSection(id, title, color, items) {
