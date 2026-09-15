@@ -1508,18 +1508,21 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
           "total": "[SumTotal_fact]"},
          "__cartera_responsable", "Cartera por ejecutivo")
 
-    # Merma día a día: sin esto no se puede comparar el mes en curso contra el
-    # mismo tramo del mes anterior, que es la unica comparacion honesta cuando
-    # van trece dias de treinta.
+    # Merma día a día. OJO: la captura agrupa por DIA pero NO por mes — el
+    # visual ya viene filtrado a un mes por la página del reporte. Sin saber
+    # de qué mes son esos 31 días no se puede comparar el mes en curso contra
+    # el mismo tramo del anterior, que era para lo que se traía. Se pide el
+    # mes explícitamente; si no viene, la app no usa la serie para comparar.
     _cap(ids.get("mermas"), "Merma Diaria#363813631d90",
-         {"dia": "[DIA]", "almacen": "[almacen]", "turno": "[Turno]",
+         {"dia": "[DIA]", "mes": "[MES]", "anio": "[Año]",
+          "almacen": "[almacen]", "turno": "[Turno]",
           "merma": "[v__MERMAS__TABLA_MERMAS]"},
          "__merma_dia", "Merma diaria")
 
-    # Producción día a día, con su marca.
+    # Producción día a día, con su marca y su mes.
     _cap(ids.get("productividad"), "Produccion Dia (Ton)#ac90f6b11dc2",
          {"dia": "[DIA]", "marca": "[MARCA 2]", "categoria": "[categoria_hijo]",
-          "mes": "[NroMes]", "semana": "[Semana]",
+          "mes": "[NroMes]", "anio": "[Año]", "semana": "[Semana]",
           "kilos": "[SumPeso_Producido_Kg_]"},
          "__produccion_dia", "Producción diaria")
 
@@ -1586,20 +1589,42 @@ def build_dimensiones(found):
 
     # ── Series diarias: merma y producción, acumuladas día a día.
     def _diaria(clave, campo_valor, campo_dia, acumula):
+        """Serie diaria POR MES. Sin el mes no sirve para comparar tramos.
+
+        La primera versión devolvía 31 días sueltos, sin decir de qué mes, y
+        la app los usaba como si fueran el mes en curso. Si la consulta no
+        trae el mes se publica igual pero marcado, y la app no compara.
+        """
         filas = found.get(clave) or []
-        por_dia = {}
+        por_mes, sin_mes = {}, 0
         for f in filas:
             d = to_float(f.get(campo_dia))
             v = to_float(f.get(campo_valor))
             if d is None or v is None:
                 continue
-            por_dia.setdefault(int(d), []).append(v)
-        if not por_dia:
+            a, m = to_float(f.get("anio")), to_float(f.get("mes"))
+            if not a or not m:
+                sin_mes += 1
+                continue
+            por_mes.setdefault(f"{int(a)}-{int(m):02d}", {}) \
+                   .setdefault(int(d), []).append(v)
+        if not por_mes:
+            if sin_mes:
+                DIAGNOSTICO.append({
+                    "consulta": clave, "http": 200,
+                    "error": f"{sin_mes} filas diarias sin mes: la captura agrupa "
+                             f"por día pero el mes lo pone el filtro de página del "
+                             f"visual. Sin mes no se puede comparar el mismo tramo "
+                             f"de dos meses, así que no se publica."})
             return None
-        dias = sorted(por_dia)
-        return {"dias": dias,
-                "valor": [round(sum(por_dia[d]) if acumula
-                                else sum(por_dia[d]) / len(por_dia[d]), 4) for d in dias]}
+        out = {}
+        for per, dd in por_mes.items():
+            dias = sorted(dd)
+            out[per] = {
+                "dias": dias,
+                "valor": [round(sum(dd[d]) if acumula else sum(dd[d]) / len(dd[d]), 4)
+                          for d in dias]}
+        return {"por_mes": out}
 
     md = _diaria("__merma_dia", "merma", "dia", acumula=False)
     if md:

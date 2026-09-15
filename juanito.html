@@ -4267,6 +4267,20 @@ function avBloqueEvolucion(ind, meta) {
       `${mejora ? 'No es un buen mes suelto, es una tendencia.'
                 : 'No es un mal mes suelto: conviene tratarlo como tendencia.'}</p>`);
   }
+  if (meta == null) {
+    const doce = pts.slice(-12);
+    const vals = doce.map(p => p.v);
+    const mejor = doce[vals.indexOf(ind.direccion === 'menor'
+      ? Math.min(...vals) : Math.max(...vals))];
+    const hoy = pts[pts.length - 1];
+    const pos = vals.filter(v => ind.direccion === 'menor' ? v < hoy.v : v > hoy.v).length;
+    lecturas.push(`<p class="av-an-lee"><b>Sin meta fijada</b>, así que se compara contra ` +
+      `su propia historia: hoy está en ${esc(fmtMeta(ind, hoy.v))}, con ${pos} de los ` +
+      `últimos ${doce.length} meses mejores que éste. El mejor fue ` +
+      `${esc(nombreMes(mejor.per))} con ${esc(fmtMeta(ind, mejor.v))}. ` +
+      `<span class="av-an-falta" style="display:inline">Fijar una meta convierte esto ` +
+      `en una alerta automática.</span></p>`);
+  }
   if (meta != null) {
     const doce = pts.slice(-12);
     const ok = doce.filter(p => { const d = distanciaMeta(ind, p.v, meta); return d && d.bien; }).length;
@@ -4302,13 +4316,26 @@ function avBloqueCifras(ind) {
             : k.nota_periodo ? `<small>${esc(k.nota_periodo)}</small>`
             : '<small style="color:var(--yellow)">sin confirmar</small>'}</td>
     </tr>`).join('');
+  const curso = mesParcial(), cerr = mesCerrado();
+  const conPer = ks.filter(k => k.periodo);
+  const delCurso = conPer.filter(k => k.periodo === curso).length;
+  const delCerrado = conPer.filter(k => k.periodo === cerr).length;
+  const sinPer = ks.length - conPer.length;
+  const lectura = [`<p class="av-an-lee">De las ${ks.length} cifras que publica este ` +
+    `reporte, <b>${conPer.length} se pudieron ubicar en un mes</b> cruzándolas contra ` +
+    `su serie: ${delCurso} de ${esc(nombreMes(curso))} y ${delCerrado} de ` +
+    `${esc(nombreMesCerrado())}.` +
+    (sinPer ? ` Las otras ${sinPer} no coinciden con ningún mes de la serie — son ` +
+              `saldos del día o acumulados del año, y por eso no se comparan contra ` +
+              `un mes.` : '') + `</p>`];
+
   return {
     periodo: undefined,
     titulo: `Las cifras del reporte ${DXP_NOMBRE[ind.reporte] || ind.reporte}`,
     por: 'Todo lo que publica el reporte de origen, con el período de cada cifra. ' +
          'Sirve para validar contra Power BI lo que muestra el resto de la pantalla.',
     cabecera: ['Cifra', 'Valor', 'Meta', 'Período'],
-    cuerpo, lecturas: [],
+    cuerpo, lecturas: lectura,
   };
 }
 
@@ -4339,6 +4366,66 @@ const COL_NOMBRE = {
   t30: '16-30 d', t30mas: '+30 d', pct_t30mas: '% en +30 d',
 };
 
+// Una tabla sin conclusión no sirve para decidir: hay que leerla entera para
+// sacar lo que la app puede decir en una línea. Esto mira cualquier desglose y
+// dice dos cosas: quién manda y qué tan concentrado está.
+function lecturaDesglose(filas, cols, ind, titulo) {
+  const numCol = c => filas.map(f => localNum(f[c])).filter(v => v != null && isFinite(v));
+  // La columna que manda: la de montos si la hay, si no la de porcentajes.
+  const cand = cols.filter(c => numCol(c).length >= filas.length * 0.6);
+  if (!cand.length) return [];
+  const esPctCol = c => filas.every(f => /%\s*$/.test(String(f[c] ?? '')));
+  const dinero = cand.find(c => filas.some(f => /S\//.test(String(f[c] ?? ''))));
+  const pctCol = cand.find(esPctCol);
+  const nomCol = cols.find(c => filas.every(f => localNum(f[c]) == null)) || cols[0];
+  const nom = f => String(f[nomCol] ?? '').trim();
+  const out = [];
+
+  if (dinero) {
+    const tot = filas.reduce((a, f) => a + Math.abs(localNum(f[dinero]) || 0), 0);
+    if (tot) {
+      const ord = filas.slice().sort((a, b) =>
+        Math.abs(localNum(b[dinero]) || 0) - Math.abs(localNum(a[dinero]) || 0));
+      const p1 = Math.abs(localNum(ord[0][dinero]) || 0) / tot * 100;
+      const p3 = ord.slice(0, 3).reduce((a, f) =>
+        a + Math.abs(localNum(f[dinero]) || 0), 0) / tot * 100;
+      out.push(`<p class="av-an-lee"><b>${esc(nom(ord[0]))} concentra el ` +
+        `${p1.toFixed(0)}%</b> (${esc(String(ord[0][dinero]))}) de los ` +
+        `${esc(fmtMeta({unidad:'soles'}, tot))} de esta tabla` +
+        (filas.length > 3 ? `, y los tres primeros el ${p3.toFixed(0)}%` : '') +
+        `. ${p3 > 70 ? 'Está muy concentrado: mover a esos pocos mueve el total.'
+                     : 'Está repartido: no hay una sola palanca que lo resuelva.'}</p>`);
+    }
+  } else if (pctCol && ind) {
+    // Porcentajes del mismo indicador: el peor según su dirección.
+    const ord = filas.slice().sort((a, b) => ind.direccion === 'menor'
+      ? localNum(b[pctCol]) - localNum(a[pctCol])
+      : localNum(a[pctCol]) - localNum(b[pctCol]));
+    const peor = ord[0], mejor = ord[ord.length - 1];
+    if (peor && mejor && nom(peor) !== nom(mejor)) {
+      const dif = Math.abs(localNum(peor[pctCol]) - localNum(mejor[pctCol]));
+      out.push(`<p class="av-an-lee rojo"><b>${esc(nom(peor))} es el que peor está</b> ` +
+        `(${esc(String(peor[pctCol]))}) y ${esc(nom(mejor))} el mejor ` +
+        `(${esc(String(mejor[pctCol]))}): ${dif.toFixed(1)} puntos de diferencia ` +
+        `entre dos partes del mismo negocio. Ahí hay algo que copiar.</p>`);
+    }
+  }
+  if (!out.length && cand.length) {
+    // Ni montos ni porcentajes reconocibles: se usa la primera columna
+    // numérica que haya. Peor una lectura escueta que ninguna.
+    const c = cand[0];
+    const ord = filas.slice().sort((a, b) =>
+      (localNum(b[c]) || 0) - (localNum(a[c]) || 0));
+    if (ord.length > 1 && nom(ord[0]) !== nom(ord[ord.length - 1])) {
+      out.push(`<p class="av-an-lee">Entre las ${filas.length} filas, ` +
+        `<b>${esc(nom(ord[0]))}</b> encabeza con ${esc(String(ord[0][c]))} y ` +
+        `${esc(nom(ord[ord.length - 1]))} cierra con ` +
+        `${esc(String(ord[ord.length - 1][c]))}.</p>`);
+    }
+  }
+  return out;
+}
+
 function avBloquesPublicados(ind) {
   const rd = avReporte(ind.reporte);
   const out = [];
@@ -4360,7 +4447,7 @@ function avBloquesPublicados(ind) {
       por: `Desglose publicado por el reporte, ${filas.length} filas.`,
       cabecera: cols.map(c => COL_NOMBRE[c] ||
         c.replace(/_/g, ' ').replace(/^./, x => x.toUpperCase())),
-      cuerpo, lecturas: [],
+      cuerpo, lecturas: lecturaDesglose(filas, cols, ind, titulo),
     });
   });
   return out;
@@ -4635,7 +4722,9 @@ function ejeSerieDiaria(clave) {
                DATA.empresas.PAUNO.dimensiones) || {};
   const mapa = { merma: 'merma_dia', produccion: 'produccion_dia' };
   const d = dim[mapa[clave]];
-  return (d && Array.isArray(d.dias) && d.dias.length) ? d : null;
+  // Solo sirve si viene partida por mes: comparar el mismo tramo exige saber
+  // de qué mes es cada día. Una serie de 31 días sin mes no dice nada.
+  return (d && d.por_mes && Object.keys(d.por_mes).length) ? d.por_mes : null;
 }
 
 // Proyección de cierre del mes en curso.
@@ -4682,17 +4771,22 @@ function ejeSemaforo(cumpl) {
 // hay dato diario: es preferible una celda que dice "no hay dato diario" a un
 // porcentaje que compara trece días contra treinta.
 function ejeComparable(ind, dias) {
-  const d = ejeSerieDiaria(ind.clave);
-  if (!d || !dias) return null;
+  const porMes = ejeSerieDiaria(ind.clave);
+  if (!porMes || !dias) return null;
+  // El mismo tramo del MES ANTERIOR, que es contra lo que hay que comparar.
+  // La primera versión sumaba los días del mes en curso contra sí mismo y
+  // devolvía el valor actual disfrazado de comparación.
+  const prev = porMes[mesCerrado()];
+  if (!prev || !Array.isArray(prev.dias)) return null;
   const hasta = dias.dia;
-  const idx = d.dias.filter(x => x <= hasta);
+  const idx = prev.dias.filter(x => x <= hasta);
   if (idx.length < 2) return null;
-  const vals = idx.map(x => d.valor[d.dias.indexOf(x)]).filter(v => v != null);
+  const vals = idx.map(x => prev.valor[prev.dias.indexOf(x)]).filter(v => v != null);
   if (!vals.length) return null;
   const v = ind.tipo === 'acumula'
     ? vals.reduce((a, b) => a + b, 0)
     : vals.reduce((a, b) => a + b, 0) / vals.length;
-  return { valor: v, dias: idx.length };
+  return { valor: v, dias: idx.length, mes: mesCerrado() };
 }
 
 // Todo lo que la pantalla necesita saber de un indicador, calculado una vez.
@@ -4743,8 +4837,11 @@ function ejeMetrica(ind) {
                     pie: `proyección de cierre vs ${nombreMesCerrado()} cerrado`,
                     proyectada: true };
     }
+  } else if (curso != null && comp) {
+    variacion = { base: comp.valor, actual: curso,
+                  pie: `mismo tramo (${comp.dias} días) de ${nombreMesCerrado()}` };
   } else if (curso != null && cerrado != null) {
-    variacion = { base: cerrado, actual: curso, pie: `vs ${nombreMesCerrado()}` };
+    variacion = { base: cerrado, actual: curso, pie: `vs ${nombreMesCerrado()} completo` };
   }
   if (variacion && (variacion.base == null || variacion.actual == null || !variacion.base)) {
     variacion = null;
