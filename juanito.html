@@ -1617,6 +1617,33 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .eje-falta { color:var(--yellow); border:1px dashed var(--yellow); border-radius:4px;
   padding:1px 6px; cursor:pointer; font-size:10.5px; }
 .eje-na { color:var(--text3); font-size:11px; font-weight:400; }
+/* iPhone: la tabla del avance deja de ser tabla. Cada fila pasa a ser una
+   tarjeta con sus valores etiquetados, que es legible sin empujar 900 píxeles
+   a lo ancho. La cabecera se esconde porque cada celda ya dice su columna. */
+@media (max-width: 560px) {
+  .av-tabla, .av-tabla tbody, .av-tabla tr, .av-tabla td { display:block; width:auto; }
+  .av-tabla thead { position:absolute; left:-9999px; }
+  .av-tabla { min-width:0 !important; }
+  .av-tabla-caja { overflow-x:visible; }
+  .av-tabla > tbody > tr, .av-tabla tbody.av-hijas > tr.av-seg {
+    border:1px solid var(--border); border-radius:8px; margin-bottom:10px;
+    padding:10px 12px; background:var(--card); }
+  .av-tabla td { display:flex; justify-content:space-between; align-items:baseline;
+    gap:12px; border:none !important; padding:4px 0 !important; text-align:right; }
+  .av-tabla td::before { content:attr(data-lab); font-size:10.5px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--text3); text-align:left; flex:0 0 auto; }
+  .av-tabla td[data-lab="Indicador"], .av-tabla td[data-lab="Segmento"] {
+    font-size:15px; font-weight:700; padding-bottom:8px !important;
+    border-bottom:1px solid var(--border) !important; margin-bottom:4px; }
+  .av-tabla td[data-lab="Indicador"]::before, .av-tabla td[data-lab="Segmento"]::before { content:none; }
+  .av-tabla td.av-seg-vacia, .av-tabla td:empty { display:none; }
+  .av-tabla td.av-seg-n { padding-left:0 !important; }
+  .av-tabla tr.av-an-fila { border:none; padding:0; background:none; margin:0; }
+  .av-tabla tr.av-an-fila td { padding:0 !important; display:block; }
+  .av-tabla tr.av-an-fila td::before { content:none; }
+  .av-an { width:auto !important; position:static !important; }
+}
+
 .flt { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:flex-end;
   justify-content:space-between; padding:12px 14px; margin:14px 0;
   background:var(--card2); border:1px solid var(--border); border-radius:8px; }
@@ -3425,15 +3452,15 @@ function avanceSegmentos(ind, meta, pct) {
            >${cae ? 'Cae · ver análisis' : 'Ver análisis'}</span>`
       : '';
     return `<tr class="av-seg">
-      <td class="av-seg-n">${esc(nombre)}</td>
-      <td></td>
-      <td class="av-cerrado">${cerrado == null ? '' : esc(fmtMeta(fmt, cerrado))}</td>
-      <td class="av-num">${curso == null
+      <td class="av-seg-n" data-lab="Segmento">${esc(nombre)}</td>
+      <td class="av-seg-vacia"></td>
+      <td class="av-cerrado" data-lab="${esc(nombreMesCerrado())}">${cerrado == null ? '' : esc(fmtMeta(fmt, cerrado))}</td>
+      <td class="av-num" data-lab="${esc(nombreMes(mesParcial()) || 'mes en curso')}">${curso == null
         ? '<span class="av-vacio">—</span>' : esc(fmtMeta(fmt, curso))}</td>
-      <td>${tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>` : ''}</td>
-      <td>${dist ? `<span class="av-num" style="color:${col}">${dist.txt}</span>` : ''}</td>
-      <td>${chispaSerie(arr, col)}</td>
-      <td>${lectura}</td>
+      <td data-lab="Variación">${tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>` : ''}</td>
+      <td data-lab="Distancia">${dist ? `<span class="av-num" style="color:${col}">${dist.txt}</span>` : ''}</td>
+      <td data-lab="Tendencia 13 m">${chispaSerie(arr, col)}</td>
+      <td data-lab="Lectura">${lectura}</td>
     </tr>
     ${an ? avAnalisisHTML(an, anId) : ''}`;
   }).join('');
@@ -3995,6 +4022,129 @@ function avBloqueSubcategorias(uen) {
 }
 
 
+
+// ── Cortes que llegan de `dimensiones`: canal, responsable de cartera y el
+// presupuesto acumulado al día. Cada uno responde una pregunta que los cortes
+// anteriores no podían: dónde se vende, quién responde por lo vencido, y si el
+// mes va bien o mal contra lo que debería llevar a estas alturas.
+function avDim() {
+  return (DATA && DATA.empresas && DATA.empresas.PAUNO &&
+          DATA.empresas.PAUNO.dimensiones) || {};
+}
+
+function avBloqueCanal() {
+  const d = avDim().venta_canal;
+  if (!d || !d.filas || d.filas.length < 2) return null;
+  const meses = d.meses || [];
+  const act = mesParcial(), ant = mesCerrado();
+  if (meses.indexOf(act) < 0 && meses.indexOf(ant) < 0) return null;
+
+  const filas = d.filas.map(f => {
+    const a = f.por_mes[ant], b = f.por_mes[act];
+    return { canal: f.canal, ant: a, act: b,
+             dif: (a != null && b != null) ? b - a : null };
+  }).filter(f => f.ant != null || f.act != null);
+  if (filas.length < 2) return null;
+
+  const totalAct = filas.reduce((s, f) => s + (f.act || 0), 0);
+  const cuerpo = filas.map(f => {
+    const peso = totalAct ? (f.act || 0) / totalAct * 100 : null;
+    return `<tr${(f.dif || 0) < 0 ? ' class="av-an-foco"' : ''}>
+      <td>${esc(f.canal)}</td>
+      <td>${f.ant == null ? '—' : esc(fmtMeta({unidad:'soles'}, f.ant))}</td>
+      <td>${f.act == null ? '—' : esc(fmtMeta({unidad:'soles'}, f.act))}</td>
+      <td>${peso == null ? '—' : peso.toFixed(1) + '%'}</td>
+      <td style="color:${(f.dif || 0) < 0 ? 'var(--red)' : 'var(--green)'};font-weight:600">
+        ${f.dif == null ? '—' : avSoles0(f.dif)}</td>
+    </tr>`;
+  }).join('');
+
+  const caen = filas.filter(f => f.dif != null && f.dif < 0)
+                    .sort((a, b) => a.dif - b.dif);
+  const lecturas = [];
+  if (caen.length) {
+    const t = caen.reduce((s, f) => s + f.dif, 0);
+    lecturas.push(`<p class="av-an-lee rojo"><b>Dónde se está perdiendo venta:</b> ` +
+      `${esc(caen[0].canal)} cae ${avSoles0(caen[0].dif)} contra ${esc(nombreMesCerrado())}, ` +
+      `${caen.length > 1 ? `y entre los ${caen.length} canales que bajan suman ${avSoles0(t)}` :
+        'y es el único canal que baja'}.</p>`);
+  }
+  lecturas.push(`<p class="av-an-lee">${esc(nombreMes(act))} va a medio mes, así que la ` +
+    `comparación contra ${esc(nombreMesCerrado())} completo no es pareja. Sirve para ver ` +
+    `<b>qué canal pesa más</b> y cuál se movió de sitio, no para juzgar la caída.</p>`);
+
+  return {
+    periodo: act,
+    titulo: 'Por canal — dónde se vende',
+    por: `Venta de cada canal en ${esc(nombreMesCerrado())} y en ${esc(nombreMes(act))}, ` +
+         `con su peso sobre la venta del mes en curso.`,
+    cabecera: ['Canal', nombreMesCerrado(), nombreMes(act) || 'mes en curso',
+               '% venta', 'Diferencia'],
+    cuerpo, lecturas,
+  };
+}
+
+function avBloqueCartera() {
+  const c = avDim().cartera_responsable;
+  if (!c || c.length < 2) return null;
+  const cuerpo = c.map(f => `
+    <tr${(f.pct_t30mas || 0) > 15 ? ' class="av-an-foco"' : ''}>
+      <td>${esc(f.ejecutivo)}${f.canal
+        ? `<small style="display:block;color:var(--text3)">${esc(f.canal)}</small>` : ''}</td>
+      <td>${esc(f.total || '—')}</td>
+      <td>${esc(f.por_vencer || '—')}</td>
+      <td>${esc(f.t15 || '—')}</td>
+      <td>${esc(f.t30 || '—')}</td>
+      <td style="color:var(--red);font-weight:600">${esc(f.t30mas || '—')}</td>
+      <td style="color:${(f.pct_t30mas || 0) > 15 ? 'var(--red)' : 'var(--text2)'}">
+        ${f.pct_t30mas == null ? '—' : f.pct_t30mas + '%'}</td>
+    </tr>`).join('');
+
+  const peor = c.filter(f => f.pct_t30mas != null)
+                .sort((a, b) => b.pct_t30mas - a.pct_t30mas)[0];
+  const lecturas = [];
+  if (peor) {
+    lecturas.push(`<p class="av-an-lee rojo"><b>Dónde priorizar la cobranza:</b> ` +
+      `${esc(peor.ejecutivo)} tiene ${peor.pct_t30mas}% de su cartera vencida a más de ` +
+      `30 días (${esc(peor.t30mas)} sobre ${esc(peor.total)}). Ese es el tramo que se ` +
+      `vuelve incobrable.</p>`);
+  }
+  lecturas.push(`<p class="av-an-lee">Es el único corte del modelo donde la cartera ` +
+    `aparece con un nombre de responsable. Ventas no trae vendedor.</p>`);
+
+  return {
+    periodo: undefined,
+    titulo: 'Por ejecutivo — quién responde por lo vencido',
+    por: 'Cartera de cada ejecutivo abierta en sus cuatro tramos de antigüedad, ' +
+         'ordenada por lo que tiene vencido a más de 30 días.',
+    cabecera: ['Ejecutivo', 'Cartera', 'Por vencer', '0-15 d', '16-30 d',
+               '+30 d', '% en +30 d'],
+    cuerpo, lecturas,
+  };
+}
+
+function avBloquePpto() {
+  const p = avDim().ppto_al_dia;
+  if (!p || !p.length) return null;
+  const cuerpo = p.map(f => `
+    <tr>
+      <td>${esc(f.canal)}</td>
+      <td>${esc(f.facturado || '—')}</td>
+      <td>${esc(f.ppto_hasta_ayer || '—')}</td>
+      <td>${esc(f.cuota_mes || '—')}</td>
+      <td style="font-weight:600">${esc(f.avance_dia || '—')}</td>
+    </tr>`).join('');
+  return {
+    periodo: mesParcial(),
+    titulo: 'Avance contra presupuesto, al día',
+    por: 'Lo facturado contra el presupuesto acumulado hasta ayer — no contra el mes ' +
+         'entero. Es la comparación que sí respeta los días transcurridos, y la calcula ' +
+         'el propio reporte.',
+    cabecera: ['Canal', 'Facturado', 'Presupuesto al día', 'Cuota del mes', '% avance'],
+    cuerpo, lecturas: [],
+  };
+}
+
 // ── Qué segmento explica la desviación de un indicador.
 //
 // Vale para cualquiera que tenga segmentos: merma, compras, margen. Compara
@@ -4152,6 +4302,18 @@ function analisisDe(ind, meta, segNombre) {
   if (ind.clave === 'margen' && !esUEN) {
     const cli = avBloqueClientes();
     if (cli) bloques.push(cli);
+    const can = avBloqueCanal();
+    if (can) bloques.push(can);
+  }
+  if (ind.clave === 'facturacion' && !esUEN) {
+    const pp = avBloquePpto();
+    if (pp) bloques.push(pp);
+    const can = avBloqueCanal();
+    if (can) bloques.push(can);
+  }
+  if (ind.clave === 'morosidad' && !esUEN) {
+    const car = avBloqueCartera();
+    if (car) bloques.push(car);
   }
 
   if (!bloques.length && !tesis) return null;
@@ -4428,7 +4590,9 @@ function ejeTarjeta(m) {
       <div class="eje-row-k">cierre de ${esc(nombreMes(mesParcial()) || 'mes')}
         <small class="eje-calc" title="${esc(m.proy.nota)}">proyección</small></div>
       <div class="eje-row-v">${esc(ejeFmt(ind, m.proy.valor))}</div>
-      <div class="eje-row-m">${m.dist ? 'vs meta ' + esc(m.dist.txt) : '—'}</div>
+      <div class="eje-row-m">${m.meta == null ? '—'
+        : 'meta ' + esc(ejeFmt(ind, m.meta)) +
+          (m.dist ? '<small>' + esc(m.dist.txt) + '</small>' : '')}</div>
       <div class="eje-row-c" style="color:${col}">${ejePct(m.cumplProy)}</div>
     </div>` : '';
 
@@ -4822,25 +4986,25 @@ function dxpAvanceView() {
 
     const tieneSeg = (ind.segmentos || []).length > 0;
     return `<tr${tieneSeg ? ` class="av-abrible" onclick="avanceAbrir('${ind.clave}')"` : ''}>
-      <td class="av-rep">${tieneSeg ? `<span class="av-flecha" id="fl-${ind.clave}">▸</span> ` : ''}${esc(ind.label)}
+      <td class="av-rep" data-lab="Indicador">${tieneSeg ? `<span class="av-flecha" id="fl-${ind.clave}">▸</span> ` : ''}${esc(ind.label)}
         <small>${esc(DXP_NOMBRE[ind.reporte] || ind.reporte)}${
           ind.nota ? ' · ' + esc(ind.nota) : ''}</small></td>
-      <td><span class="av-meta ${meta == null ? 'av-meta-vacia' : ''} ${propia ? 'av-meta-mia' : ''}"
+      <td data-lab="Meta del mes"><span class="av-meta ${meta == null ? 'av-meta-vacia' : ''} ${propia ? 'av-meta-mia' : ''}"
             onclick="editarMeta('${ind.clave}')"
             title="${propia ? 'Meta puesta por ti, sin publicar' : 'Clic para cambiarla'}"
             >${esc(metaTxt)}</span></td>
-      <td class="av-cerrado">${cerrado == null
+      <td class="av-cerrado" data-lab="${esc(nombreMesCerrado())}">${cerrado == null
         ? '<span class="av-vacio">—</span>' : esc(fmtMeta(ind, cerrado))}</td>
-      <td class="av-num">${
+      <td class="av-num" data-lab="${esc(nombreMes(mesParcial()) || 'mes en curso')}">${
         curso != null ? esc(fmtMeta(ind, curso))
         : '<span class="av-vacio">aún sin dato</span>'}${
         sinSerie ? '<small class="av-vacio">del día</small>' : ''}</td>
-      <td>${triHtml}${compara.pie
+      <td data-lab="Variación">${triHtml}${compara.pie
         ? `<small class="av-vacio">${esc(compara.pie)}</small>` : ''}</td>
-      <td>${centro}</td>
-      <td>${sinSerie ? '<span class="av-vacio">sin corte mensual</span>'
+      <td data-lab="Ritmo / distancia">${centro}</td>
+      <td data-lab="Tendencia 13 m">${sinSerie ? '<span class="av-vacio">sin corte mensual</span>'
                      : chispaSerie(serie, col)}</td>
-      <td>${veredicto}</td>
+      <td data-lab="Lectura">${veredicto}</td>
     </tr>
     ${an ? avAnalisisHTML(an, anId) : ''}
     ${tieneSeg ? `<tbody class="av-hijas" id="seg-${ind.clave}" hidden>
@@ -4901,10 +5065,16 @@ function dxpTab(tab) {
   if (tab === 'avance' && v) v.innerHTML = dxpAvanceView();
   if (tab === 'ejecutivo' && v) v.innerHTML = ejeVista();
   const ctx = root.querySelector('#dxp-context');
-  if (ctx) ctx.textContent = tab === 'roadmap' ? 'Plan de Acción'
-    : tab === 'avance' ? 'Avance del mes en curso'
-    : tab === 'ejecutivo' ? `Vista ejecutiva · ${(METAS?.indicadores || []).length} indicadores`
-    : `Resumen · ${DXP_ORDEN.length} reportes`;
+  // Cada pestaña habla de un período distinto y el encabezado lo dice: el
+  // resumen es del mes cerrado y las otras dos del mes en curso. Tenerlo en el
+  // título fijo hacía que la vista de setiembre se leyera bajo un rótulo que
+  // decía "Agosto".
+  const mesCur = nombreMes(mesParcial()) || 'mes en curso';
+  if (ctx) ctx.textContent =
+      tab === 'roadmap'   ? 'Plan de Acción'
+    : tab === 'avance'    ? `Avance de ${mesCur}`
+    : tab === 'ejecutivo' ? `${(METAS?.indicadores || []).length} indicadores · ${mesCur} vs ${nombreMesCerrado()}`
+    : `Cierre de ${nombreMesCerrado()} · ${DXP_ORDEN.length} reportes`;
   const sc = document.getElementById('screens-container'); if (sc) sc.scrollTop = 0;
 }
 function dxpOpen(tipo) {
@@ -4928,13 +5098,13 @@ function renderHome() {
   root.innerHTML = `
   <div class="wrap">
     <div class="masthead">
-      <div class="mast-left" onclick="dxpTab('resumen')">
+      <div class="mast-left" onclick="dxpTab('ejecutivo')">
         <div class="eyebrow">Holding · Diagnóstico Ejecutivo</div>
-        <h1>PAUNO — ${mesTitulo}</h1>
+        <h1>PAUNO</h1>
       </div>
       <div class="meta-block">
         Fuente: Power BI · validado contra las tarjetas del reporte<br>
-        <span id="dxp-context">Resumen · ${DXP_ORDEN.length} reportes</span>
+        <span id="dxp-context">Vista ejecutiva</span>
       </div>
     </div>
 
