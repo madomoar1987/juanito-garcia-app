@@ -58,6 +58,18 @@ class Informe:
         self.fallos = []
         self.saltados = []
 
+    def afirmar(self, ok, titulo, detalle=""):
+        """Una comprobación que no compara dos números sino que verifica una
+        condición: la serie está alineada, el campo existe."""
+        if ok:
+            self.ok += 1
+            print(f"  OK     {titulo}" + (f"  ({detalle})" if detalle else ""))
+        else:
+            self.fallos.append((titulo, None, None, None, detalle))
+            print(f"  FALLA  {titulo}")
+            if detalle:
+                print(f"         {detalle}")
+
     def comparar(self, titulo, a, b, detalle, tol=TOL):
         if a is None or b is None:
             self.saltados.append(f"{titulo}: falta un dato")
@@ -105,6 +117,140 @@ EQUIVALENCIAS = [
 SALDOS = [
     ("cuentas_por_cobrar", "Morosidad", "cxc", "% Morosidad", True),
 ]
+
+
+# Qué serie mensual le corresponde a cada reporte. Un reporte sin serie no se
+# puede sellar: su tarjeta se queda sin período confirmado, que es correcto —
+# control interno y avance vs presupuesto son acumulados sin corte mensual.
+DATASET_DE_REPORTE = {
+    "mermas": "mermas",
+    "margen_variable": "margen",
+    "cuentas_por_cobrar": "cxc",
+    "cuentas_por_pagar": "cxp",
+    "fill_rate": "fill_rate",
+    "consumo_materiales": "consumo",
+    "productividad": "productividad",
+    "compras": "compras",
+    "sop_inventario": "inventario",
+}
+
+
+def series_desalineadas(ser):
+    """Series cuyos datos están al principio del eje y no al final.
+
+    Una serie mensual termina en el mes en curso. Si sus únicos puntos están en
+    los primeros meses del eje —2025-01 a 2025-04 en un eje que llega a
+    2026-09— no es que falten datos recientes: es que los datos se escribieron
+    en las posiciones equivocadas. Se detectó porque la tarjeta del reporte,
+    que es del mes actual, coincidía con el punto de 2025-04.
+
+    No se corrige sola: mover los puntos sería inventarles un mes. Se avisa
+    para que se vuelva a capturar el visual, y mientras tanto esa serie no se
+    usa para sellar períodos.
+    """
+    per = ser.get("periodos") or []
+    if len(per) < 8:
+        return []
+    malas = []
+    for ds, series in (ser.get("datasets") or {}).items():
+        for sk, arr in (series or {}).items():
+            if not isinstance(arr, list) or len(arr) != len(per):
+                continue
+            idx = [i for i, x in enumerate(arr) if x is not None]
+            if not idx or len(idx) > len(per) // 2:
+                continue
+            # Todos los puntos en el primer tercio del eje y ninguno cerca del
+            # final: el eje va al revés de lo que debería.
+            if idx[-1] < len(per) // 3:
+                malas.append((f"{ds}/{sk}", len(idx), per[idx[0]], per[idx[-1]]))
+    return malas
+
+
+
+DESALINEADAS = set()
+
+
+def sellar_periodos(rp, ser, parcial=None, cerrado=None):
+    """Marca cada KPI con el mes al que pertenece, deducido de su propio valor.
+
+    La pantalla de reportes mostraba once tarjetas bajo el título "este mes" y
+    no todas eran del mes: ventas y margen eran de agosto, la mora era el saldo
+    de hoy, consumo de materiales era el acumulado del año y el fill rate venía
+    de otra medida. Todas correctas, todas con el mismo rótulo.
+
+    En vez de mantener a mano una lista de qué es cada tarjeta —que envejece y
+    miente—, se busca el valor en las series y se mira en qué mes aparece. Si
+    aparece en uno solo, ese es su período y se sella. Si aparece en varios o
+    en ninguno, no se inventa: se deja sin sellar y la app dice que no está
+    confirmado, que es la verdad.
+    """
+    per = ser.get("periodos") or []
+    datasets = ser.get("datasets") or {}
+    if not per or not datasets:
+        return 0, 0
+
+    sellados = sin_sellar = 0
+    for rep_k, rep in rp.items():
+        if not isinstance(rep, dict):
+            continue
+        # Solo se busca dentro de la serie del PROPIO reporte. Buscar en todas
+        # producía coincidencias de casualidad: el 69.32% de control interno
+        # "aparecía" en un mes de 2025 de otra medida cualquiera, y la tarjeta
+        # quedaba sellada con un mes que no tiene nada que ver.
+        ds_k = DATASET_DE_REPORTE.get(rep_k)
+        series_rep = datasets.get(ds_k) if ds_k else None
+        if not series_rep:
+            sin_sellar += len(rep.get("kpis", []) or [])
+            continue
+        for k in rep.get("kpis", []) or []:
+            v = num(k.get("valor"))
+            if v is None or v == 0:
+                continue
+            # Se pregunta primero por los dos meses que una tarjeta puede ser:
+            # el que corre o el último cerrado. Buscar en los veintiún meses
+            # del eje devolvía "coincide con varios" y dejaba sin sellar
+            # tarjetas que eran claramente del mes cerrado: un 46.5% de margen
+            # se repite en más de un mes del año.
+            # La tarjeta viene redondeada para mostrarse, así que la
+            # tolerancia sale de cuántos decimales enseña: "2.9%" puede ser
+            # cualquier cosa entre 2.85 y 2.95, y "S/0.53" entre 0.525 y
+            # 0.535. Con una tolerancia fija en porcentaje, la merma —que se
+            # muestra con un decimal sobre un número chico— se quedaba fuera
+            # por dos centésimas.
+            txt = str(k.get("valor"))
+            dec = len(txt.split(".")[1].rstrip("%KGkg ")) if "." in txt else 0
+            tol_abs = max(0.5 * (10 ** -dec), abs(v) * 0.002)
+            candidatos = [p for p in (parcial, cerrado) if p in per]
+            meses, fuentes = set(), set()
+            for orden in (candidatos, range(len(per))):
+                idxs = ([per.index(p) for p in orden] if orden is candidatos
+                        else list(orden))
+                for sk, arr in series_rep.items():
+                    if not isinstance(arr, list) or f"{ds_k}/{sk}" in DESALINEADAS:
+                        continue
+                    for i in idxs:
+                        x = arr[i] if i < len(arr) else None
+                        if x is None or i >= len(per):
+                            continue
+                        # Los porcentajes viajan como fracción en las series y
+                        # como número en las tarjetas: se prueban las dos.
+                        for cand in (x, x * 100):
+                            if cand and abs(abs(cand) - abs(v)) <= tol_abs:
+                                meses.add(per[i])
+                                fuentes.add(f"{ds_k}/{sk}")
+                                break
+                if len(meses) == 1:
+                    break            # ya se resolvió con los meses probables
+                meses, fuentes = set(), set()
+            if len(meses) == 1:
+                k["periodo"] = meses.pop()
+                if len(fuentes) == 1:
+                    k["periodo_fuente"] = fuentes.pop()
+                sellados += 1
+            else:
+                sin_sellar += 1
+    return sellados, sin_sellar
+
 
 
 def marcar_saldos(rp, ser, cerrado):
@@ -375,7 +521,21 @@ def main():
 
     if anotar:
         corregir_etiquetas(rp, ser, cerrado, inf)
+        malas = series_desalineadas(ser)
+        print("\nSeries escritas en el tramo equivocado del eje")
+        if malas:
+            DESALINEADAS.update(m[0] for m in malas)
+            for nombre, n, ini, fin in malas:
+                inf.afirmar(False, f"{nombre}: eje al revés",
+                            f"sus {n} puntos van de {ini} a {fin}, pero el eje "
+                            f"llega a {per[-1]} — hay que volver a capturar "
+                            f"ese visual")
+        else:
+            inf.afirmar(True, "ninguna serie desalineada")
         marcar_saldos(rp, ser, cerrado)
+        a, b = sellar_periodos(rp, ser, parcial, cerrado)
+        print(f"\nPeríodo de cada tarjeta: {a} selladas con su mes, "
+              f"{b} sin confirmar")
         # Un descuadre que acaba de quedar explicado ya no es un descuadre.
         # Si no se retira, el correo avisaría cada día de algo resuelto, y un
         # aviso que siempre suena deja de mirarse.
@@ -397,6 +557,8 @@ def main():
         print("\nLo que no cuadra:")
         for t, a, b, dif, det in inf.fallos:
             print(f"  · {t}")
+            if dif is None and det:
+                print(f"      {det}")
             if dif:
                 print(f"      publicado {a:,.2f}  ·  se esperaba {b:,.2f}"
                       f"  ({dif*100:.0f}% de diferencia)")

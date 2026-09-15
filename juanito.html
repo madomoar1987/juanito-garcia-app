@@ -1534,6 +1534,9 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .av-an-tabla tr:last-child td { border-bottom:none; }
 .av-an-foco td { background:var(--red-bg); }
 .av-an-ene { color:var(--text3); }
+.kpi-per { display:block; margin-top:4px; font-size:10px; letter-spacing:.03em;
+  color:var(--text3); }
+.kpi-per-ojo { color:var(--yellow); font-weight:600; }
 .av-pr { margin:0 0 16px; }
 .av-pr-k { font-size:10px; letter-spacing:.09em; text-transform:uppercase;
   color:var(--yellow); font-weight:600; margin-bottom:8px; }
@@ -2928,12 +2931,29 @@ function dxpHeatmap(s) {
 }
 
 // ── Bloque: holding strip ──────────────────────────────────────────────────
+// El período de una cifra, tal como lo dedujo la validación al cruzarla con
+// su serie. Si no se pudo confirmar se dice: once tarjetas bajo el rótulo
+// "este mes" cuando la mitad no lo era fue justo el problema que esto cierra.
+function dxpPeriodoKpi(k) {
+  if (!k) return '';
+  if (k.periodo) {
+    const curso = mesParcial();
+    const txt = k.periodo === curso
+      ? nombreMes(k.periodo) + ' al día ' + ((avanceDelMes() || {}).dia || '')
+      : nombreMes(k.periodo);
+    return `<span class="kpi-per">${esc(txt)}</span>`;
+  }
+  if (k.nota_periodo) return `<span class="kpi-per">${esc(k.nota_periodo)}</span>`;
+  if (/acumulado/i.test(k.label || '')) return '';
+  return '<span class="kpi-per kpi-per-ojo">período sin confirmar</span>';
+}
+
 function dxpHolding(s) {
   return `
-    <div class="section-label"><span class="num">◆</span><h2>Holding — este mes</h2><span class="rule"></span></div>
+    <div class="section-label"><span class="num">◆</span><h2>Holding — ${esc(nombreMesCerrado())} cerrado</h2><span class="rule"></span></div>
     <div class="holding-strip">
-      <div class="hs-cell"><div class="hs-label">Ventas</div><div class="hs-val">${s.ventas||'—'}</div><div class="hs-delta" style="color:${s.ventasYoY==null?'var(--sub)':s.ventasYoY>=0?'var(--green)':'var(--red)'}">${s.ventasYoY==null?'—':(s.ventasYoY>=0?'▲ ':'▼ ')+dxpSigno(s.ventasYoY)+' YoY'}</div></div>
-      <div class="hs-cell"><div class="hs-label">Mora consolidada</div><div class="hs-val" style="color:var(--yellow)">${s.mora||'—'}</div><div class="hs-delta" style="color:var(--sub)">meta 15%</div></div>
+      <div class="hs-cell"><div class="hs-label">Ventas · ${esc(nombreMesCerrado())}</div><div class="hs-val">${s.ventas||'—'}</div><div class="hs-delta" style="color:${s.ventasYoY==null?'var(--sub)':s.ventasYoY>=0?'var(--green)':'var(--red)'}">${s.ventasYoY==null?'—':(s.ventasYoY>=0?'▲ ':'▼ ')+dxpSigno(s.ventasYoY)+' YoY'}</div></div>
+      <div class="hs-cell"><div class="hs-label">Mora consolidada · hoy</div><div class="hs-val" style="color:var(--yellow)">${s.mora||'—'}</div><div class="hs-delta" style="color:var(--sub)">meta 15%</div></div>
       <div class="hs-cell"><div class="hs-label">Reportes en Crítico</div><div class="hs-val" style="color:var(--red)">${s.criticos.length} / ${DXP_ORDEN.length}</div><div class="hs-delta" style="color:var(--sub)">${s.criticos.map(t=>DXP_CORTO[t]).join(', ')||'—'}</div></div>
       <div class="hs-cell"><div class="hs-label">Reportes en Atención</div><div class="hs-val" style="color:var(--yellow)">${s.atencion.length} / ${DXP_ORDEN.length}</div><div class="hs-delta" style="color:var(--sub)">${s.atencion.map(t=>DXP_CORTO[t]).join(', ')||'—'}</div></div>
       <div class="hs-cell"><div class="hs-label">Reportes con serie mensual</div><div class="hs-val">${s.dsConf} / ${s.dsTot}</div><div class="hs-delta" style="color:var(--sub)">${s.repConSerie.map(x=>DXP_CORTO[x]).join(', ')}</div></div>
@@ -2969,7 +2989,7 @@ function dxpCards(s) {
         <div><div class="rcard-num">${String(i+1).padStart(2,'0')}</div><div class="rcard-title">${DXP_NOMBRE[t]||t}<span class="arrow">→</span></div></div>
         <span class="pill ${est}">${lbl}</span>
       </div>
-      <div class="rcard-kpi"><span class="v" style="color:${est==='crit'?'var(--red)':est==='warn'?'var(--yellow)':'var(--ink)'}">${k0.valor}</span><span class="meta">${k0.label}${k0.fuente && k0.fuente !== 'reporte' ? ' <span title="No contrastado contra Power BI" style="color:var(--yellow);font-weight:700">◦</span>' : ''}${k0.meta?' · meta '+k0.meta:''}</span></div>
+      <div class="rcard-kpi"><span class="v" style="color:${est==='crit'?'var(--red)':est==='warn'?'var(--yellow)':'var(--ink)'}">${k0.valor}</span><span class="meta">${k0.label}${k0.fuente && k0.fuente !== 'reporte' ? ' <span title="No contrastado contra Power BI" style="color:var(--yellow);font-weight:700">◦</span>' : ''}${k0.meta?' · meta '+k0.meta:''}</span>${dxpPeriodoKpi(k0)}</div>
       <div class="rcard-body">${body}</div>
     </div>`;
   }).join('');
