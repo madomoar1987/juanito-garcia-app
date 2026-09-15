@@ -1413,6 +1413,218 @@ def dax_con_periodo(dax, periodo, columna="PERIODO"):
 
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# DIMENSIONES DE ANÁLISIS
+#
+# Hasta ahora la app abría el margen por unidad de negocio, subcategoría y SKU.
+# El catálogo tiene tres cortes más que nadie estaba usando y que responden
+# preguntas distintas: por CANAL (dónde se vende), por EJECUTIVO y JEFE DE
+# VENTA (quién responde por la cartera) y por DÍA (que es lo único que permite
+# comparar un mes a medias contra el mismo tramo del anterior).
+#
+# Lo que NO existe, y conviene decirlo para que nadie lo espere: no hay
+# vendedor en el reporte de ventas —solo en el de cobranza—, ni zona, ni
+# territorio, ni sucursal, ni familia. Son dimensiones que el modelo de Power
+# BI no tiene.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def extraer_dimensiones(token, ws_id, ids, scanned):
+    """Trae los cortes por canal, por responsable de cartera y por día."""
+    bolsa = scanned.setdefault("dimensiones", {})
+
+    def _cap(dataset, visual, columnas, clave, etiqueta):
+        try:
+            filas = desglose_desde_captura(token, ws_id, [dataset], visual, columnas)
+            if filas:
+                bolsa[clave] = filas
+                print(f"    ✓ {etiqueta}: {len(filas)} filas")
+            else:
+                print(f"    · {etiqueta}: sin filas")
+        except Exception as e:
+            print(f"    ✗ {etiqueta}: {e}")
+            DIAGNOSTICO.append({"consulta": clave, "http": 0, "error": repr(e)[:300]})
+
+    # Venta por canal y mes. Permite comparar agosto contra setiembre por canal
+    # y no solo en total.
+    _cap(ids.get("margen"), "FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO#d37f17982d3b",
+         {"canal": "[Canal]", "anio": "[Año]", "mes": "[NroMes]",
+          "venta": "[SumMonto_Neto_Factura_TG_0]", "cantidad": "[Sumcantidad]"},
+         "__venta_canal", "Venta por canal")
+
+    # Precio unitario por producto y canal: dice si un precio cayó en todos los
+    # canales (decisión de precios) o en uno solo (una negociación puntual).
+    _cap(ids.get("margen"), "PRECIO UNITARIO#793034878518",
+         {"producto": "[DESCRIPCION]", "canal": "[Canal]", "anio": "[Año]",
+          "mes": "[NroMes]", "precio": "[Precio_unitario]"},
+         "__precio_canal", "Precio unitario por canal")
+
+    # Cartera por responsable. Es el único sitio del modelo donde aparece un
+    # nombre de vendedor, y trae los cuatro tramos de antigüedad.
+    _cap(ids.get("cuentas_por_cobrar"), "Matriz#38e3644b220b",
+         {"canal": "[CANAL]", "jefe": "[JEFE_VENTA]", "ejecutivo": "[EJECUTIVO]",
+          "por_vencer": "[POR VENCER]", "t15": "[0 A 15 DÍAS]",
+          "t30": "[16 A 30 DÍAS]", "t30mas": "[MAS DE 30 DÍAS]",
+          "total": "[SumTotal_fact]"},
+         "__cartera_responsable", "Cartera por ejecutivo")
+
+    # Merma día a día: sin esto no se puede comparar el mes en curso contra el
+    # mismo tramo del mes anterior, que es la unica comparacion honesta cuando
+    # van trece dias de treinta.
+    _cap(ids.get("mermas"), "Merma Diaria#363813631d90",
+         {"dia": "[DIA]", "almacen": "[almacen]", "turno": "[Turno]",
+          "merma": "[v__MERMAS__TABLA_MERMAS]"},
+         "__merma_dia", "Merma diaria")
+
+    # Producción día a día, con su marca.
+    _cap(ids.get("productividad"), "Produccion Dia (Ton)#ac90f6b11dc2",
+         {"dia": "[DIA]", "marca": "[MARCA 2]", "categoria": "[categoria_hijo]",
+          "mes": "[NroMes]", "semana": "[Semana]",
+          "kilos": "[SumPeso_Producido_Kg_]"},
+         "__produccion_dia", "Producción diaria")
+
+    # Presupuesto acumulado hasta ayer, por canal. Es la comparación contra
+    # meta que sí respeta los días transcurridos: el propio reporte la calcula.
+    _cap(ids.get("margen_pag2") or ids.get("margen"),
+         "FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d",
+         {"canal": "[Canal]", "facturado": "[SumMonto_Neto_Factura]",
+          "cuota": "[SumCUOTA_DIRECTORIO]",
+          "ppto_hasta_ayer": "[PPTO_Acumulado_Hasta_Ayer]",
+          "avance_dia": "[v_Av_vs_PPTO_AL_DIA]",
+          "pendiente": "[SumMonto_Neto_Pendiente]"},
+         "__ppto_al_dia", "Presupuesto acumulado al día")
+
+    return bolsa
+
+
+def build_dimensiones(found):
+    """Ordena los cortes nuevos para que la app los consuma directamente."""
+    res = {}
+
+    # ── Venta por canal, pivotada por mes.
+    canal = {}
+    for f in (found.get("__venta_canal") or []):
+        c = (f.get("canal") or "").strip()
+        v, a, m = to_float(f.get("venta")), to_float(f.get("anio")), to_float(f.get("mes"))
+        if not c or v is None or not a or not m:
+            continue
+        canal.setdefault(c, {})[f"{int(a)}-{int(m):02d}"] = v
+    if canal:
+        meses = sorted({k for v in canal.values() for k in v})
+        res["venta_canal"] = {"meses": meses,
+                              "filas": [{"canal": c, "por_mes": v} for c, v in
+                                        sorted(canal.items(), key=lambda kv: -sum(kv[1].values()))]}
+
+    # ── Cartera por ejecutivo, con sus tramos.
+    cart = []
+    for f in (found.get("__cartera_responsable") or []):
+        eje = (f.get("ejecutivo") or "").strip()
+        if not eje:
+            continue
+        tot = to_float(f.get("total")) or 0
+        t30 = to_float(f.get("t30mas")) or 0
+        cart.append({
+            "ejecutivo": eje,
+            "jefe": (f.get("jefe") or "").strip() or None,
+            "canal": (f.get("canal") or "").strip() or None,
+            "total": fmt_soles(tot),
+            "por_vencer": fmt_soles(to_float(f.get("por_vencer")) or 0),
+            "t15": fmt_soles(to_float(f.get("t15")) or 0),
+            "t30": fmt_soles(to_float(f.get("t30")) or 0),
+            "t30mas": fmt_soles(t30),
+            "pct_t30mas": round(t30 / tot * 100, 1) if tot else None,
+            "_v": abs(t30),
+        })
+    if cart:
+        anotar_derivado("cuentas_por_cobrar", "cartera_responsable", "pct_t30mas",
+                        "vencido a más de 30 días / cartera total del ejecutivo",
+                        "el reporte publica los tramos en soles pero no su peso")
+        cart.sort(key=lambda x: -x["_v"])
+        for x in cart:
+            x.pop("_v", None)
+        res["cartera_responsable"] = cart
+
+    # ── Series diarias: merma y producción, acumuladas día a día.
+    def _diaria(clave, campo_valor, campo_dia, acumula):
+        filas = found.get(clave) or []
+        por_dia = {}
+        for f in filas:
+            d = to_float(f.get(campo_dia))
+            v = to_float(f.get(campo_valor))
+            if d is None or v is None:
+                continue
+            por_dia.setdefault(int(d), []).append(v)
+        if not por_dia:
+            return None
+        dias = sorted(por_dia)
+        return {"dias": dias,
+                "valor": [round(sum(por_dia[d]) if acumula
+                                else sum(por_dia[d]) / len(por_dia[d]), 4) for d in dias]}
+
+    md = _diaria("__merma_dia", "merma", "dia", acumula=False)
+    if md:
+        res["merma_dia"] = md
+    pd_ = _diaria("__produccion_dia", "kilos", "dia", acumula=True)
+    if pd_:
+        res["produccion_dia"] = pd_
+
+    # ── Precio unitario por producto y canal. Es lo que separa "bajamos el
+    # precio" de "un canal negoció distinto": si el mismo producto cae en un
+    # canal y no en otro, la conversación es con ese canal.
+    pc = {}
+    for f in (found.get("__precio_canal") or []):
+        prod = (f.get("producto") or "").strip()
+        canal = (f.get("canal") or "").strip()
+        pr = to_float(f.get("precio"))
+        a, m = to_float(f.get("anio")), to_float(f.get("mes"))
+        if not prod or not canal or pr is None or not a or not m:
+            continue
+        pc.setdefault((prod, canal), {})[f"{int(a)}-{int(m):02d}"] = pr
+    if pc:
+        meses = sorted({k for v in pc.values() for k in v})
+        act = meses[-1]
+        ant = meses[-2] if len(meses) > 1 else None
+        filas = []
+        for (prod, canal), v in pc.items():
+            p1, p0 = v.get(act), v.get(ant) if ant else None
+            if p1 is None:
+                continue
+            filas.append({
+                "producto": prod, "canal": canal,
+                "precio": f"S/{p1:.2f}",
+                "precio_previo": f"S/{p0:.2f}" if p0 is not None else None,
+                "var_pct": (round((p1 - p0) / p0 * 100, 1)
+                            if p0 else None),
+            })
+        filas.sort(key=lambda x: (x["var_pct"] if x["var_pct"] is not None else 0))
+        res["precio_canal"] = {"meses": [ant, act], "filas": filas}
+
+    # ── Presupuesto al día: la comparación contra meta que respeta los días.
+    ppto = []
+    for f in (found.get("__ppto_al_dia") or []):
+        c = (f.get("canal") or "").strip()
+        fac = to_float(f.get("facturado"))
+        hasta = to_float(f.get("ppto_hasta_ayer"))
+        if fac is None and hasta is None:
+            continue
+        ppto.append({
+            "canal": c or "Total",
+            "facturado": fmt_soles(fac) if fac is not None else None,
+            "ppto_hasta_ayer": fmt_soles(hasta) if hasta is not None else None,
+            "cuota_mes": fmt_soles(to_float(f.get("cuota")) or 0),
+            "avance_dia": (f"{to_float(f.get('avance_dia')) * 100:.1f}%"
+                           if to_float(f.get("avance_dia")) is not None else None),
+            "_v": abs(fac or 0),
+        })
+    if ppto:
+        ppto.sort(key=lambda x: -x["_v"])
+        for x in ppto:
+            x.pop("_v", None)
+        res["ppto_al_dia"] = ppto
+
+    return res
+
+
+
 def desglose_desde_captura(token, ws, candidatos, visual, columnas, limite=None,
                            periodo=None):
     """Ejecuta una consulta capturada y devuelve sus filas como diccionarios.
@@ -4355,6 +4567,21 @@ def main():
                     "live_connection": True
                 }
                 print("  Consumo Materiales: sin medidas DAX — Live Connection")
+
+        # ── Cortes de análisis: canal, responsable de cartera y día.
+        # Van antes de los reportes que los usan, y en su propio bloque para
+        # que un fallo acá no se lleve por delante ningún KPI.
+        if empresa == "PAUNO":
+            try:
+                extraer_dimensiones(token, ws_id, ids, scanned)
+                dim = build_dimensiones(scanned.get("dimensiones") or {})
+                if dim:
+                    empresa_data["dimensiones"] = dim
+                    print(f"  Dimensiones: {', '.join(dim)}")
+            except Exception as e:
+                print(f"  ✗ dimensiones: {e}")
+                DIAGNOSTICO.append({"consulta": "dimensiones", "http": 0,
+                                    "error": repr(e)[:300]})
 
         # ── Mermas
         if scanned.get("mermas"):

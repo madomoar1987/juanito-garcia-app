@@ -68,7 +68,16 @@ def test_claves_internas(src):
     for i, linea in enumerate(lineas):
         for m in re.finditer(r'\["(__[a-z_]+)"\]\s*=', linea):
             escrituras.setdefault(m.group(1), []).append(funcion_contenedora(lineas, i))
+        # Escritura indirecta: un ayudante que recibe la clave como argumento
+        # y la guarda él. `extraer_dimensiones` trae seis cortes con la misma
+        # mecánica y repetir seis veces la asignación literal solo para que
+        # este test la viera sería peor código.
+        for m in re.finditer(r'^\s*"(__[a-z_]+)",\s', linea):
+            escrituras.setdefault(m.group(1), []).append(funcion_contenedora(lineas, i))
         for m in re.finditer(r'found\.get\("(__[a-z_]+)"\)', linea):
+            lecturas.setdefault(m.group(1), []).append(funcion_contenedora(lineas, i))
+        # Lectura indirecta: el ayudante recibe la clave y hace el found.get.
+        for m in re.finditer(r'_diaria\("(__[a-z_]+)"', linea):
             lecturas.setdefault(m.group(1), []).append(funcion_contenedora(lineas, i))
     for clave in sorted(set(escrituras) | set(lecturas)):
         e, l = escrituras.get(clave, []), lecturas.get(clave, [])
