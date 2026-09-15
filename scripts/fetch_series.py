@@ -2109,6 +2109,23 @@ def serie_mermas_plantas(token, ds_id, periodos):
                 except (TypeError, ValueError):
                     pass
         serie = [por_periodo.get(pp) for pp in periodos]
+        # Las tres medidas de planta son porcentajes pero no vienen en la misma
+        # escala: '% Merma total MAQUILA' devuelve 1.86 donde sus hermanas
+        # devuelven 0.0303. Publicadas juntas, la app mostraba Planta Terceros
+        # en 185.6% y la ponía a la cabeza de todos los problemas de merma.
+        # Una merma por encima del 50% no existe: lo que pase de ahí está en
+        # escala de porcentaje y se normaliza a fracción.
+        vistos = [x for x in serie if x is not None]
+        if vistos and max(abs(x) for x in vistos) > 0.5:
+            serie = [None if x is None else x / 100 for x in serie]
+            print(f"    · [% Merma {etiqueta}] venía en escala de porcentaje; "
+                  f"normalizada a fracción")
+            DIAG_SERIES.append({
+                "consulta": f"mermas:{etiqueta}", "http": 200,
+                "error": f"la medida '{medida}' devuelve porcentaje (máx "
+                         f"{max(abs(x) for x in vistos):.4f}) mientras las otras "
+                         f"plantas devuelven fracción; se normalizó dividiendo "
+                         f"entre 100"})
         if any(x is not None for x in serie):
             out[f"% Merma {etiqueta}"] = serie
             print(f"    [% Merma {etiqueta}]: "
@@ -2145,6 +2162,23 @@ def serie_mermas_segmentos(token, ds_id, periodos):
                 except (TypeError, ValueError):
                     pass
         serie = [por_periodo.get(pp) for pp in periodos]
+        # Las tres medidas de planta son porcentajes pero no vienen en la misma
+        # escala: '% Merma total MAQUILA' devuelve 1.86 donde sus hermanas
+        # devuelven 0.0303. Publicadas juntas, la app mostraba Planta Terceros
+        # en 185.6% y la ponía a la cabeza de todos los problemas de merma.
+        # Una merma por encima del 50% no existe: lo que pase de ahí está en
+        # escala de porcentaje y se normaliza a fracción.
+        vistos = [x for x in serie if x is not None]
+        if vistos and max(abs(x) for x in vistos) > 0.5:
+            serie = [None if x is None else x / 100 for x in serie]
+            print(f"    · [% Merma {etiqueta}] venía en escala de porcentaje; "
+                  f"normalizada a fracción")
+            DIAG_SERIES.append({
+                "consulta": f"mermas:{etiqueta}", "http": 200,
+                "error": f"la medida '{medida}' devuelve porcentaje (máx "
+                         f"{max(abs(x) for x in vistos):.4f}) mientras las otras "
+                         f"plantas devuelven fracción; se normalizó dividiendo "
+                         f"entre 100"})
         if any(x is not None for x in serie):
             out[f"% Merma {etiqueta}"] = serie
             print(f"    [% Merma {etiqueta}]: "

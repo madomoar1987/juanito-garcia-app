@@ -2037,7 +2037,7 @@ async function loadData() {
     if (rhi && rhi.ok) HISTORICO = await rhi.json();
     try {
       const rs = await fetch('data/latest/series.json?t=' + t);
-      if (rs && rs.ok) SERIES = await rs.json();
+      if (rs && rs.ok) { SERIES = await rs.json(); normalizarEscalas(); }
     } catch(e) {}
     try {
       const rm = await fetch('data/metas.json?t=' + t);
@@ -2120,6 +2120,32 @@ const KPI_DECISION = {
 };
 
 // ── Utilidades de serie ─────────────────────────────────────
+// Un porcentaje de una familia puede llegar en otra escala que sus hermanas:
+// '% Merma Planta Terceros' venía en 1.86 donde las demás venían en 0.030, y
+// la app la mostraba en 185.6%. Se normaliza al cargar, comparando cada serie
+// contra su propia familia y no contra un umbral fijo — el ratio consumo sobre
+// compra pasa de 1 legítimamente y no debe tocarse.
+function normalizarEscalas() {
+  if (!SERIES || !SERIES.datasets) return;
+  Object.entries(SERIES.datasets).forEach(([ds, series]) => {
+    const pct = Object.entries(series).filter(([k, a]) =>
+      k.startsWith('%') && Array.isArray(a));
+    if (pct.length < 2) return;
+    const maxDe = a => Math.max(...a.filter(x => x != null).map(Math.abs), 0);
+    const fracc = pct.filter(([, a]) => maxDe(a) > 0 && maxDe(a) <= 1);
+    // Solo se corrige una oveja negra: hacen falta al menos dos hermanas en
+    // fracción y que sean la clara mayoría. Los ratios de compras pasan de 1
+    // legítimamente y ahí la mayoría no es de fracciones, así que no se tocan.
+    if (fracc.length < 2 || fracc.length < pct.length * 0.66) return;
+    pct.forEach(([k, a]) => {
+      if (maxDe(a) <= 1) return;
+      series[k] = a.map(x => x == null ? null : x / 100);
+      console.warn(`[escala] ${ds}/${k} venía en porcentaje; normalizada ` +
+                   `a fracción como sus ${fracc.length} hermanas`);
+    });
+  });
+}
+
 function serieDe(dsKey, medida) {
   // Dos formas de llamarla, porque conviven dos estilos en la app:
   //   serieDe('margen', '% Margen Variable')   ← KPI_SOURCE
@@ -4651,6 +4677,73 @@ function ejeTarjeta(m) {
 // Se arman con los datos publicados, no con texto fijo. Cada uno dice el
 // indicador, el segmento responsable, cuánto se desvía, qué vale en dinero
 // cuando se puede calcular, hacia dónde va, y qué conviene hacer.
+// Qué hacer con un indicador fuera de meta, dicho con su propio dato.
+function ejeAccion(ind, m) {
+  // 1. ¿Hay un segmento que lo explique?
+  const segs = (ind.segmentos || []).filter(x => !x[2] || x[2] === ind.unidad);
+  let peor = null;
+  segs.forEach(([nombre, par]) => {
+    const v = avSerie(par);
+    if (!v || v.curso == null) return;
+    const d = distanciaMeta(ind, v.curso, m.meta);
+    if (!d || d.bien) return;
+    if (!peor || Math.abs(d.d) > Math.abs(peor.d)) peor = { nombre, d: d.d, txt: d.txt };
+  });
+  if (peor) {
+    const fuera = segs.length;
+    return `${peor.nombre} es el que más lo aleja de la meta (${peor.txt}) entre sus ` +
+           `${fuera} segmentos. Empezar por ahí.`;
+  }
+
+  // 2. ¿Hay un desglose por categoría publicado en su reporte?
+  //
+  // Se elige la fila PEOR, no la primera. Tomando la primera, el fill rate
+  // recomendaba mirar al cliente que mejor lo cumple: "lo encabeza SPSA con
+  // 92.5%", que está por encima del 88% general y no es donde hay que actuar.
+  const rd = avReporte(ind.reporte);
+  const lista = rd.dead_por_categoria || rd.working_por_categoria ||
+                rd.proveedores_criticos || rd.por_grupo;
+  if (Array.isArray(lista) && lista.length) {
+    const nom = f => f.categoria || f.nombre || f.grupo;
+    const val = f => f.valor || f.monto;
+    // Si las filas traen un porcentaje del mismo indicador, la peor es la que
+    // está más lejos de la meta en su dirección. Si solo traen montos, la
+    // peor es la mayor: es donde hay más dinero parado.
+    // Si el valor de la fila es un porcentaje, la peor se elige según la
+    // dirección del indicador: en fill rate el peor grupo es el que menos
+    // cumple, no el que más. Antes recomendaba mirar al que iba en 100%.
+    const esPct = f => /%\s*$/.test(String(val(f) ?? f.pct ?? ''));
+    const num = f => localNum(val(f)) ?? f.pct;
+    let top;
+    if (lista.length && lista.every(esPct)) {
+      top = lista.slice().sort((a, b) =>
+        ind.direccion === 'menor' ? num(b) - num(a) : num(a) - num(b))[0];
+    } else {
+      top = lista.slice().sort((a, b) =>
+        Math.abs(num(b) || 0) - Math.abs(num(a) || 0))[0];
+    }
+    if (top && nom(top) && (val(top) || top.pct != null)) {
+      const esPeorPct = lista.every(esPct);
+      return `En el desglose del reporte, ${nom(top)} es el que ` +
+             (esPeorPct ? 'peor está' : 'más pesa') +
+             (val(top) ? ` con ${val(top)}` : ` con ${top.pct}%`) +
+             (val(top) && top.pct != null ? ` (${top.pct}% del total)` : '') +
+             '. Es donde hay más que recuperar.';
+    }
+  }
+
+  // 3. Lo que se acumula: el ritmo dice si llega o no.
+  if (ind.tipo === 'acumula' && m.proy) {
+    return `Va al ${ejePct(m.cumplCurso)} de lo que debería llevar el día ${m.dias?.dia}. ` +
+           `A este ritmo cierra en ${ejeFmt(ind, m.proy.valor)}, ${m.dist ? m.dist.txt : ''} de la meta.`;
+  }
+
+  // 4. Sin desglose: se dice que no lo hay, en vez de una frase de relleno.
+  return `Está ${m.dist ? m.dist.txt : ''} de la meta y el reporte no publica un ` +
+         `desglose que permita ver de dónde viene. Para abrirlo hace falta capturar ` +
+         `ese visual en Power BI.`;
+}
+
 function ejeHallazgos() {
   const out = [];
   const mv = avReporte('margen_variable');
@@ -4668,12 +4761,10 @@ function ejeHallazgos() {
       tendencia: m.tri ? (m.tri.cls === 't-peor' ? 'empeora' :
                           m.tri.cls === 't-mejor' ? 'mejora' : 'estable') : null,
       prioridad: m.sem.k,
-      // La acción sale de lo que dice el propio dato, no de una plantilla.
-      accion: ind.tipo === 'acumula'
-        ? `Va al ${ejePct(m.cumplCurso)} de lo que debería llevar el día ${m.dias?.dia}. ` +
-          `Si sigue este ritmo cierra en ${ejeFmt(ind, m.proy?.valor)}.`
-        : `Está ${m.dist.txt} de la meta. ` +
-          ((ind.segmentos || []).length ? 'Abrir sus segmentos para ver cuál lo arrastra.' : ''),
+      // La acción sale de lo que dice el propio dato, no de una plantilla:
+      // cuando el indicador tiene segmentos se nombra el que lo arrastra, y
+      // cuando tiene desglose publicado se nombra la categoría que más pesa.
+      accion: ejeAccion(ind, m),
       orden: Math.abs(m.dist.d) * (m.sem.k === 'crit' ? 10 : 1),
     });
   });

@@ -135,6 +135,38 @@ DATASET_DE_REPORTE = {
 }
 
 
+def escalas_mezcladas(ser):
+    """Medidas de la misma familia publicadas en escalas distintas.
+
+    '% Merma Planta Terceros' llegaba en 1.86 mientras '% Merma Planta ATE'
+    llegaba en 0.0303: el mismo porcentaje, dos escalas. La app mostraba la
+    primera como 185.6% y la ponía a la cabeza de todos los problemas de
+    merma. No hay forma de notarlo mirando una sola serie — solo comparando a
+    las hermanas entre sí.
+
+    Se agrupan las series por su prefijo (lo que va antes del último espacio)
+    y se comprueba que todas estén en el mismo orden de magnitud.
+    """
+    malas = []
+    for ds, series in (ser.get("datasets") or {}).items():
+        familias = {}
+        for sk, arr in (series or {}).items():
+            if not sk.startswith("%") or not isinstance(arr, list):
+                continue
+            vals = [abs(x) for x in arr if x is not None]
+            if not vals:
+                continue
+            # fracción (<= 1) o porcentaje (> 1): dos mundos distintos.
+            familias.setdefault(ds, []).append((sk, max(vals)))
+        for fam, items in familias.items():
+            frac = [k for k, v in items if v <= 1]
+            pct = [k for k, v in items if v > 1]
+            if frac and pct:
+                malas.append((fam, frac, pct))
+    return malas
+
+
+
 def series_desalineadas(ser):
     """Series cuyos datos están al principio del eje y no al final.
 
@@ -519,7 +551,18 @@ def main():
                 print(f"  FALLA  {etiqueta} = {tot:.2f}% fuera del rango de "
                       f"{clave} ({lo:.2f}% a {hi:.2f}%)")
 
-        malas = series_desalineadas(ser)
+    print("\nPorcentajes de la misma familia en la misma escala")
+    mezcla = escalas_mezcladas(ser)
+    if mezcla:
+        for fam, frac, pct in mezcla:
+            inf.afirmar(False, f"{fam}: porcentajes en dos escalas",
+                        f"en fracción {frac} · en porcentaje {pct} — publicadas "
+                        f"juntas, la app muestra unas cien veces más grandes que "
+                        f"las otras")
+    else:
+        inf.afirmar(True, "todas las familias de porcentajes en una sola escala")
+
+    malas = series_desalineadas(ser)
     print("\nSeries escritas en el tramo equivocado del eje")
     if malas:
         DESALINEADAS.update(m[0] for m in malas)
