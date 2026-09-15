@@ -1078,10 +1078,25 @@ def serie_fillrate(token, ds_id, periodos):
     out = {}
     for etiqueta, m in pares.items():
         serie = [m.get(pp) for pp in periodos]
-        if any(x is not None for x in serie):
-            out[etiqueta] = serie
-            print(f"    [{etiqueta}]: "
-                  f"{sum(1 for x in serie if x is not None)}/{len(serie)} meses")
+        llenos = [i for i, x in enumerate(serie) if x is not None]
+        if not llenos:
+            continue
+        out[etiqueta] = serie
+        print(f"    [{etiqueta}]: {len(llenos)}/{len(serie)} meses")
+        # Una serie mensual termina en el mes en curso. Si sus puntos quedaron
+        # en el tramo viejo del eje, el mapa de calendario está ubicando mal
+        # los meses y el gráfico sale con datos de otro año sin que nada falle.
+        # Se deja constancia de lo que devolvió el mapa para poder corregirlo,
+        # en vez de publicar una serie que parece buena y no lo es.
+        if llenos[-1] < len(serie) - 3:
+            muestra = sorted(m)[:6]
+            print(f"    ⚠ [{etiqueta}] termina en {periodos[llenos[-1]]} y el eje "
+                  f"llega a {periodos[-1]}")
+            DIAG_SERIES.append({
+                "consulta": f"fillrate:{etiqueta}", "http": 200,
+                "error": f"la serie termina en {periodos[llenos[-1]]} pero el eje "
+                         f"llega a {periodos[-1]}. El mapa de CALENDARIO devolvió "
+                         f"{len(mapa)} meses; primeros períodos mapeados: {muestra}"})
     return out
 
 

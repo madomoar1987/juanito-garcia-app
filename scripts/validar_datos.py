@@ -519,19 +519,20 @@ def main():
                 print(f"  FALLA  {etiqueta} = {tot:.2f}% fuera del rango de "
                       f"{clave} ({lo:.2f}% a {hi:.2f}%)")
 
+        malas = series_desalineadas(ser)
+    print("\nSeries escritas en el tramo equivocado del eje")
+    if malas:
+        DESALINEADAS.update(m[0] for m in malas)
+        for nombre, n, ini, fin in malas:
+            inf.afirmar(False, f"{nombre}: eje al revés",
+                        f"sus {n} puntos van de {ini} a {fin}, pero el eje "
+                        f"llega a {per[-1]} — hay que volver a capturar "
+                        f"ese visual")
+    else:
+        inf.afirmar(True, "ninguna serie desalineada")
+
     if anotar:
         corregir_etiquetas(rp, ser, cerrado, inf)
-        malas = series_desalineadas(ser)
-        print("\nSeries escritas en el tramo equivocado del eje")
-        if malas:
-            DESALINEADAS.update(m[0] for m in malas)
-            for nombre, n, ini, fin in malas:
-                inf.afirmar(False, f"{nombre}: eje al revés",
-                            f"sus {n} puntos van de {ini} a {fin}, pero el eje "
-                            f"llega a {per[-1]} — hay que volver a capturar "
-                            f"ese visual")
-        else:
-            inf.afirmar(True, "ninguna serie desalineada")
         marcar_saldos(rp, ser, cerrado)
         a, b = sellar_periodos(rp, ser, parcial, cerrado)
         print(f"\nPeríodo de cada tarjeta: {a} selladas con su mes, "

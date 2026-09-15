@@ -1681,6 +1681,10 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .eje-foot { display:flex; justify-content:space-between; align-items:flex-end; gap:10px; }
 .eje-var { font-size:12px; min-width:0; }
 .eje-var b { font-variant-numeric:tabular-nums; }
+.eje-var .av-tri { margin-right:2px; }
+.eje-var .t-mejor { color:var(--green); }
+.eje-var .t-peor { color:var(--red); }
+.eje-var .t-igual { color:var(--text2); }
 .eje-var span { color:var(--text2); }
 .eje-var small { display:block; font-size:10px; color:var(--text3); }
 .eje-spark { flex:0 0 auto; }
@@ -4605,7 +4609,13 @@ function ejeTarjeta(m) {
     }
     const d = m.variacion.actual - m.variacion.base;
     const rel = m.variacion.base ? d / Math.abs(m.variacion.base) * 100 : null;
-    return `<b>${d >= 0 ? '+' : '−'}${esc(ejeFmt(ind, Math.abs(d)))}</b>
+    // El color dice si mejora o empeora, no si el número sube o baja: una
+    // merma que cae 13% es una buena noticia y salía del mismo color que una
+    // venta que cae 13%.
+    const mejora = ind.direccion === 'menor' ? d < 0 : d > 0;
+    const cls = Math.abs(rel || 0) < 2 ? 't-igual' : (mejora ? 't-mejor' : 't-peor');
+    return `<span class="av-tri ${cls}"><i></i></span>
+      <b class="${cls}">${d >= 0 ? '+' : '−'}${esc(ejeFmt(ind, Math.abs(d)))}</b>
       ${rel != null ? `<span>(${d >= 0 ? '+' : '−'}${Math.abs(rel).toFixed(1)}%)</span>` : ''}
       <small>${esc(m.variacion.pie)}${m.variacion.proyectada ? ' · proyectado' : ''}</small>`;
   })();
