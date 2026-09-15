@@ -1571,6 +1571,15 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .eje-upd-v { font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; }
 .eje-upd-n { font-size:11px; color:var(--text3); margin-top:2px; }
 
+.eje-conf { display:flex; flex-wrap:wrap; gap:8px 18px; align-items:baseline;
+  padding:11px 14px; margin-top:14px; background:var(--card2);
+  border:1px solid var(--border); border-radius:7px; font-size:12px; color:var(--text2); }
+.eje-conf-k { font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--text3); flex:0 0 auto; }
+.eje-conf-i b { color:var(--text); font-variant-numeric:tabular-nums; }
+.eje-conf-i.ok b { color:var(--green); }
+.eje-conf-i.mal b { color:var(--red); }
+
 .eje-sec { margin-top:26px; }
 .eje-sec-h { font-size:15px; margin:0 0 12px; display:flex; flex-wrap:wrap;
   align-items:baseline; gap:10px; }
@@ -5063,6 +5072,30 @@ function ejeVista() {
   const act = (DATA && (DATA.fecha_actualizacion || DATA.fecha)) || '';
   const hora = (DATA && DATA.hora_actualizacion) || null;
 
+  // Franja de confianza: qué tan contrastado está lo que se muestra. Sin esto
+  // el usuario tiene que creer en el tablero; con esto puede verificarlo.
+  const val = DATA.validacion || {};
+  const vt = DATA.validacion_tarjetas || {};
+  const cob = DATA.cobertura || {};
+  const nFallos = (val.fallos || []).length;
+  const nDist = (vt.distintas || []).length;
+  const derN = (DATA.derivados || []).length;
+  const confianza = `
+    <div class="eje-conf">
+      <span class="eje-conf-k">Contraste contra Power BI</span>
+      <span class="eje-conf-i ${nDist ? 'mal' : 'ok'}">
+        <b>${vt.iguales != null ? vt.iguales : '—'}</b> tarjetas idénticas al reporte${
+          nDist ? ` · <b>${nDist}</b> distintas` : ''}</span>
+      <span class="eje-conf-i ${nFallos ? 'mal' : 'ok'}">
+        <b>${nFallos ? nFallos + ' descuadres' : 'sin descuadres'}</b> de coherencia</span>
+      <span class="eje-conf-i">${cob.pct != null
+        ? `<b>${cob.pct}%</b> de los KPIs vienen del reporte (${cob.kpis_del_reporte}/${cob.kpis_totales})`
+        : 'cobertura sin medir'}</span>
+      <span class="eje-conf-i">${derN
+        ? `<b>${derN}</b> cifras calculadas, marcadas como tales`
+        : 'ninguna cifra calculada'}</span>
+    </div>`;
+
   const hall = ejeHallazgos();
   const chip = (k, txt) => `<span class="eje-chip eje-chip-${k}">${cuenta(k)} ${txt}</span>`;
 
@@ -5081,6 +5114,7 @@ function ejeVista() {
       <div class="eje-upd-n">${hora ? 'hora de Lima · ' : ''}Power BI · corre todos los días a las 7:00</div>
     </div>
   </section>
+  ${confianza}
 
   ${hall.length ? `
   <section class="eje-sec">
@@ -5110,8 +5144,11 @@ function ejeVista() {
     <div class="eje-cards">${orden.map(ejeTarjeta).join('')}</div>
   </section>
 
-  <p class="eje-legal">La proyección de cierre es la única cifra de esta pantalla que no sale
-    de Power BI: se calcula con el ritmo del mes. Todo lo demás viene del reporte.
+  <p class="eje-legal">Cada cifra de esta pantalla sale del reporte de Power BI del que
+    lleva el nombre. Las tres cosas que calcula la app, y que van marcadas donde aparecen:
+    la <b>proyección de cierre</b> (lo que va del mes dividido entre la parte transcurrida),
+    el <b>cumplimiento</b> (valor contra meta, con el signo que corresponde a cada indicador)
+    y el <b>semáforo</b> (favorable desde el 100% de la meta, en riesgo desde el 90%).
     Donde falta el dato diario para comparar el mismo tramo de ${esc(nombreMesCerrado())},
     se dice en vez de comparar un mes a medias contra uno entero.</p>`;
 }

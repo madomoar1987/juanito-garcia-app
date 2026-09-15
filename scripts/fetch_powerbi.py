@@ -1310,6 +1310,25 @@ def _tablas_dax(token, ws, dataset_id, query, label):
     return []
 
 
+def dax_precio_producto_canal():
+    """Precio por kilo de cada producto en cada canal, mes a mes.
+
+    Misma mecánica que dax_sku_por_uen: los filtros se copian literalmente de
+    la captura y solo se cambian las columnas por las que se agrupa. El precio
+    se deriva de venta y kilos en vez de usar la medida del reporte, porque la
+    medida viene por fila del visual y no se puede reagrupar.
+    """
+    base = dax_sku_por_uen()
+    if not base:
+        return None
+    return base.replace(
+        "'Exl Tipo de Negocio'[TIPO DE NEGOCIO N1],",
+        "'Exl Cliente x Vendedor'[Canal],"
+    ).replace(
+        "'Exl A Maestra de Facturas de Venta'[Subcategoria],\n", ""
+    )
+
+
 def dax_sku_por_uen():
     """Arma la consulta que cruza SKU con unidad de negocio.
 
@@ -1432,9 +1451,17 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
     """Trae los cortes por canal, por responsable de cartera y por día."""
     bolsa = scanned.setdefault("dimensiones", {})
 
+    # Una captura no dice de qué dataset salió, y adivinarlo falló en cuatro de
+    # seis: la matriz de cartera, la producción diaria y el presupuesto al día
+    # devolvieron cero tablas o un error de columna inexistente porque se les
+    # preguntó al dataset equivocado. Se prueban todos, empezando por el más
+    # probable, hasta que uno traiga las columnas pedidas.
+    todos = [v for v in ids.values() if v]
+
     def _cap(dataset, visual, columnas, clave, etiqueta):
+        candidatos = ([dataset] if dataset else []) + [d for d in todos if d != dataset]
         try:
-            filas = desglose_desde_captura(token, ws_id, [dataset], visual, columnas)
+            filas = desglose_desde_captura(token, ws_id, candidatos, visual, columnas)
             if filas:
                 bolsa[clave] = filas
                 print(f"    ✓ {etiqueta}: {len(filas)} filas")
@@ -1451,12 +1478,26 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
           "venta": "[SumMonto_Neto_Factura_TG_0]", "cantidad": "[Sumcantidad]"},
          "__venta_canal", "Venta por canal")
 
-    # Precio unitario por producto y canal: dice si un precio cayó en todos los
-    # canales (decisión de precios) o en uno solo (una negociación puntual).
-    _cap(ids.get("margen"), "PRECIO UNITARIO#793034878518",
-         {"producto": "[DESCRIPCION]", "canal": "[Canal]", "anio": "[Año]",
-          "mes": "[NroMes]", "precio": "[Precio_unitario]"},
-         "__precio_canal", "Precio unitario por canal")
+    # Precio por producto y canal: dice si un precio cayó en todos los canales
+    # (decisión de precios) o en uno solo (una negociación puntual).
+    #
+    # La captura "PRECIO UNITARIO" no sirve: su visual reemplaza el producto
+    # por un [ColumnIndex] y el nombre viaja en otra tabla del resultado. Se
+    # arma la consulta con los filtros del reporte, igual que la de SKU.
+    q_pc = dax_precio_producto_canal()
+    if q_pc:
+        try:
+            filas = (_tablas_dax(token, ws_id, ids.get("margen"), q_pc,
+                                 "precio_producto_canal") or [[]])[0]
+            if filas:
+                bolsa["__precio_canal"] = filas
+                print(f"    ✓ Precio por producto y canal: {len(filas)} filas")
+            else:
+                print("    · Precio por producto y canal: sin filas")
+        except Exception as e:
+            print(f"    ✗ precio por canal: {e}")
+            DIAGNOSTICO.append({"consulta": "__precio_canal", "http": 0,
+                                "error": repr(e)[:300]})
 
     # Cartera por responsable. Es el único sitio del modelo donde aparece un
     # nombre de vendedor, y trae los cuatro tramos de antigüedad.
@@ -1570,12 +1611,19 @@ def build_dimensiones(found):
     # ── Precio unitario por producto y canal. Es lo que separa "bajamos el
     # precio" de "un canal negoció distinto": si el mismo producto cae en un
     # canal y no en otro, la conversación es con ese canal.
+    def _b(f, suf):
+        for k, v in f.items():
+            if k.endswith(suf):
+                return v
+        return None
+
     pc = {}
     for f in (found.get("__precio_canal") or []):
-        prod = (f.get("producto") or "").strip()
-        canal = (f.get("canal") or "").strip()
-        pr = to_float(f.get("precio"))
-        a, m = to_float(f.get("anio")), to_float(f.get("mes"))
+        prod = (_b(f, "[producto]") or "").strip()
+        canal = (_b(f, "[Canal]") or "").strip()
+        v_, pe_ = to_float(_b(f, "[Venta]")), to_float(_b(f, "[Peso]"))
+        pr = (v_ / pe_) if (v_ is not None and pe_) else None
+        a, m = to_float(_b(f, "[Año]")), to_float(_b(f, "[NroMes]"))
         if not prod or not canal or pr is None or not a or not m:
             continue
         pc.setdefault((prod, canal), {})[f"{int(a)}-{int(m):02d}"] = pr
