@@ -1587,6 +1587,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .eje-conf-i b { color:var(--text); font-variant-numeric:tabular-nums; }
 .eje-conf-i.ok b { color:var(--green); }
 .eje-conf-i.mal b { color:var(--red); }
+.eje-conf-btn { cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
 
 .eje-sec { margin-top:26px; }
 .eje-sec-h { font-size:15px; margin:0 0 12px; display:flex; flex-wrap:wrap;
@@ -5123,12 +5124,29 @@ function ejeHallazgos() {
         tendencia: (avNum(f.margen_enero) != null && avNum(f.margen) < avNum(f.margen_enero))
           ? 'cae desde enero' : 'cayó este mes',
         prioridad: f.soles_mes < -1000 ? 'crit' : 'warn',
-        accion: (avNum(f.precio_kg) != null && avNum(f.precio_kg_previo) != null &&
-                 avNum(f.precio_kg) < avNum(f.precio_kg_previo))
-          ? `El precio por kilo bajó de ${f.precio_kg_previo} a ${f.precio_kg}: es precio, ` +
-            `no costo. La conversación es comercial.`
-          : `El precio por kilo se mantuvo: el margen se perdió por costo. ` +
-            `La conversación es de planta o compras.`,
+        // La acción trae siempre las dos cifras: el costo por kilo se deriva
+        // del precio y el margen, porque el detalle no lo publica suelto y sin
+        // él "se perdió por costo" no dice cuánto ni desde dónde.
+        accion: (() => {
+          const p1 = avNum(f.precio_kg), p0 = avNum(f.precio_kg_previo);
+          const m1 = avNum(f.margen), m0 = avNum(f.margen_previo);
+          const c1 = (p1 != null && m1 != null) ? p1 * (1 - m1 / 100) : null;
+          const c0 = (p0 != null && m0 != null) ? p0 * (1 - m0 / 100) : null;
+          if (p1 != null && p0 != null && p1 < p0) {
+            return `El precio por kilo bajó de ${f.precio_kg_previo} a ${f.precio_kg} ` +
+              `(−${((p0 - p1) / p0 * 100).toFixed(1)}%): es precio, no costo. ` +
+              `La conversación es comercial.`;
+          }
+          if (c1 != null && c0 != null && c1 > c0) {
+            return `El precio por kilo se mantuvo en ${f.precio_kg} y el costo subió de ` +
+              `S/${c0.toFixed(2)} a S/${c1.toFixed(2)} ` +
+              `(+${((c1 - c0) / c0 * 100).toFixed(1)}%): se perdió por costo. ` +
+              `La conversación es de planta o compras.`;
+          }
+          return `Margen de ${f.margen_previo} a ${f.margen} con el precio por kilo en ` +
+            `${f.precio_kg || 's/d'}: ni el precio ni el costo explican solos la caída, ` +
+            `revisar la mezcla de presentaciones de este producto.`;
+        })(),
         orden: Math.abs(f.soles_mes),
       }));
   });
@@ -5193,6 +5211,10 @@ function ejeVista() {
   const nFallos = (val.fallos || []).length;
   const nDist = (vt.distintas || []).length;
   const derN = (DATA.derivados || []).length;
+  // Una consulta que falla deja un bloque vacío, y un bloque vacío se lee como
+  // "no hay nada que mostrar" en vez de "no se pudo traer". Se dice cuántas y
+  // se pueden ver.
+  const diagN = (DATA.diagnostico || []).length;
   const confianza = `
     <div class="eje-conf">
       <span class="eje-conf-k">Contraste contra Power BI</span>
@@ -5207,6 +5229,9 @@ function ejeVista() {
       <span class="eje-conf-i">${derN
         ? `<b>${derN}</b> cifras calculadas, marcadas como tales`
         : 'ninguna cifra calculada'}</span>
+      ${diagN ? `<span class="eje-conf-i mal eje-conf-btn" onclick="ejeVerDiagnostico()"
+        title="Ver qué consultas fallaron"><b>${diagN}</b> consultas fallaron en la
+        última corrida — ver cuáles ›</span>` : ''}
     </div>`;
 
   const hall = ejeHallazgos();
@@ -5267,6 +5292,32 @@ function ejeVista() {
 }
 
 // Abre el análisis de un indicador desde la vista ejecutiva.
+// Qué consultas fallaron en la última corrida, en lenguaje entendible.
+function ejeVerDiagnostico() {
+  const d = DATA.diagnostico || [];
+  if (!d.length) return;
+  const lineas = d.map(x => {
+    const nombre = String(x.consulta || '').replace(/^captura:/, '')
+      .split('#')[0].replace(/_/g, ' ');
+    let causa = String(x.error || '');
+    if (/columnas sin mapear|ninguna tabla/i.test(causa)) {
+      causa = 'el visual devolvió otras columnas de las esperadas';
+    } else if (/cannot be found/i.test(causa)) {
+      causa = 'la consulta pide una columna que ese modelo no tiene';
+    } else if (/mayor que el peor segmento/i.test(causa)) {
+      causa = 'el total superaba a sus partes, así que se publicó sin dato';
+    } else if (/sin mes/i.test(causa)) {
+      causa = 'llegó sin el mes, y sin mes no se puede comparar';
+    } else {
+      causa = causa.slice(0, 140);
+    }
+    return `• ${nombre}\n   ${causa}`;
+  }).join('\n\n');
+  alert('Consultas con problema en la corrida del ' + (DATA.fecha || '') + ':\n\n' +
+        lineas + '\n\nLo que traía cada una no se publica. El resto del tablero ' +
+        'no se ve afectado.');
+}
+
 function ejeAbrir(clave) {
   dxpTab('avance');
   setTimeout(() => {
