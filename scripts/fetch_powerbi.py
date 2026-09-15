@@ -4018,6 +4018,11 @@ def main():
     summary = {
         "fecha": hoy_lima().strftime("%d/%m/%Y"),
         "fecha_actualizacion": HOY,
+        # Hora de Lima, no del runner: GitHub corre en UTC y la app decía que
+        # los datos eran de las 2 de la mañana cuando en Lima eran las 9 de la
+        # noche del día anterior.
+        "hora_actualizacion": datetime.datetime.now(
+            datetime.timezone(datetime.timedelta(hours=-5))).strftime("%H:%M"),
         "generado_por": "JUANITO — Power BI Direct v3",
         "semaforos": {}, "semaforo_razon": {},
         "holding_ventas": "—", "holding_mora": "—",

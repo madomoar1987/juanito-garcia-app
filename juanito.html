@@ -4841,6 +4841,7 @@ function ejeVista() {
   const mesC = nombreMes(mesParcial()) || 'mes en curso';
   const d = ejeDias();
   const act = (DATA && (DATA.fecha_actualizacion || DATA.fecha)) || '';
+  const hora = (DATA && DATA.hora_actualizacion) || null;
 
   const hall = ejeHallazgos();
   const chip = (k, txt) => `<span class="eje-chip eje-chip-${k}">${cuenta(k)} ${txt}</span>`;
@@ -4856,8 +4857,8 @@ function ejeVista() {
     </div>
     <div class="eje-top-r">
       <div class="eje-upd-k">Última actualización</div>
-      <div class="eje-upd-v">${esc(act)}</div>
-      <div class="eje-upd-n">Power BI · corre todos los días a las 7:00</div>
+      <div class="eje-upd-v">${esc(act)}${hora ? ` · ${esc(hora)}` : ''}</div>
+      <div class="eje-upd-n">${hora ? 'hora de Lima · ' : ''}Power BI · corre todos los días a las 7:00</div>
     </div>
   </section>
 
@@ -4922,7 +4923,7 @@ const FILTROS = { texto: '', min: 0 };
 function filtrosActivos() {
   const a = [];
   if (FILTROS.texto) a.push({ k: 'texto', txt: `contiene «${FILTROS.texto}»` });
-  if (FILTROS.min) a.push({ k: 'min', txt: `pierde más de ${avSoles0(-FILTROS.min)}` });
+  if (FILTROS.min) a.push({ k: 'min', txt: `pierde más de S/${FILTROS.min.toLocaleString('es-PE')}` });
   return a;
 }
 
