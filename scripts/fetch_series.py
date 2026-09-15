@@ -981,6 +981,23 @@ def dataset_de_reporte(token, ws, report_id):
     return r.json().get("datasetId")
 
 
+def _columna_anio_calendario(token, ds_id):
+    """Cómo se llama la columna de año en 'CALENDARIO'. None si no la hay.
+
+    No se adivina el nombre: se lee una fila de la tabla y se busca entre sus
+    columnas. Los modelos del proyecto la llaman de tres formas distintas.
+    """
+    fila = dax(token, ds_id, "EVALUATE TOPN(1, 'CALENDARIO')",
+               "fillrate-cols-anio", retries=1)
+    if not fila:
+        return None
+    for c in fila[0].keys():
+        base = c.split("[")[-1].rstrip("]").strip().lower()
+        if base in ("año", "anio", "ano", "year"):
+            return c.split("[")[-1].rstrip("]")
+    return None
+
+
 def _mapa_calendario_fillrate(token, ds_id):
     """Mapa IN_MES -> (año, mes) para el calendario del dataset FILLRATE.
 
@@ -1042,27 +1059,62 @@ def serie_fillrate(token, ds_id, periodos):
     2026-09-06), enviada VERBATIM — es la única de todo el proyecto que no
     lleva ningún filtro. El año se resuelve aparte, con _mapa_calendario.
     """
-    mapa = _mapa_calendario_fillrate(token, ds_id)
-    if not mapa:
-        return {}
+    # Se pide el AÑO en la propia consulta en vez de deducirlo de IN_MES.
+    #
+    # La versión anterior agrupaba por [MES] e [IN_MES] y traducía IN_MES a un
+    # período con un mapa aparte. El mapa ubicó los cuatro puntos en
+    # 2025-01..2025-04 de un eje que llega a 2026-09, y el gráfico quedó
+    # publicado con datos en el tramo equivocado sin que nada fallara. Pedir el
+    # año directamente elimina la traducción y el error que traía.
+    col_anio = _columna_anio_calendario(token, ds_id)
+    filas, por_anio = None, bool(col_anio)
+    if col_anio:
+        q = ("DEFINE\n"
+             "\tVAR __DS0Core = \n"
+             "\t\tSUMMARIZECOLUMNS(\n"
+             f"\t\t\t'CALENDARIO'[{col_anio}],\n"
+             "\t\t\t'CALENDARIO'[MES],\n"
+             "\t\t\t\"FILLRATE\", '0_MEDIDAS'[FILLRATE],\n"
+             "\t\t\t\"PEDIDOS_NO_ATENDIDOS\", '0_MEDIDAS'[PEDIDOS NO ATENDIDOS]\n"
+             "\t\t)\n\n"
+             "EVALUATE\n\t__DS0Core")
+        filas = dax(token, ds_id, q, "fillrate-mensual-anio")
+        if not filas:
+            print("    · fill rate por año sin filas; se intenta con IN_MES")
+            por_anio = False
 
-    q = ("DEFINE\n"
-         "\tVAR __DS0Core = \n"
-         "\t\tSUMMARIZECOLUMNS(\n"
-         "\t\t\t'CALENDARIO'[MES],\n"
-         "\t\t\t'CALENDARIO'[IN_MES],\n"
-         "\t\t\t\"FILLRATE\", '0_MEDIDAS'[FILLRATE],\n"
-         "\t\t\t\"PEDIDOS_NO_ATENDIDOS\", '0_MEDIDAS'[PEDIDOS NO ATENDIDOS]\n"
-         "\t\t)\n\n"
-         "EVALUATE\n\t__DS0Core\n\n"
-         "ORDER BY\n\t'CALENDARIO'[IN_MES], 'CALENDARIO'[MES]")
-    filas = dax(token, ds_id, q, "fillrate-mensual")
+    mapa = {}
+    if not por_anio:
+        mapa = _mapa_calendario_fillrate(token, ds_id)
+        if not mapa:
+            return {}
+        q = ("DEFINE\n"
+             "\tVAR __DS0Core = \n"
+             "\t\tSUMMARIZECOLUMNS(\n"
+             "\t\t\t'CALENDARIO'[MES],\n"
+             "\t\t\t'CALENDARIO'[IN_MES],\n"
+             "\t\t\t\"FILLRATE\", '0_MEDIDAS'[FILLRATE],\n"
+             "\t\t\t\"PEDIDOS_NO_ATENDIDOS\", '0_MEDIDAS'[PEDIDOS NO ATENDIDOS]\n"
+             "\t\t)\n\n"
+             "EVALUATE\n\t__DS0Core\n\n"
+             "ORDER BY\n\t'CALENDARIO'[IN_MES], 'CALENDARIO'[MES]")
+        filas = dax(token, ds_id, q, "fillrate-mensual")
     if not filas:
         return {}
 
     pares = {"% Fill Rate": {}, "Pedidos no atendidos": {}}
     for r in filas:
-        per = mapa.get(r.get("CALENDARIO[IN_MES]"))
+        if por_anio:
+            a = r.get(f"CALENDARIO[{col_anio}]")
+            m = r.get("CALENDARIO[MES]")
+            if isinstance(m, str):
+                m = MESES_CORTOS.get(m.strip().lower()[:3])
+            try:
+                per = (int(a), int(m))
+            except (TypeError, ValueError):
+                continue
+        else:
+            per = mapa.get(r.get("CALENDARIO[IN_MES]"))
         if not per:
             continue
         for alias, etiqueta in (("FILLRATE", "% Fill Rate"),
