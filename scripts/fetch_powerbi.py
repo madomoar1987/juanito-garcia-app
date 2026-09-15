@@ -1762,10 +1762,35 @@ def desglose_desde_captura(token, ws, candidatos, visual, columnas, limite=None,
         print(f"    · '{visual}': no está en el catálogo de capturas")
         return []
 
+    def _llano(x):
+        """Nombre de columna comparable: sin corchetes, acentos ni adornos.
+
+        Power BI sanea los nombres en el resultado y no siempre igual: "0 A 15
+        DÍAS" vuelve como [v0_A_15_DÍAS] —con una v delante porque no puede
+        empezar por número— y "POR VENCER" como [POR_VENCER]. Pedir la columna
+        tal como se ve en el visual no encontraba ninguna, y el desglose de
+        cartera por ejecutivo se perdió tres corridas por eso.
+        """
+        x = str(x).strip().strip("[]")
+        x = x.split("[")[-1].rstrip("]")
+        for a, b in (("á", "a"), ("é", "e"), ("í", "i"), ("ó", "o"), ("ú", "u"),
+                     ("Á", "a"), ("É", "e"), ("Í", "i"), ("Ó", "o"), ("Ú", "u"),
+                     ("ñ", "n"), ("Ñ", "n")):
+            x = x.replace(a, b)
+        x = re.sub(r"[^a-z0-9]+", "", x.lower())
+        return re.sub(r"^v(?=\d)", "", x)
+
     def busca(fila, sufijo):
         for k, v in fila.items():
             if k.endswith(sufijo):
                 return v
+        # Segundo intento, comparando los nombres saneados. Así una captura
+        # nueva no vuelve a fallar por cómo Power BI escribe sus columnas.
+        objetivo = _llano(sufijo)
+        if objetivo:
+            for k, v in fila.items():
+                if _llano(k) == objetivo:
+                    return v
         return None
 
     # Estas consultas devuelven VARIAS tablas: el eje, los subtotales y el
@@ -4816,6 +4841,38 @@ def main():
                                 "error": (f"{kpi['label']} = {kpi['valor']} es mayor que el "
                                           f"peor segmento ({tope:.2f}%); un total no puede "
                                           "superar a sus partes. Se publica sin dato.")})
+                            # Antes de renunciar al dato, se intenta traerlo
+                            # con el MISMO filtro de página que los segmentos.
+                            # El total incoherente venía del sondeo genérico,
+                            # sin filtro de mes; pedido como se piden las UEN,
+                            # mide lo mismo que ellas y vuelve a cuadrar.
+                            rescatado = None
+                            try:
+                                for medida in ("% Merma total", "% MERMAS -TABLA MERMAS",
+                                               "% Merma Total"):
+                                    v = dax_mermas_uen(token, ws_id, mermas_ds_id,
+                                                       medida, PREV_YEAR,
+                                                       label=f"merma-total-{medida[:14]}")
+                                    if v is None:
+                                        continue
+                                    vp = abs(v * 100) if abs(v) <= 1 else abs(v)
+                                    if vp <= tope * 1.05:
+                                        rescatado = vp
+                                        break
+                            except Exception as e:
+                                print(f"    · no se pudo rescatar el total: {e}")
+
+                            if rescatado is not None:
+                                print(f"    ✓ total de merma recuperado con el filtro "
+                                      f"del reporte: {rescatado:.2f}%")
+                                kpi["valor"] = f"{rescatado:.2f}%"
+                                kpi["fuente"] = "reporte"
+                                DIAGNOSTICO[-1]["error"] += (
+                                    f" Se recuperó con el filtro de página del reporte: "
+                                    f"{rescatado:.2f}%.")
+                                DIAGNOSTICO[-1]["resuelto"] = True
+                                continue
+
                             kpi["valor"] = "sin dato"
                             kpi["meta"] = "el total del reporte no cuadra con sus segmentos"
                             kpi["estado"] = "red"

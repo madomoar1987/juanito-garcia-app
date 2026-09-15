@@ -4209,8 +4209,13 @@ function avBloqueCartera() {
 }
 
 function avBloquePpto() {
-  const p = avDim().ppto_al_dia;
-  if (!p || !p.length) return null;
+  const todas = avDim().ppto_al_dia;
+  if (!todas || !todas.length) return null;
+  // Si el presupuesto acumulado llegó en cero, la tabla diría "facturado
+  // S/18.63M contra presupuesto S/0" — el visual de origen no filtra mes.
+  // Mejor no mostrarla: un avance contra cero no significa nada.
+  const p = todas.filter(f => (localNum(f.ppto_hasta_ayer) || 0) > 0);
+  if (!p.length) return null;
   const cuerpo = p.map(f => `
     <tr>
       <td>${esc(f.canal)}</td>
@@ -4226,7 +4231,18 @@ function avBloquePpto() {
          'entero. Es la comparación que sí respeta los días transcurridos, y la calcula ' +
          'el propio reporte.',
     cabecera: ['Canal', 'Facturado', 'Presupuesto al día', 'Cuota del mes', '% avance'],
-    cuerpo, lecturas: [],
+    cuerpo,
+    lecturas: (() => {
+      const conAv = p.filter(f => localNum(f.avance_dia) != null);
+      if (conAv.length < 2) return [];
+      const ord = conAv.slice().sort((a, b) => localNum(a.avance_dia) - localNum(b.avance_dia));
+      const peor = ord[0], mejor = ord[ord.length - 1];
+      return [`<p class="av-an-lee ${localNum(peor.avance_dia) < 90 ? 'rojo' : ''}">` +
+        `<b>${esc(peor.canal)} va al ${esc(peor.avance_dia)}</b> de lo que debería llevar ` +
+        `a estas alturas y ${esc(mejor.canal)} al ${esc(mejor.avance_dia)}. ` +
+        `Esta comparación sí respeta los días transcurridos: la calcula el propio ` +
+        `reporte contra el presupuesto acumulado hasta ayer.</p>`];
+    })(),
   };
 }
 
@@ -4401,12 +4417,16 @@ function lecturaDesglose(filas, cols, ind, titulo) {
   if (dinero) {
     const tot = filas.reduce((a, f) => a + Math.abs(localNum(f[dinero]) || 0), 0);
     if (tot) {
-      const ord = filas.slice().sort((a, b) =>
+      // Si las filas traen estado, encabeza la peor y no la mayor.
+      const rojas = filas.filter(f => f.estado === 'red');
+      const base = rojas.length ? rojas : filas;
+      const ord = base.slice().sort((a, b) =>
         Math.abs(localNum(b[dinero]) || 0) - Math.abs(localNum(a[dinero]) || 0));
       const p1 = Math.abs(localNum(ord[0][dinero]) || 0) / tot * 100;
       const p3 = ord.slice(0, 3).reduce((a, f) =>
         a + Math.abs(localNum(f[dinero]) || 0), 0) / tot * 100;
-      out.push(`<p class="av-an-lee"><b>${esc(nom(ord[0]))} concentra el ` +
+      out.push(`<p class="av-an-lee ${rojas.length ? 'rojo' : ''}"><b>` +
+        `${esc(nom(ord[0]))} ${rojas.length ? 'es el tramo crítico y' : ''} concentra el ` +
         `${p1.toFixed(0)}%</b> (${esc(String(ord[0][dinero]))}) de los ` +
         `${esc(fmtMeta({unidad:'soles'}, tot))} de esta tabla` +
         (filas.length > 3 ? `, y los tres primeros el ${p3.toFixed(0)}%` : '') +
@@ -5120,11 +5140,23 @@ function ejeAccion(ind, m) {
   // recomendaba mirar al cliente que mejor lo cumple: "lo encabeza SPSA con
   // 92.5%", que está por encima del 88% general y no es donde hay que actuar.
   const rd = avReporte(ind.reporte);
-  const lista = rd.dead_por_categoria || rd.working_por_categoria ||
-                rd.proveedores_criticos || rd.por_grupo;
+  // Cualquier desglose sirve, no una lista fija: morosidad publica tramos y
+  // responsables, y la acción decía "el reporte no publica un desglose".
+  const lista = DESGLOSES_PUBLICADOS.map(([k]) => rd[k])
+    .find(v => Array.isArray(v) && v.length > 1)
+    || Object.entries(rd).filter(([k]) => k !== 'kpis')
+         .map(([, v]) => v)
+         .find(v => Array.isArray(v) && v.length > 1 &&
+                    v.every(x => x && typeof x === 'object'));
   if (Array.isArray(lista) && lista.length) {
-    const nom = f => f.categoria || f.nombre || f.grupo;
-    const val = f => f.valor || f.monto;
+    // Los desgloses no comparten nombres de campo: tramos usa "label",
+    // responsables usa "responsable", proveedores usa "nombre". Buscando solo
+    // tres, morosidad caía al texto de "el reporte no publica un desglose"
+    // teniendo cuatro tramos y diez responsables publicados.
+    const nom = f => f.categoria || f.nombre || f.grupo || f.label ||
+                     f.ejecutivo || f.responsable || f.subcategoria ||
+                     f.producto || f.canal || f.sku || f.planta || f.marca;
+    const val = f => f.valor || f.monto || f.total || f.venta || f.vencido;
     // Si las filas traen un porcentaje del mismo indicador, la peor es la que
     // está más lejos de la meta en su dirección. Si solo traen montos, la
     // peor es la mayor: es donde hay más dinero parado.
@@ -5134,17 +5166,28 @@ function ejeAccion(ind, m) {
     const esPct = f => /%\s*$/.test(String(val(f) ?? f.pct ?? ''));
     const num = f => localNum(val(f)) ?? f.pct;
     let top;
-    if (lista.length && lista.every(esPct)) {
-      top = lista.slice().sort((a, b) =>
+    // Si las filas traen estado, el foco es la peor, no la mayor: en un
+    // aging "Por Vencer" es siempre la más grande y es justo la parte sana.
+    // Decir "enfócate en lo por vencer" era el consejo contrario al correcto.
+    const rojas = lista.filter(f => f.estado === 'red');
+    const ambar = lista.filter(f => f.estado === 'yellow');
+    const foco = rojas.length ? rojas : (ambar.length ? ambar : lista);
+    if (foco.length && foco.every(esPct)) {
+      top = foco.slice().sort((a, b) =>
         ind.direccion === 'menor' ? num(b) - num(a) : num(a) - num(b))[0];
     } else {
-      top = lista.slice().sort((a, b) =>
+      top = foco.slice().sort((a, b) =>
         Math.abs(num(b) || 0) - Math.abs(num(a) || 0))[0];
     }
     if (top && nom(top) && (val(top) || top.pct != null)) {
-      const esPeorPct = lista.every(esPct);
-      return `En el desglose del reporte, ${nom(top)} es el que ` +
-             (esPeorPct ? 'peor está' : 'más pesa') +
+      const esPeorPct = foco.every(esPct);
+      const conEstado = rojas.length || ambar.length;
+      // "Tramo" solo si de verdad lo es: una antigüedad de deuda. Para un
+      // grupo de clientes o una categoría suena raro.
+      const esTramo = /d[ií]as|vencer|vigente/i.test(String(nom(top)));
+      return `En el desglose del reporte, ${nom(top)} es ` +
+             (conEstado ? (esTramo ? 'el tramo que más urge' : 'el que más urge')
+              : esPeorPct ? 'el que peor está' : 'el que más pesa') +
              (val(top) ? ` con ${val(top)}` : ` con ${top.pct}%`) +
              (val(top) && top.pct != null ? ` (${top.pct}% del total)` : '') +
              '. Es donde hay más que recuperar.';
@@ -5295,8 +5338,10 @@ function ejeVista() {
   // no son consultas rotas: contarlas juntas inflaba el número y hacía que se
   // dejara de mirar.
   const diagTodos = DATA.diagnostico || [];
-  const diagFallos = diagTodos.filter(d => d.tipo !== 'aviso');
-  const diagAvisos = diagTodos.filter(d => d.tipo === 'aviso');
+  // Un aviso marcado como resuelto es una comprobación que salto y que además
+  // se arreglo sola: no hay nada que mirar ahi.
+  const diagFallos = diagTodos.filter(d => d.tipo !== 'aviso' && !d.resuelto);
+  const diagAvisos = diagTodos.filter(d => d.tipo === 'aviso' && !d.resuelto);
   const diagN = diagFallos.length;
   const confianza = `
     <div class="eje-conf">
@@ -5384,8 +5429,13 @@ function ejeVista() {
 function ejeVerDiagnostico() {
   const todos = DATA.diagnostico || [];
   if (!todos.length) return;
-  const d = todos.slice().sort((a, b) =>
+  const d = todos.filter(x => !x.resuelto).slice().sort((a, b) =>
     (a.tipo === 'aviso' ? 1 : 0) - (b.tipo === 'aviso' ? 1 : 0));
+  if (!d.length) {
+    alert('Corrida del ' + (DATA.fecha || '') +
+          '\n\nTodas las consultas trajeron dato. Nada pendiente.');
+    return;
+  }
   const lineas = d.map(x => {
     const nombre = String(x.consulta || '').replace(/^captura:/, '')
       .split('#')[0].replace(/_/g, ' ');
