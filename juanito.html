@@ -4470,6 +4470,76 @@ function avBloquesPublicados(ind) {
   return out;
 }
 
+
+// ── Precio por producto y canal ────────────────────────────────────────────
+//
+// Es la tabla que separa las dos explicaciones de una caída de precio: si un
+// producto bajó en TODOS sus canales, fue una decisión de precios; si bajó en
+// uno solo, fue una negociación con ese canal. Ninguna otra tabla del tablero
+// puede distinguirlas.
+function avBloquePrecioCanal() {
+  const d = avDim().precio_canal;
+  if (!d || !d.filas || d.filas.length < 3) return null;
+  const meses = d.meses || [];
+  const filas = filtrarFilas(
+    d.filas.filter(f => f.var_pct != null), 'producto');
+  if (filas.length < 3) return null;
+
+  const bajan = filas.filter(f => f.var_pct < 0).sort((a, b) => a.var_pct - b.var_pct);
+  const muestra = bajan.slice(0, 15);
+  const cuerpo = muestra.map(f => `
+    <tr${f.var_pct < -10 ? ' class="av-an-foco"' : ''}>
+      <td>${esc(f.producto)}</td>
+      <td>${esc(f.canal)}</td>
+      <td>${esc(f.precio_previo || '—')}</td>
+      <td>${esc(f.precio || '—')}</td>
+      <td style="color:${f.var_pct < 0 ? 'var(--red)' : 'var(--green)'};font-weight:600">
+        ${f.var_pct > 0 ? '+' : ''}${f.var_pct.toFixed(1)}%</td>
+    </tr>`).join('');
+
+  // ¿Decisión de precios o negociación de canal? Se mira producto por
+  // producto: si cae en todos sus canales es lo primero, si cae en uno solo
+  // y se mantiene en los otros, lo segundo.
+  const porProducto = {};
+  filas.forEach(f => {
+    (porProducto[f.producto] = porProducto[f.producto] || []).push(f);
+  });
+  const variosCanales = Object.entries(porProducto).filter(([, v]) => v.length > 1);
+  const enTodos = variosCanales.filter(([, v]) => v.every(x => x.var_pct < -2));
+  const soloUno = variosCanales.filter(([, v]) =>
+    v.filter(x => x.var_pct < -5).length === 1 && v.some(x => x.var_pct >= -2));
+
+  const lecturas = [];
+  if (bajan.length) {
+    lecturas.push(`<p class="av-an-lee rojo"><b>${bajan.length} de ${filas.length} ` +
+      `combinaciones de producto y canal bajaron de precio</b> entre ` +
+      `${esc(nombreMes(meses[0]))} y ${esc(nombreMes(meses[1]))}. La mayor caída es ` +
+      `${esc(bajan[0].producto)} en ${esc(bajan[0].canal)}: de ` +
+      `${esc(bajan[0].precio_previo)} a ${esc(bajan[0].precio)} ` +
+      `(${bajan[0].var_pct.toFixed(1)}%).</p>`);
+  }
+  if (variosCanales.length) {
+    lecturas.push(`<p class="av-an-lee"><b>Decisión de precios o negociación de canal:</b> ` +
+      `de los ${variosCanales.length} productos que se venden en más de un canal, ` +
+      `<b>${enTodos.length} bajaron en todos</b> — eso es política de precios — y ` +
+      `<b>${soloUno.length} bajaron en uno solo</b> manteniéndose en los demás, que es ` +
+      `una negociación puntual con ese canal.` +
+      (soloUno.length ? ` El primero de esos es ${esc(soloUno[0][0])}.` : '') + `</p>`);
+  }
+
+  return {
+    periodo: meses.length === 2 ? meses[1] : null,
+    titulo: 'Por producto y canal — dónde cayó el precio',
+    por: `Precio por kilo de cada producto en cada canal, comparando ` +
+      `${esc(nombreMes(meses[0]))} contra ${esc(nombreMes(meses[1]))}. Están las ` +
+      `${muestra.length} mayores caídas de ${filas.length} combinaciones. Es la única ` +
+      `tabla que separa una decisión de precios de una negociación con un canal.`,
+    cabecera: ['Producto', 'Canal', nombreMes(meses[0]) || 'mes previo',
+               nombreMes(meses[1]) || 'mes actual', 'Variación'],
+    cuerpo, lecturas,
+  };
+}
+
 // ── Qué segmento explica la desviación de un indicador.
 //
 // Vale para cualquiera que tenga segmentos: merma, compras, margen. Compara
@@ -4629,6 +4699,8 @@ function analisisDe(ind, meta, segNombre) {
     if (cli) bloques.push(cli);
     const can = avBloqueCanal();
     if (can) bloques.push(can);
+    const pc = avBloquePrecioCanal();
+    if (pc) bloques.push(pc);
   }
   if (ind.clave === 'facturacion' && !esUEN) {
     const pp = avBloquePpto();
@@ -4735,12 +4807,16 @@ function ejeDias() {
 // Serie diaria acumulada de un indicador, si el reporte la publica. Sin esto
 // no hay forma honesta de comparar trece días contra treinta.
 function ejeSerieDiaria(clave) {
+  // Ningún reporte publica hoy una serie diaria con su mes: las capturas de
+  // merma y producción agrupan por día pero el mes lo pone el filtro de
+  // página del visual. Sin mes no se puede comparar el mismo tramo de dos
+  // meses, así que no hay comparación por tramo y la app lo dice.
+  //
+  // Donde sí existe esa comparación es en ventas: el reporte publica el
+  // presupuesto acumulado hasta ayer, y eso se usa en su propia tarjeta.
   const dim = (DATA && DATA.empresas && DATA.empresas.PAUNO &&
                DATA.empresas.PAUNO.dimensiones) || {};
-  const mapa = { merma: 'merma_dia', produccion: 'produccion_dia' };
-  const d = dim[mapa[clave]];
-  // Solo sirve si viene partida por mes: comparar el mismo tramo exige saber
-  // de qué mes es cada día. Una serie de 31 días sin mes no dice nada.
+  const d = dim[({ merma: 'merma_dia', produccion: 'produccion_dia' })[clave]];
   return (d && d.por_mes && Object.keys(d.por_mes).length) ? d.por_mes : null;
 }
 

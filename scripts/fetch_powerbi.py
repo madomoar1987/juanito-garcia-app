@@ -1583,29 +1583,25 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
     # Cartera por responsable. Es el único sitio del modelo donde aparece un
     # nombre de vendedor, y trae los cuatro tramos de antigüedad.
     _cap(ids.get("cuentas_por_cobrar"), "Matriz#38e3644b220b",
+         # Power BI sanea los nombres en el resultado: "0 A 15 DÍAS" vuelve
+         # como [v0_A_15_DÍAS] y "POR VENCER" como [POR_VENCER]. Pedirlos tal
+         # como se ven en el visual no encontraba ninguno.
          {"canal": "[CANAL]", "jefe": "[JEFE_VENTA]", "ejecutivo": "[EJECUTIVO]",
-          "por_vencer": "[POR VENCER]", "t15": "[0 A 15 DÍAS]",
-          "t30": "[16 A 30 DÍAS]", "t30mas": "[MAS DE 30 DÍAS]",
+          "por_vencer": "[POR_VENCER]", "t15": "[v0_A_15_DÍAS]",
+          "t30": "[v16_A_30_DÍAS]", "t30mas": "[MAS_DE_30_DÍAS]",
           "total": "[SumTotal_fact]"},
          "__cartera_responsable", "Cartera por ejecutivo")
 
-    # Merma día a día. OJO: la captura agrupa por DIA pero NO por mes — el
-    # visual ya viene filtrado a un mes por la página del reporte. Sin saber
-    # de qué mes son esos 31 días no se puede comparar el mes en curso contra
-    # el mismo tramo del anterior, que era para lo que se traía. Se pide el
-    # mes explícitamente; si no viene, la app no usa la serie para comparar.
-    _cap(ids.get("mermas"), "Merma Diaria#363813631d90",
-         {"dia": "[DIA]", "mes": "[MES]", "anio": "[Año]",
-          "almacen": "[almacen]", "turno": "[Turno]",
-          "merma": "[v__MERMAS__TABLA_MERMAS]"},
-         "__merma_dia", "Merma diaria")
-
-    # Producción día a día, con su marca y su mes.
-    _cap(ids.get("productividad"), "Produccion Dia (Ton)#ac90f6b11dc2",
-         {"dia": "[DIA]", "marca": "[MARCA 2]", "categoria": "[categoria_hijo]",
-          "mes": "[NroMes]", "anio": "[Año]", "semana": "[Semana]",
-          "kilos": "[SumPeso_Producido_Kg_]"},
-         "__produccion_dia", "Producción diaria")
+    # Las series diarias de merma y producción se dejaron de pedir.
+    #
+    # Se traían para comparar el mes en curso contra el mismo tramo del
+    # anterior. No sirven para eso: ninguna de las dos capturas agrupa por mes
+    # —el mes lo pone el filtro de página del visual— y la de merma ni
+    # siquiera trae el día como valor, lo reemplaza por un [ColumnIndex].
+    # Publicarlas era publicar 31 días sin saber de qué mes son.
+    #
+    # La comparación por tramo sí existe donde más importa: el presupuesto
+    # acumulado hasta ayer, que el propio reporte calcula y que se trae abajo.
 
     # Presupuesto acumulado hasta ayer, por canal. Es la comparación contra
     # meta que sí respeta los días transcurridos: el propio reporte la calcula.
@@ -1669,51 +1665,6 @@ def build_dimensiones(found):
         res["cartera_responsable"] = cart
 
     # ── Series diarias: merma y producción, acumuladas día a día.
-    def _diaria(clave, campo_valor, campo_dia, acumula):
-        """Serie diaria POR MES. Sin el mes no sirve para comparar tramos.
-
-        La primera versión devolvía 31 días sueltos, sin decir de qué mes, y
-        la app los usaba como si fueran el mes en curso. Si la consulta no
-        trae el mes se publica igual pero marcado, y la app no compara.
-        """
-        filas = found.get(clave) or []
-        por_mes, sin_mes = {}, 0
-        for f in filas:
-            d = to_float(f.get(campo_dia))
-            v = to_float(f.get(campo_valor))
-            if d is None or v is None:
-                continue
-            a, m = to_float(f.get("anio")), to_float(f.get("mes"))
-            if not a or not m:
-                sin_mes += 1
-                continue
-            por_mes.setdefault(f"{int(a)}-{int(m):02d}", {}) \
-                   .setdefault(int(d), []).append(v)
-        if not por_mes:
-            if sin_mes:
-                DIAGNOSTICO.append({
-                    "consulta": clave, "http": 200,
-                    "error": f"{sin_mes} filas diarias sin mes: la captura agrupa "
-                             f"por día pero el mes lo pone el filtro de página del "
-                             f"visual. Sin mes no se puede comparar el mismo tramo "
-                             f"de dos meses, así que no se publica."})
-            return None
-        out = {}
-        for per, dd in por_mes.items():
-            dias = sorted(dd)
-            out[per] = {
-                "dias": dias,
-                "valor": [round(sum(dd[d]) if acumula else sum(dd[d]) / len(dd[d]), 4)
-                          for d in dias]}
-        return {"por_mes": out}
-
-    md = _diaria("__merma_dia", "merma", "dia", acumula=False)
-    if md:
-        res["merma_dia"] = md
-    pd_ = _diaria("__produccion_dia", "kilos", "dia", acumula=True)
-    if pd_:
-        res["produccion_dia"] = pd_
-
     # ── Precio unitario por producto y canal. Es lo que separa "bajamos el
     # precio" de "un canal negoció distinto": si el mismo producto cae en un
     # canal y no en otro, la conversación es con ese canal.
@@ -1769,11 +1720,26 @@ def build_dimensiones(found):
                            if to_float(f.get("avance_dia")) is not None else None),
             "_v": abs(fac or 0),
         })
-    if ppto:
-        ppto.sort(key=lambda x: -x["_v"])
-        for x in ppto:
+    # Solo sirve si el presupuesto acumulado llegó con valor. En la corrida
+    # del 15 vino en cero y el facturado era el del AÑO (S/18.63M contra una
+    # cuota mensual de S/7.79M): es el visual que no filtra mes, ya conocido.
+    # Publicarlo así mostraría "facturado S/18.63M contra presupuesto S/0",
+    # que es peor que no mostrar nada.
+    util = [x for x in ppto if (to_float(str(x.get("ppto_hasta_ayer") or 0)
+                                         .replace("S/", "").replace(",", "")
+                                         .replace("M", "e6")) or 0) > 0]
+    if ppto and not util:
+        DIAGNOSTICO.append({
+            "tipo": "aviso", "consulta": "ppto_al_dia_en_cero", "http": 200,
+            "error": "el presupuesto acumulado hasta ayer llegó en cero y el "
+                     "facturado es el del año, no el del mes: es el visual que "
+                     "no filtra mes. No se publica para no mostrar un avance "
+                     "contra un presupuesto de cero."})
+    if util:
+        util.sort(key=lambda x: -x["_v"])
+        for x in util:
             x.pop("_v", None)
-        res["ppto_al_dia"] = ppto
+        res["ppto_al_dia"] = util
 
     return res
 
@@ -1819,8 +1785,12 @@ def desglose_desde_captura(token, ws, candidatos, visual, columnas, limite=None,
                     "error": f"se pidió el período {periodo} pero la consulta no "
                              f"tiene filtro de PERIODO; se usa el mes con que se "
                              f"exportó"})
+        # Probar varios datasets deja un error por cada uno que no es el
+        # correcto. La corrida del 15 publicó veintinueve "fallos" de los que
+        # dieciséis eran intentos de una consulta que al final funcionó. Se
+        # consulta en silencio y solo se anota si ninguno sirve.
         tablas = tablas_de_captura(
-            lambda q, lb: (_tablas_dax(token, ws, ds, q, lb) or [[]])[0],
+            lambda q, lb: (_tablas_dax(token, ws, ds, q, lb, silencioso=True) or [[]])[0],
             dax, f"captura:{visual}")
         if not tablas:
             continue
