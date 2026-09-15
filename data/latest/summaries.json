@@ -1,16 +1,16 @@
 {
   "fecha": "15/09/2026",
   "fecha_actualizacion": "2026-09-15",
-  "hora_actualizacion": "08:20",
+  "hora_actualizacion": "17:18",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "yellow"
   },
   "semaforo_razon": {
-    "PAUNO": "Morosidad 16.5% — sobre meta"
+    "PAUNO": "Morosidad 16.0% — sobre meta"
   },
   "holding_ventas": "S/8.09M",
-  "holding_mora": "16.5%",
+  "holding_mora": "16.0%",
   "agenda_ceo": {
     "decidir_hoy": [],
     "escalar_semana": [],
@@ -21,101 +21,101 @@
       "reportes": {
         "cuentas_por_cobrar": {
           "estado": "yellow",
-          "alerta": "Morosidad 16.5% — sobre meta",
+          "alerta": "Morosidad 16.0% — sobre meta",
           "kpis": [
             {
               "label": "Morosidad · hoy",
-              "valor": "16.5%",
+              "valor": "16.0%",
               "meta": "15%",
               "estado": "yellow",
-              "fuente": "reporte",
+              "fuente": "sondeo",
               "nota_periodo": "saldo del día. El cierre de 2026-08 fue 21.9%.",
               "periodo": "2026-09",
               "periodo_fuente": "cxc/% Morosidad"
             },
             {
               "label": "CxC por vencer",
-              "valor": "S/3.78M",
+              "valor": "S/3.86M",
               "meta": "aging confirmado",
               "fuente": "reporte"
             },
             {
               "label": "CxC Total",
-              "valor": "S/4.53M",
+              "valor": "S/4.59M",
               "fuente": "reporte"
             },
             {
               "label": "CxC Vencido",
-              "valor": "S/749,006",
-              "meta": "16.5% de cartera",
+              "valor": "S/734,839",
+              "meta": "16.0% de cartera",
               "estado": "yellow",
               "fuente": "reporte"
             },
             {
               "label": "Clientes",
-              "valor": "214",
+              "valor": "213",
               "fuente": "reporte"
             },
             {
               "label": "Ventas del mes",
-              "valor": "S/2.06M",
+              "valor": "S/2.16M",
               "fuente": "reporte"
             }
           ],
           "tramos": [
             {
               "label": "Por Vencer",
-              "valor": "S/3.78M",
+              "valor": "S/3.86M",
               "estado": "green",
-              "pct": 83.5
+              "pct": 84.0
             },
             {
               "label": "0 a 15 días",
-              "valor": "S/193,536",
+              "valor": "S/142,920",
               "estado": "yellow",
-              "pct": 4.3
+              "pct": 3.1
             },
             {
               "label": "16 a 30 días",
-              "valor": "S/211,818",
+              "valor": "S/248,326",
               "estado": "yellow",
-              "pct": 4.7
+              "pct": 5.4
             },
             {
               "label": "Más de 30 días",
-              "valor": "S/343,652",
+              "valor": "S/343,593",
               "estado": "red",
-              "pct": 7.6
+              "pct": 7.5
             }
           ],
           "responsables": [
             {
-              "responsable": "CARLOS MIRANDA",
-              "nivel": "jefe",
-              "canal": "CANAL TRADICIONAL",
-              "total": "S/785,879",
-              "vencido": "S/208,412"
-            },
-            {
               "responsable": "VICTOR ASCENCIO",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
-              "total": "S/442,773",
+              "total": "S/475,036",
               "vencido": "S/196,106"
+            },
+            {
+              "responsable": "CARLOS MIRANDA",
+              "nivel": "jefe",
+              "canal": "CANAL TRADICIONAL",
+              "total": "S/769,213",
+              "vencido": "S/193,746"
             },
             {
               "responsable": "JOSELYN ASTORAY",
               "nivel": "jefe",
               "canal": "HORECA",
-              "total": "S/378,726",
-              "vencido": "S/109,815"
+              "total": "S/382,627",
+              "vencido": "S/111,791"
             },
             {
               "responsable": "MORI COLLAZOS MARTIN",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
-              "total": "S/139,102",
-              "vencido": "S/93,897"
+              "total": "S/135,321",
+              "vencido": "S/92,420"
             },
             {
               "responsable": "GIOVANI O'BRIEN",
@@ -135,14 +135,14 @@
               "responsable": "YAQUELINE VALDIVIA",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
-              "total": "S/254,673",
+              "total": "S/218,873",
               "vencido": "S/26,019"
             },
             {
               "responsable": "JUAN CANCHARIS",
               "nivel": "jefe",
               "canal": "CANAL MODERNO",
-              "total": "S/2.07M",
+              "total": "S/2.15M",
               "vencido": "S/19,602"
             },
             {
@@ -178,19 +178,19 @@
             },
             {
               "label": "# Proveedores",
-              "valor": "188",
+              "valor": "186",
               "fuente": "reporte"
             },
             {
               "label": "CxP Vencido",
-              "valor": "S/3.23M",
-              "meta": "32.5% de la deuda viva",
+              "valor": "S/3.36M",
+              "meta": "33.8% de la deuda viva",
               "estado": "red",
               "fuente": "reporte"
             },
             {
               "label": "Deuda top 15 proveedores",
-              "valor": "S/11.92M",
+              "valor": "S/11.95M",
               "meta": "concentración",
               "fuente": "reporte"
             },
@@ -204,49 +204,49 @@
           "tramos": [
             {
               "label": "Vigente",
-              "valor": "S/6.70M",
-              "pct": 67.5,
+              "valor": "S/6.57M",
+              "pct": 66.2,
               "estado": "green"
             },
             {
               "label": "16 a 30 días",
-              "valor": "S/898,489",
-              "pct": 9.1,
+              "valor": "S/990,343",
+              "pct": 10.0,
               "estado": "yellow"
             },
             {
               "label": "31 a 45 días",
-              "valor": "S/854,726",
-              "pct": 8.6,
+              "valor": "S/865,339",
+              "pct": 8.7,
               "estado": "red"
             },
             {
               "label": "8 a 15 días",
-              "valor": "S/727,645",
-              "pct": 7.3,
+              "valor": "S/585,071",
+              "pct": 5.9,
               "estado": "yellow"
             },
             {
               "label": "0 a 7 días",
-              "valor": "S/432,818",
-              "pct": 4.4,
+              "valor": "S/547,314",
+              "pct": 5.5,
               "estado": "yellow"
             },
             {
               "label": "61 a 90 días",
-              "valor": "S/382,941",
-              "pct": 3.9,
+              "valor": "S/408,492",
+              "pct": 4.1,
               "estado": "red"
             },
             {
               "label": "46 a 60 días",
-              "valor": "S/260,835",
-              "pct": 2.6,
+              "valor": "S/289,851",
+              "pct": 2.9,
               "estado": "red"
             },
             {
               "label": "Más de 91 días",
-              "valor": "S/-330,849",
+              "valor": "S/-329,317",
               "pct": -3.3,
               "estado": "red"
             }
@@ -256,7 +256,7 @@
               "nombre": "E & M S.R.L.",
               "categoria": "LECHE DESCREMADA",
               "monto": "S/5.03M",
-              "pct": 42.2
+              "pct": 42.1
             },
             {
               "nombre": "DIVERPLAST S.A.C.",
@@ -280,13 +280,13 @@
               "nombre": "INTERLOOM S.A.C.",
               "categoria": "AZUCAR BLANCA",
               "monto": "S/674,296",
-              "pct": 5.7
+              "pct": 5.6
             },
             {
               "nombre": "SOCIEDAD GANADERA EL SEQUION S A",
               "categoria": "LECHE FRESCA",
               "monto": "S/638,391",
-              "pct": 5.4
+              "pct": 5.3
             },
             {
               "nombre": "CHR. HANSEN PERU S.A.",
@@ -304,7 +304,13 @@
               "nombre": "GEKA CORP S.A.C",
               "categoria": "ENVASES BALDES",
               "monto": "S/352,268",
-              "pct": 3.0
+              "pct": 2.9
+            },
+            {
+              "nombre": "PROLABELS S.A.",
+              "categoria": "ETIQUETAS",
+              "monto": "S/340,224",
+              "pct": 2.8
             },
             {
               "nombre": "QUIMERCO S.A.S. SUCURSAL DEL PERU",
@@ -323,12 +329,6 @@
               "categoria": "PASTA DE TOMATE",
               "monto": "S/326,283",
               "pct": 2.7
-            },
-            {
-              "nombre": "PROLABELS S.A.",
-              "categoria": "ETIQUETAS",
-              "monto": "S/312,491",
-              "pct": 2.6
             },
             {
               "nombre": "TRANSPORTES E INVERSIONES YAURI S.A.C.",
@@ -3097,14 +3097,6 @@
               "pct": null
             },
             {
-              "sku": "INT122",
-              "almacen": "Lacteos Producción",
-              "estandar": 225570.3,
-              "consumido": 237714.8,
-              "exceso": 12144.5,
-              "pct": "5.4%"
-            },
-            {
               "sku": "E001841",
               "almacen": "Lacteos Producción",
               "estandar": 69368.0,
@@ -3135,6 +3127,14 @@
               "consumido": 239357.0,
               "exceso": 8719.0,
               "pct": "3.8%"
+            },
+            {
+              "sku": "INT122",
+              "almacen": "Lacteos Producción",
+              "estandar": 229228.0,
+              "consumido": 237714.8,
+              "exceso": 8486.9,
+              "pct": "3.7%"
             },
             {
               "sku": "E001544",
@@ -3220,12 +3220,12 @@
           "por_uen": [
             {
               "uen": "B&D",
-              "merma": "1.47%",
+              "merma": "1.46%",
               "estado": "green"
             },
             {
               "uen": "TIGO",
-              "merma": "4.25%",
+              "merma": "4.26%",
               "estado": "red"
             },
             {
@@ -3243,7 +3243,7 @@
             },
             {
               "planta": "PACHACAMAC",
-              "merma": "1.80%",
+              "merma": "1.79%",
               "estado": "green"
             },
             {
@@ -3259,34 +3259,34 @@
           "kpis": [
             {
               "label": "Stock PP (Punto de Pedido)",
-              "valor": "4,217,556",
+              "valor": "4,411,810",
               "fuente": "reporte"
             },
             {
               "label": "Stock Valorizado",
-              "valor": "S/6.88M",
+              "valor": "S/6.99M",
               "fuente": "reporte"
             },
             {
               "label": "Consumo Prom 3M",
-              "valor": "13,568,163",
+              "valor": "13,639,033",
               "fuente": "reporte"
             },
             {
               "label": "Consumo Prom 6M",
-              "valor": "13,695,435",
+              "valor": "13,731,489",
               "fuente": "reporte"
             },
             {
               "label": "Materiales en quiebre",
-              "valor": "24",
+              "valor": "25",
               "meta": "explosión de materiales",
               "estado": "red",
               "fuente": "reporte"
             },
             {
               "label": "Ítems con necesidad de compra",
-              "valor": "432",
+              "valor": "436",
               "fuente": "reporte"
             }
           ],
@@ -3294,36 +3294,22 @@
             {
               "producto": "LECHE FRESCA",
               "categoria": "Lácteos base y derivados",
-              "faltante": "67,852",
-              "stock": "0",
-              "lead_time": null
-            },
-            {
-              "producto": "DOYPACK VALIDA PASTA DE TOMATE 100GR",
-              "categoria": "Envases flexibles (doypacks, bolsas, láminas)",
-              "faltante": "60,800",
-              "stock": "-0",
-              "lead_time": null
-            },
-            {
-              "producto": "AZUCAR RUBIA",
-              "categoria": "Azúcares y edulcorantes",
-              "faltante": "7,022",
-              "stock": "3,050",
-              "lead_time": null
-            },
-            {
-              "producto": "BOTELLA 1.7KG (GALONERA)",
-              "categoria": "Envases rígidos (botellas, frascos, potes, vasos)",
-              "faltante": "6,030",
-              "stock": "69,728",
+              "faltante": "52,548",
+              "stock": "4,200",
               "lead_time": null
             },
             {
               "producto": "SEPARADOR DE CARTON 27.6 CM X 17.2 CM",
               "categoria": "Cajas y embalaje secundario",
-              "faltante": "4,309",
+              "faltante": "3,557",
               "stock": "200",
+              "lead_time": null
+            },
+            {
+              "producto": "FRASCO MOSTAZA 425GR",
+              "categoria": "Envases rígidos (botellas, frascos, potes, vasos)",
+              "faltante": "3,396",
+              "stock": "3,900",
               "lead_time": null
             },
             {
@@ -3336,15 +3322,22 @@
             {
               "producto": "LECHE DESCREMADA EN POLVO LH",
               "categoria": "Lácteos base y derivados",
-              "faltante": "2,760",
-              "stock": "14,842",
+              "faltante": "2,731",
+              "stock": "12,168",
               "lead_time": null
             },
             {
-              "producto": "ACEITE DE SOYA",
-              "categoria": "Aceites, grasas y proteínas vegetales",
-              "faltante": "1,313",
-              "stock": "1,840",
+              "producto": "ETIQ B&D MOSTAZA 425G ND",
+              "categoria": "Etiquetas",
+              "faltante": "2,716",
+              "stock": "4,580",
+              "lead_time": null
+            },
+            {
+              "producto": "ETIQ B&D KETCHUP 245 ND",
+              "categoria": "Etiquetas",
+              "faltante": "920",
+              "stock": "2,200",
               "lead_time": null
             },
             {
@@ -3362,28 +3355,35 @@
               "lead_time": null
             },
             {
-              "producto": "ALMIDON MAXIGEL 617 ( TATE & LYLE )",
-              "categoria": "Almidones y espesantes",
-              "faltante": "311",
-              "stock": "1,719",
-              "lead_time": null
-            },
-            {
               "producto": "AJI AMARILLO FRESCO",
               "categoria": "Ingredientes frescos y vegetales",
               "faltante": "236",
               "stock": "-0",
+              "lead_time": null
+            },
+            {
+              "producto": "CAJA CORRUGADA GRANOLA (375X280X92MM)",
+              "categoria": "Cajas y embalaje secundario",
+              "faltante": "161",
+              "stock": "3,200",
+              "lead_time": null
+            },
+            {
+              "producto": "CHANCACA",
+              "categoria": "Azúcares y edulcorantes",
+              "faltante": "79",
+              "stock": "0",
               "lead_time": null
             }
           ],
           "necesidad_compra": [
             {
               "momento": "Comprar-( Oct 2026)",
-              "items": 196
+              "items": 193
             },
             {
               "momento": "Comprar-( Nov 2026)",
-              "items": 156
+              "items": 163
             },
             {
               "momento": "Comprar-( Set 2026)",
@@ -5493,37 +5493,7 @@
               "var_pct": 752.6
             }
           ]
-        },
-        "ppto_al_dia": [
-          {
-            "canal": "Total",
-            "facturado": "S/18.63M",
-            "ppto_hasta_ayer": "S/0",
-            "cuota_mes": "S/7.79M",
-            "avance_dia": "0.0%"
-          },
-          {
-            "canal": "MODERNO",
-            "facturado": "S/13.57M",
-            "ppto_hasta_ayer": "S/0",
-            "cuota_mes": "S/5.82M",
-            "avance_dia": "0.0%"
-          },
-          {
-            "canal": "TRADICIONAL",
-            "facturado": "S/4.23M",
-            "ppto_hasta_ayer": "S/0",
-            "cuota_mes": "S/1.71M",
-            "avance_dia": "0.0%"
-          },
-          {
-            "canal": "HORECA",
-            "facturado": "S/831,427",
-            "ppto_hasta_ayer": "S/0",
-            "cuota_mes": "S/260,000",
-            "avance_dia": "0.0%"
-          }
-        ]
+        }
       }
     }
   },
@@ -5535,165 +5505,20 @@
     "avance": 0.6295519287006067
   },
   "verificacion": {
-    "verificados": 61,
+    "verificados": 60,
     "total": 63
   },
   "cobertura": {
-    "kpis_del_reporte": 61,
+    "kpis_del_reporte": 60,
     "kpis_totales": 63,
-    "pct": 96.8
+    "pct": 95.2
   },
   "diagnostico": [
-    {
-      "consulta": "captura:Matriz#38e3644b220b",
-      "http": 200,
-      "error": "columnas sin mapear: ['por_vencer ([POR VENCER])', 't15 ([0 A 15 DÍAS])', 't30 ([16 A 30 DÍAS])', 't30mas ([MAS DE 30 DÍAS])']. Claves reales: ['DATA_FACTURACION[CANAL]', 'DATA_FACTURACION[EJECUTIVO]', 'DATA_FACTURACION[JEFE_VENTA]', '[IsDM1Total]', '[IsDM3Total]', '[IsGrandTotalRowTotal]', '[MAS_DE_30_DÍAS]', '[POR_VENCER]', '[SortBy_DM1_0]', '[SortBy_DM3_0]', '[SumTotal_fact]', '[v0_A_15_DÍAS]', '[v16_A_30_DÍAS]']"
-    },
-    {
-      "consulta": "captura:Merma Diaria#363813631d90#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (49, 27) Cannot find table '<oii>Tabla Mermas</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:Merma Diaria#363813631d90#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (49, 27) Cannot find table '<oii>Tabla Mermas</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:Merma Diaria#363813631d90",
-      "http": 200,
-      "error": "columnas sin mapear: ['mes ([MES])', 'anio ([Año])']. Claves reales: ['Tabla Mermas[Turno]', 'Tabla Mermas[almacen]', '[ColumnIndex]', '[IsDM0Total]', '[IsGrandTotalRowTotal]', '[v__MERMAS__TABLA_MERMAS]']"
-    },
-    {
-      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (13, 23) Column '<oii>Turno</oii>' in table '<oii>Maestra de Kardex (Total)</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]"
-    },
-    {
-      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (13, 23) Column '<oii>Turno</oii>' in table '<oii>Maestra de Kardex (Total)</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]"
-    },
-    {
-      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (57, 4) Cannot find table '<oii>Maestra de Kardex (Total)</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (57, 4) Cannot find table '<oii>Maestra de Kardex (Total)</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (57, 4) Cannot find table '<oii>Maestra de Kardex (Total)</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (57, 4) Cannot find table '<oii>Maestra de Kardex (Total)</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2",
-      "http": 200,
-      "error": "columnas sin mapear: ['anio ([Año])']. Claves reales: ['Maestra de Kardex (Total)[MARCA 2]', 'Maestra de Kardex (Total)[categoria_hijo]', '[ColumnIndex]', '[IsDM0Total]', '[IsGrandTotalRowTotal]', '[SumPeso_Producido_Kg_]']"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (9, 16) Column '<oii>Mes Nº</oii>' in table '<oii>Calendario</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (9, 16) Column '<oii>Mes Nº</oii>' in table '<oii>Calendario</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (9, 16) Cannot find table '<oii>Calendario</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (9, 16) Cannot find table '<oii>Calendario</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
-      "http": 400,
-      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
-    },
-    {
-      "consulta": "__merma_dia",
-      "http": 200,
-      "error": "249 filas diarias sin mes: la captura agrupa por día pero el mes lo pone el filtro de página del visual. Sin mes no se puede comparar el mismo tramo de dos meses, así que no se publica."
-    },
-    {
-      "consulta": "__produccion_dia",
-      "http": 200,
-      "error": "211 filas diarias sin mes: la captura agrupa por día pero el mes lo pone el filtro de página del visual. Sin mes no se puede comparar el mismo tramo de dos meses, así que no se publica."
-    },
     {
       "tipo": "aviso",
       "consulta": "merma_total_incoherente",
       "http": 200,
-      "error": "Merma Total = 4.87% es mayor que el peor segmento (4.25%); un total no puede superar a sus partes. Se publica sin dato."
+      "error": "Merma Total = 4.87% es mayor que el peor segmento (4.26%); un total no puede superar a sus partes. Se publica sin dato."
     }
   ],
   "derivados": [
