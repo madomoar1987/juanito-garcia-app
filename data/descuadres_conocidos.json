@@ -18,6 +18,12 @@
       "resuelto": "2026-09-14",
       "explicacion": "No era un descuadre. Confirmado por gerencia el 14/09/2026: la venta del mes es la del reporte de Margen (agosto S/7.69M) y la facturación de Fill Rate mide el cumplimiento del pedido, no la venta. La comparación se quitó de validar_datos.py y la fila del tablero pasó a leer la serie de Margen.",
       "pendiente": null
+    },
+    {
+      "prueba": "Presupuesto acumulado al día (FACTURACION AL 05 SETIEMBRE)",
+      "desde": "2026-09-15",
+      "explicacion": "La captura devuelve el presupuesto acumulado hasta ayer en cero y el facturado del AÑO (S/18.63M contra una cuota mensual de S/7.79M): ese visual no filtra el mes. No es un fallo de la consulta, es el alcance del visual de origen.",
+      "pendiente": "Capturar ese visual con el filtro de mes aplicado para tener el avance contra presupuesto que sí respeta los días transcurridos."
     }
   ]
 }

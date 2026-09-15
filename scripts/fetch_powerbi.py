@@ -1664,7 +1664,6 @@ def build_dimensiones(found):
             x.pop("_v", None)
         res["cartera_responsable"] = cart
 
-    # ── Series diarias: merma y producción, acumuladas día a día.
     # ── Precio unitario por producto y canal. Es lo que separa "bajamos el
     # precio" de "un canal negoció distinto": si el mismo producto cae en un
     # canal y no en otro, la conversación es con ese canal.
@@ -1729,12 +1728,12 @@ def build_dimensiones(found):
                                          .replace("S/", "").replace(",", "")
                                          .replace("M", "e6")) or 0) > 0]
     if ppto and not util:
-        DIAGNOSTICO.append({
-            "tipo": "aviso", "consulta": "ppto_al_dia_en_cero", "http": 200,
-            "error": "el presupuesto acumulado hasta ayer llegó en cero y el "
-                     "facturado es el del año, no el del mes: es el visual que "
-                     "no filtra mes. No se publica para no mostrar un avance "
-                     "contra un presupuesto de cero."})
+        # No se anota como aviso: es una limitación conocida y estable del
+        # visual de origen, igual que los descuadres ya investigados. Un aviso
+        # que sale todos los días con la misma causa deja de mirarse, y
+        # entonces el día que aparece algo nuevo tampoco se ve.
+        print("    · presupuesto al día en cero (el visual no filtra mes) — "
+              "no se publica; ver data/descuadres_conocidos.json")
     if util:
         util.sort(key=lambda x: -x["_v"])
         for x in util:
