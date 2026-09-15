@@ -5214,7 +5214,14 @@ function ejeVista() {
   // Una consulta que falla deja un bloque vacío, y un bloque vacío se lee como
   // "no hay nada que mostrar" en vez de "no se pudo traer". Se dice cuántas y
   // se pueden ver.
-  const diagN = (DATA.diagnostico || []).length;
+  // Solo los fallos de verdad. Las comprobaciones que hicieron su trabajo
+  // —"el total superaba a sus partes, no se publica"— llevan tipo "aviso" y
+  // no son consultas rotas: contarlas juntas inflaba el número y hacía que se
+  // dejara de mirar.
+  const diagTodos = DATA.diagnostico || [];
+  const diagFallos = diagTodos.filter(d => d.tipo !== 'aviso');
+  const diagAvisos = diagTodos.filter(d => d.tipo === 'aviso');
+  const diagN = diagFallos.length;
   const confianza = `
     <div class="eje-conf">
       <span class="eje-conf-k">Contraste contra Power BI</span>
@@ -5230,8 +5237,13 @@ function ejeVista() {
         ? `<b>${derN}</b> cifras calculadas, marcadas como tales`
         : 'ninguna cifra calculada'}</span>
       ${diagN ? `<span class="eje-conf-i mal eje-conf-btn" onclick="ejeVerDiagnostico()"
-        title="Ver qué consultas fallaron"><b>${diagN}</b> consultas fallaron en la
-        última corrida — ver cuáles ›</span>` : ''}
+        title="Ver qué consultas fallaron"><b>${diagN}</b> ${diagN === 1 ? 'consulta falló'
+        : 'consultas fallaron'} en la última corrida — ver cuáles ›</span>`
+        : `<span class="eje-conf-i ok"><b>todas</b> las consultas trajeron dato</span>`}
+      ${diagAvisos.length ? `<span class="eje-conf-i eje-conf-btn"
+        onclick="ejeVerDiagnostico()"><b>${diagAvisos.length}</b>
+        ${diagAvisos.length === 1 ? 'comprobación evitó' : 'comprobaciones evitaron'}
+        publicar un dato incoherente ›</span>` : ''}
     </div>`;
 
   const hall = ejeHallazgos();
@@ -5294,8 +5306,10 @@ function ejeVista() {
 // Abre el análisis de un indicador desde la vista ejecutiva.
 // Qué consultas fallaron en la última corrida, en lenguaje entendible.
 function ejeVerDiagnostico() {
-  const d = DATA.diagnostico || [];
-  if (!d.length) return;
+  const todos = DATA.diagnostico || [];
+  if (!todos.length) return;
+  const d = todos.slice().sort((a, b) =>
+    (a.tipo === 'aviso' ? 1 : 0) - (b.tipo === 'aviso' ? 1 : 0));
   const lineas = d.map(x => {
     const nombre = String(x.consulta || '').replace(/^captura:/, '')
       .split('#')[0].replace(/_/g, ' ');
@@ -5311,11 +5325,12 @@ function ejeVerDiagnostico() {
     } else {
       causa = causa.slice(0, 140);
     }
-    return `• ${nombre}\n   ${causa}`;
+    return `${x.tipo === 'aviso' ? '✓' : '•'} ${nombre}\n   ${causa}`;
   }).join('\n\n');
-  alert('Consultas con problema en la corrida del ' + (DATA.fecha || '') + ':\n\n' +
-        lineas + '\n\nLo que traía cada una no se publica. El resto del tablero ' +
-        'no se ve afectado.');
+  alert('Corrida del ' + (DATA.fecha || '') + '\n\n' +
+        '•  consultas que no trajeron dato — lo suyo no se publica\n' +
+        '✓  comprobaciones que evitaron publicar un dato incoherente\n\n' +
+        lineas + '\n\nEl resto del tablero no se ve afectado.');
 }
 
 function ejeAbrir(clave) {

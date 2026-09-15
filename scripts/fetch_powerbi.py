@@ -1275,10 +1275,15 @@ def espera_throttle(r):
     return min(int(m.group(1)) + 2, 90) if m else 15
 
 
-def _tablas_dax(token, ws, dataset_id, query, label):
+def _tablas_dax(token, ws, dataset_id, query, label, silencioso=False):
     """Como dax(), pero devuelve TODAS las tablas del resultado.
 
     Las consultas del Analizador suelen traer dos EVALUATE (eje y cuerpo).
+
+    `silencioso` es para los sondeos: preguntar a seis datasets cuál tiene una
+    tabla deja cinco errores esperados, y un diagnóstico lleno de fallos que
+    no son fallos hace que nadie lo mire. Devuelve None cuando falla, para
+    distinguirlo de una consulta que corrió y no trajo filas.
     """
     import time
     url = f"{PBI_BASE}/groups/{ws}/datasets/{dataset_id}/executeQueries"
@@ -1292,22 +1297,25 @@ def _tablas_dax(token, ws, dataset_id, query, label):
             r = requests.post(url, json=body, headers=headers, timeout=90)
             if r.status_code == 429:
                 if intento == 2:
-                    DIAGNOSTICO.append({"consulta": label, "http": 429,
-                                        "error": "límite de peticiones tras 3 intentos"})
-                    return []
+                    if not silencioso:
+                        DIAGNOSTICO.append({"consulta": label, "http": 429,
+                                            "error": "límite de peticiones tras 3 intentos"})
+                    return None if silencioso else []
                 espera = espera_throttle(r)
                 print(f"    · {label}: límite de peticiones, esperando {espera}s")
                 time.sleep(espera)
                 continue
             if r.status_code != 200:
-                DIAGNOSTICO.append({"consulta": label, "http": r.status_code,
-                                    "error": r.text[:400]})
-                return []
+                if not silencioso:
+                    DIAGNOSTICO.append({"consulta": label, "http": r.status_code,
+                                        "error": r.text[:400]})
+                return None if silencioso else []
             return [t.get("rows", []) for t in r.json()["results"][0].get("tables", [])]
         except Exception as e:
-            DIAGNOSTICO.append({"consulta": label, "http": 0, "error": repr(e)[:300]})
-            return []
-    return []
+            if not silencioso:
+                DIAGNOSTICO.append({"consulta": label, "http": 0, "error": repr(e)[:300]})
+            return None if silencioso else []
+    return None if silencioso else []
 
 
 def dax_precio_producto_canal():
@@ -1447,6 +1455,75 @@ def dax_con_periodo(dax, periodo, columna="PERIODO"):
 # BI no tiene.
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Qué dataset tiene cada tabla. Se llena sondeando y se reusa toda la corrida.
+_TABLA_DATASET = {}
+_DATASETS_WS = None
+
+
+def datasets_del_espacio(token, ws_id):
+    """Todos los datasets del espacio de trabajo, no solo los once conocidos."""
+    global _DATASETS_WS
+    if _DATASETS_WS is None:
+        try:
+            _DATASETS_WS = list(discover_all_datasets(token, ws_id).values())
+        except Exception:
+            _DATASETS_WS = []
+    return _DATASETS_WS
+
+
+def dataset_con_tabla(token, ws_id, tabla, preferidos=()):
+    """El dataset que contiene esa tabla. None si ninguno la tiene.
+
+    Una captura del Analizador no dice de qué dataset salió, y adivinarlo por
+    el nombre del reporte falló en cuatro de seis consultas nuevas: devolvían
+    cero tablas o "Column ... cannot be found". Pero el catálogo sí dice qué
+    TABLAS usa cada consulta, así que se busca el dataset que las tenga.
+
+    El sondeo es una consulta mínima —cero filas— por dataset, y el resultado
+    queda en caché: son unas pocas llamadas la primera vez y ninguna después.
+    """
+    if tabla in _TABLA_DATASET:
+        return _TABLA_DATASET[tabla]
+    # Tope de sondeos: preguntar a todos los datasets del espacio por cada
+    # tabla puede empujar la corrida sobre el límite de peticiones, y un 429
+    # borra desgloses enteros. Los conocidos van primero, así que en la
+    # práctica se resuelve en los primeros intentos.
+    orden = ([d for d in preferidos if d] +
+             [d for d in datasets_del_espacio(token, ws_id) if d not in preferidos])[:14]
+    for ds in orden:
+        try:
+            filas = _tablas_dax(token, ws_id, ds,
+                                f"EVALUATE TOPN(0, '{tabla}')",
+                                f"sonda:{tabla[:24]}", silencioso=True)
+        except Exception:
+            filas = None
+        if filas is not None:
+            _TABLA_DATASET[tabla] = ds
+            print(f"    · tabla '{tabla}' vive en el dataset {ds[:8]}…")
+            return ds
+    _TABLA_DATASET[tabla] = None
+    return None
+
+
+def datasets_para_captura(token, ws_id, visual, preferidos=()):
+    """Candidatos ordenados para una captura, según las tablas que usa."""
+    entrada = (catalogo_capturas().get(visual) or {})
+    tablas = [t for t in (entrada.get("tablas") or [])
+              if not t.startswith("LocalDateTable")]
+    vistos, orden = set(), []
+    for t in tablas:
+        ds = dataset_con_tabla(token, ws_id, t, preferidos)
+        if ds and ds not in vistos:
+            vistos.add(ds)
+            orden.append(ds)
+    for d in list(preferidos) + datasets_del_espacio(token, ws_id):
+        if d and d not in vistos:
+            vistos.add(d)
+            orden.append(d)
+    return orden
+
+
+
 def extraer_dimensiones(token, ws_id, ids, scanned):
     """Trae los cortes por canal, por responsable de cartera y por día."""
     bolsa = scanned.setdefault("dimensiones", {})
@@ -1459,7 +1536,11 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
     todos = [v for v in ids.values() if v]
 
     def _cap(dataset, visual, columnas, clave, etiqueta):
-        candidatos = ([dataset] if dataset else []) + [d for d in todos if d != dataset]
+        # El orden lo decide qué tablas usa la consulta, no el nombre del
+        # reporte: el catálogo dice que la matriz de cartera usa
+        # DATA_FACTURACION, así que se busca el dataset que tenga esa tabla.
+        candidatos = datasets_para_captura(token, ws_id, visual,
+                                           preferidos=([dataset] if dataset else []) + todos)
         try:
             filas = desglose_desde_captura(token, ws_id, candidatos, visual, columnas)
             if filas:
@@ -2732,7 +2813,7 @@ def build_margen(found):
         # Llegaron filas pero ninguna paso el filtro. Sin una muestra no hay
         # forma de saber si el problema es el nombre vacio, la venta en cero
         # o un signo invertido.
-        DIAGNOSTICO.append({"consulta": "margen_cliente_vacio", "http": 200,
+        DIAGNOSTICO.append({"tipo": "aviso", "consulta": "margen_cliente_vacio", "http": 200,
                             "error": f"{len(cli)} filas, ninguna util. "
                                      f"Muestra: {cli[:3]}"})
     if limpios:
@@ -3264,7 +3345,7 @@ def build_compras(found):
         vivos = [f for f in falt if abs(to_float(f.get("faltante")) or 0) > 0]
         vivos.sort(key=lambda f: -abs(to_float(f.get("faltante")) or 0))
         if falt and not vivos:
-            DIAGNOSTICO.append({"consulta": "faltantes_vacio", "http": 200,
+            DIAGNOSTICO.append({"tipo": "aviso", "consulta": "faltantes_vacio", "http": 200,
                                 "error": f"{len(falt)} filas, ninguna con "
                                          f"faltante distinto de cero. "
                                          f"Muestra: {falt[:3]}"})
@@ -4755,6 +4836,12 @@ def main():
                             print(f"    ✗ {kpi['label']} = {kpi['valor']} supera a "
                                   f"su mayor segmento ({tope:.2f}%) — se oculta")
                             DIAGNOSTICO.append({
+                                # No es un fallo: es una comprobación que
+                                # funcionó y evitó publicar un total imposible.
+                                # Contarla junto a las consultas rotas hacía
+                                # que el tablero dijera "7 fallaron" cuando
+                                # eran seis y una defensa haciendo su trabajo.
+                                "tipo": "aviso",
                                 "consulta": "merma_total_incoherente", "http": 200,
                                 "error": (f"{kpi['label']} = {kpi['valor']} es mayor que el "
                                           f"peor segmento ({tope:.2f}%); un total no puede "
