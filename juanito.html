@@ -23,8 +23,13 @@
   --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 0 1px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
   --text:   #1c1c1e;
-  --text2:  rgba(0,0,0,0.5);
-  --text3:  rgba(0,0,0,0.3);
+  /* Negro al 50% y al 30% sobre blanco dan 3.9:1 y 2.3:1 de contraste: por
+     debajo del 4.5:1 que necesita un texto pequeño para leerse. Las etiquetas
+     de período, las notas y los pies de tarjeta usan --text3, así que media
+     pantalla estaba en un gris que no se ve. Se oscurecen lo justo para pasar
+     el umbral sin perder la jerarquía entre los tres niveles. */
+  --text2:  rgba(0,0,0,0.72);
+  --text3:  rgba(0,0,0,0.56);
   --red:    #d32f2f;
   --red-light: #ef5350;
   --red-bg: #ffebee;
@@ -4175,6 +4180,145 @@ function avBloquePpto() {
   };
 }
 
+
+// ── Análisis genérico: el que sirve para CUALQUIER indicador ────────────────
+//
+// Ocho de los trece KPIs no tenían segmentos ni tablas propias, así que su
+// tarjeta ofrecía "Ver análisis" y al hacer clic no pasaba nada. Un botón que
+// promete y no cumple es peor que no tener botón.
+//
+// Estos tres bloques se arman con lo que SIEMPRE existe: la serie mensual, las
+// cifras del propio reporte y cualquier desglose que el reporte publique. No
+// inventan nada; cuando no hay desglose lo dicen.
+
+function avBloqueEvolucion(ind, meta) {
+  const arr = serieDe(ind.serie);
+  if (!arr) return null;
+  const per = periodos();
+  const pts = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] != null) pts.push({ per: per[i], v: arr[i] });
+  }
+  if (pts.length < 3) return null;
+  const ult = pts.slice(-7);
+
+  const cuerpo = ult.map((p, i) => {
+    const ant = i ? ult[i - 1].v : null;
+    const tri = ant != null ? triangulo(ind, p.v, ant) : null;
+    const d = distanciaMeta(ind, p.v, meta);
+    const esParcial = p.per === mesParcial();
+    return `<tr${esParcial ? ' class="av-an-foco"' : ''}>
+      <td>${esc(nombreMes(p.per))}${esParcial
+        ? `<small style="display:block;color:var(--text3)">al día ${(avanceDelMes() || {}).dia || ''}</small>` : ''}</td>
+      <td>${esc(fmtMeta(ind, p.v))}</td>
+      <td>${tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>` : '—'}</td>
+      <td style="color:${d ? (d.bien ? 'var(--green)' : 'var(--red)') : 'var(--text3)'}">
+        ${d ? esc(d.txt) : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  // Lectura: cuántos meses seguidos se mueve en la misma dirección y cuántos
+  // de los últimos doce cumplieron la meta.
+  const lecturas = [];
+  let racha = 0, dirUlt = null;
+  for (let i = pts.length - 1; i > 0; i--) {
+    const sube = pts[i].v > pts[i - 1].v;
+    if (dirUlt === null) { dirUlt = sube; racha = 1; }
+    else if (sube === dirUlt) racha++;
+    else break;
+  }
+  const mejora = ind.direccion === 'menor' ? !dirUlt : dirUlt;
+  if (racha >= 2) {
+    lecturas.push(`<p class="av-an-lee ${mejora ? '' : 'rojo'}"><b>` +
+      `${racha} meses seguidos ${mejora ? 'mejorando' : 'empeorando'}.</b> ` +
+      `${mejora ? 'No es un buen mes suelto, es una tendencia.'
+                : 'No es un mal mes suelto: conviene tratarlo como tendencia.'}</p>`);
+  }
+  if (meta != null) {
+    const doce = pts.slice(-12);
+    const ok = doce.filter(p => { const d = distanciaMeta(ind, p.v, meta); return d && d.bien; }).length;
+    const mejor = doce.slice().sort((a, b) =>
+      ind.direccion === 'menor' ? a.v - b.v : b.v - a.v)[0];
+    lecturas.push(`<p class="av-an-lee"><b>${ok} de los últimos ${doce.length} meses</b> ` +
+      `cumplieron la meta de ${esc(fmtMeta(ind, meta))}. El mejor fue ` +
+      `${esc(nombreMes(mejor.per))} con ${esc(fmtMeta(ind, mejor.v))}` +
+      `${ok === 0 ? ', así que la meta no se ha alcanzado nunca en este período' : ''}.</p>`);
+  }
+
+  return {
+    periodo: mesParcial(),
+    titulo: 'Evolución mes a mes',
+    por: `Los últimos ${ult.length} meses con dato, su variación contra el mes ` +
+         `anterior y su distancia a la meta. El mes en curso va marcado: lleva ` +
+         `${(avanceDelMes() || {}).dia || ''} de ${(avanceDelMes() || {}).dias || ''} días.`,
+    cabecera: ['Mes', 'Valor', 'vs mes anterior', 'vs meta'],
+    cuerpo, lecturas,
+  };
+}
+
+function avBloqueCifras(ind) {
+  const rd = avReporte(ind.reporte);
+  const ks = (rd.kpis || []).filter(k => k && k.valor);
+  if (ks.length < 2) return null;
+  const cuerpo = ks.map(k => `
+    <tr>
+      <td>${esc(k.label)}</td>
+      <td style="font-weight:600">${esc(k.valor)}</td>
+      <td>${esc(k.meta || '—')}</td>
+      <td>${k.periodo ? esc(nombreMes(k.periodo))
+            : k.nota_periodo ? `<small>${esc(k.nota_periodo)}</small>`
+            : '<small style="color:var(--yellow)">sin confirmar</small>'}</td>
+    </tr>`).join('');
+  return {
+    periodo: undefined,
+    titulo: `Las cifras del reporte ${DXP_NOMBRE[ind.reporte] || ind.reporte}`,
+    por: 'Todo lo que publica el reporte de origen, con el período de cada cifra. ' +
+         'Sirve para validar contra Power BI lo que muestra el resto de la pantalla.',
+    cabecera: ['Cifra', 'Valor', 'Meta', 'Período'],
+    cuerpo, lecturas: [],
+  };
+}
+
+// Desgloses publicados por el reporte, sea cual sea su forma. Se renderizan
+// genéricamente en vez de escribir un bloque a medida por cada uno.
+const DESGLOSES_PUBLICADOS = [
+  ['tramos', 'Por antigüedad de la deuda'],
+  ['dead_por_categoria', 'Dead stock por categoría'],
+  ['working_por_categoria', 'Working stock por categoría'],
+  ['proveedores_criticos', 'Proveedores que más concentran'],
+  ['por_grupo', 'Por grupo de cliente'],
+  ['por_marca', 'Por marca'],
+  ['por_planta', 'Por planta'],
+  ['por_sku', 'Por SKU'],
+  ['responsables', 'Por responsable'],
+];
+
+function avBloquesPublicados(ind) {
+  const rd = avReporte(ind.reporte);
+  const out = [];
+  DESGLOSES_PUBLICADOS.forEach(([clave, titulo]) => {
+    const filas = rd[clave];
+    if (!Array.isArray(filas) || filas.length < 2) return;
+    // Las columnas salen de los propios datos: así un desglose nuevo se
+    // muestra sin tocar la app.
+    const cols = [...new Set(filas.flatMap(f => Object.keys(f)))]
+      .filter(c => !c.startsWith('_') && c !== 'estado');
+    if (!cols.length) return;
+    const cuerpo = filas.slice(0, 20).map(f => `
+      <tr${f.estado === 'red' ? ' class="av-an-foco"' : ''}>
+        ${cols.map(c => `<td>${f[c] == null ? '—' : esc(String(f[c]))}</td>`).join('')}
+      </tr>`).join('');
+    out.push({
+      periodo: undefined,
+      titulo: titulo,
+      por: `Desglose publicado por el reporte, ${filas.length} filas.`,
+      cabecera: cols.map(c => c.replace(/_/g, ' ').replace(/^./, x => x.toUpperCase())),
+      cuerpo, lecturas: [],
+    });
+  });
+  return out;
+}
+
 // ── Qué segmento explica la desviación de un indicador.
 //
 // Vale para cualquiera que tenga segmentos: merma, compras, margen. Compara
@@ -4344,6 +4488,17 @@ function analisisDe(ind, meta, segNombre) {
   if (ind.clave === 'morosidad' && !esUEN) {
     const car = avBloqueCartera();
     if (car) bloques.push(car);
+  }
+
+  // Todo indicador abre algo. Estos tres bloques se arman con lo que siempre
+  // existe —la serie, las cifras del reporte y sus desgloses publicados—, así
+  // que ningún KPI se queda con un botón que no lleva a ninguna parte.
+  if (!esUEN) {
+    const ev = avBloqueEvolucion(ind, meta);
+    if (ev) bloques.push(ev);
+    avBloquesPublicados(ind).forEach(b => bloques.push(b));
+    const ci = avBloqueCifras(ind);
+    if (ci) bloques.push(ci);
   }
 
   if (!bloques.length && !tesis) return null;
