@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-14",
+  "generado": "2026-09-15",
   "parcial": "2026-09",
   "fuente": "Power BI REST API executeQueries",
   "periodos": [
@@ -29,7 +29,6 @@
     "cxc": "LocalDateTable_9de71e0e-3dad-40db-b49a-7124064ba537[Año] + 'Calendario (FACT)'[Mes Numero]",
     "mermas": "Calendario[Año] + Calendario[MES] (6 filtros del visual)",
     "cxp": "Calendario[Date]",
-    "margen": "Calendario[Date]",
     "inventario": "Calendario[Date]",
     "planificacion": "Calendario[Date]"
   },
@@ -60,6 +59,16 @@
           "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
         }
       ]
+    },
+    "margen": {
+      "medidas": [
+        "Venta Total",
+        "Precio x Kilo",
+        "Costo x Kilo"
+      ],
+      "tablas": [],
+      "columnas_fecha": [],
+      "esquema_rest_error": "HTTP 404"
     },
     "inventario": {
       "medidas": [],
@@ -1233,12 +1242,12 @@
     {
       "consulta": "fillrate:% Fill Rate",
       "http": 200,
-      "error": "la serie termina en (2025, 4) pero el eje llega a (2026, 9). El mapa de CALENDARIO devolvió 60 meses; primeros períodos mapeados: [(2024, 2), (2024, 3), (2024, 4), (2024, 5), (2024, 6), (2024, 7)]"
+      "error": "la serie termina en (2025, 4) pero el eje llega a (2026, 9). El mapa de CALENDARIO devolvió 0 meses; primeros períodos mapeados: [(2024, 2), (2024, 3), (2024, 4), (2024, 5), (2024, 6), (2024, 7)]"
     },
     {
       "consulta": "fillrate:Pedidos no atendidos",
       "http": 200,
-      "error": "la serie termina en (2025, 4) pero el eje llega a (2026, 9). El mapa de CALENDARIO devolvió 60 meses; primeros períodos mapeados: [(2024, 2), (2024, 3), (2024, 4), (2024, 5), (2024, 6), (2024, 7)]"
+      "error": "la serie termina en (2025, 4) pero el eje llega a (2026, 9). El mapa de CALENDARIO devolvió 0 meses; primeros períodos mapeados: [(2024, 2), (2024, 3), (2024, 4), (2024, 5), (2024, 6), (2024, 7)]"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
-  "fecha": "14/09/2026",
-  "fecha_actualizacion": "2026-09-14",
-  "hora_actualizacion": "22:49",
+  "fecha": "15/09/2026",
+  "fecha_actualizacion": "2026-09-15",
+  "hora_actualizacion": "07:45",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "yellow"
@@ -3881,7 +3881,7 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "yellow",
+          "estado": "red",
           "alerta": "Avance 239% — la consulta del reporte filtra mes pero no año, así que suma el mismo mes de varios años contra un presupuesto mensual",
           "kpis": [
             {
@@ -4023,74 +4023,1507 @@
             }
           ]
         },
-        "merma_dia": {
-          "dias": [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17,
-            18,
-            19,
-            20,
-            21,
-            22,
-            23,
-            24,
-            25,
-            26,
-            27,
-            28,
-            29,
-            30,
-            31
+        "precio_canal": {
+          "meses": [
+            "2026-08",
+            "2026-09"
           ],
-          "valor": [
-            0.0147,
-            0.0319,
-            0.0272,
-            0.0197,
-            0.0165,
-            0.0099,
-            0.0183,
-            0.0218,
-            0.0254,
-            0.0249,
-            0.019,
-            0.015,
-            0.0391,
-            0.0176,
-            0.0225,
-            0.0219,
-            0.0333,
-            0.0186,
-            0.0229,
-            0.0482,
-            0.0251,
-            0.0238,
-            0.0221,
-            0.0293,
-            0.0266,
-            0.0198,
-            0.0192,
-            0.0217,
-            0.0146,
-            0.0275,
-            0.0298
+          "filas": [
+            {
+              "producto": "B&D KETCHUP BALDE 20K  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/2.81",
+              "precio_previo": "S/4.09",
+              "var_pct": -31.2
+            },
+            {
+              "producto": "TIGO GRIEGO BEBIBLE FRESA 285G",
+              "canal": "HORECA",
+              "precio": "S/8.73",
+              "precio_previo": "S/10.49",
+              "var_pct": -16.7
+            },
+            {
+              "producto": "TIGO YOG PRE MANGO MARACUYA 1K (POTE)",
+              "canal": "HORECA",
+              "precio": "S/8.95",
+              "precio_previo": "S/10.60",
+              "var_pct": -15.6
+            },
+            {
+              "producto": "B&D SALSA INGLESA 500ML X 12",
+              "canal": "TRADICIONAL",
+              "precio": "S/8.24",
+              "precio_previo": "S/9.43",
+              "var_pct": -12.6
+            },
+            {
+              "producto": "B&D MOSTAZA CAJA SACHET 252 X 8GR",
+              "canal": "HORECA",
+              "precio": "S/5.93",
+              "precio_previo": "S/6.40",
+              "var_pct": -7.3
+            },
+            {
+              "producto": "TIGO YOG PREMIUM NATURAL 160G",
+              "canal": "HORECA",
+              "precio": "S/16.73",
+              "precio_previo": "S/17.97",
+              "var_pct": -6.9
+            },
+            {
+              "producto": "TIGOMIX YOG BLACK 125G",
+              "canal": "HORECA",
+              "precio": "S/14.67",
+              "precio_previo": "S/15.60",
+              "var_pct": -6.0
+            },
+            {
+              "producto": "B&D MAYONESA CAJA 2 BOLSA 4KG   ND",
+              "canal": "HORECA",
+              "precio": "S/6.78",
+              "precio_previo": "S/7.19",
+              "var_pct": -5.7
+            },
+            {
+              "producto": "B&D MOSTAZA DOYPACK 850G X 6  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/5.52",
+              "precio_previo": "S/5.83",
+              "var_pct": -5.3
+            },
+            {
+              "producto": "TIGOMIX YOG GRAGEAS 125G",
+              "canal": "MODERNO",
+              "precio": "S/18.28",
+              "precio_previo": "S/19.11",
+              "var_pct": -4.4
+            },
+            {
+              "producto": "B&D SALSA INGLESA 500ML X 12",
+              "canal": "HORECA",
+              "precio": "S/10.52",
+              "precio_previo": "S/11.01",
+              "var_pct": -4.4
+            },
+            {
+              "producto": "B&D TRIO (MAYONESA 190G + KETCHUP 200G + MOSTAZA 200G) X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/11.38",
+              "precio_previo": "S/11.86",
+              "var_pct": -4.0
+            },
+            {
+              "producto": "B&D KETCHUP 425G + MOSTAZA 425G X 12 (CAJA)  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/7.19",
+              "precio_previo": "S/7.42",
+              "var_pct": -3.1
+            },
+            {
+              "producto": "TIGOMIX YOG GRAGEAS 125G",
+              "canal": "HORECA",
+              "precio": "S/14.16",
+              "precio_previo": "S/14.61",
+              "var_pct": -3.1
+            },
+            {
+              "producto": "B&D MOSTAZA DOYPACK 100G X 12  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/10.36",
+              "precio_previo": "S/10.68",
+              "var_pct": -3.0
+            },
+            {
+              "producto": "TIGO GRIEGO BEBIBLE ARANDANO CON CHIA 285G",
+              "canal": "MODERNO",
+              "precio": "S/9.53",
+              "precio_previo": "S/9.79",
+              "var_pct": -2.6
+            },
+            {
+              "producto": "B&D KETCHUP DOYPACK 100G X 12  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/10.57",
+              "precio_previo": "S/10.85",
+              "var_pct": -2.5
+            },
+            {
+              "producto": "B&D MAYONESA CAJA 2 BOLSA 4KG X 4  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/7.63",
+              "precio_previo": "S/7.81",
+              "var_pct": -2.3
+            },
+            {
+              "producto": "B&D MOSTAZA BALDE 4K X 4  ND",
+              "canal": "HORECA",
+              "precio": "S/3.90",
+              "precio_previo": "S/3.98",
+              "var_pct": -2.2
+            },
+            {
+              "producto": "TIGO YOG GRANOLA FRESAS 155G",
+              "canal": "MODERNO",
+              "precio": "S/21.14",
+              "precio_previo": "S/21.55",
+              "var_pct": -1.9
+            },
+            {
+              "producto": "TIGO YOG PREMIUM FRESA 160G",
+              "canal": "HORECA",
+              "precio": "S/15.91",
+              "precio_previo": "S/16.18",
+              "var_pct": -1.7
+            },
+            {
+              "producto": "B&D SALSA BARBECUE DOYPACK 200G X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/16.14",
+              "precio_previo": "S/16.37",
+              "var_pct": -1.4
+            },
+            {
+              "producto": "B&D CREMA DE AJI DOYPACK 190G X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/23.72",
+              "precio_previo": "S/24.06",
+              "var_pct": -1.4
+            },
+            {
+              "producto": "B&D KETCHUP CAJA 4K X 4  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/4.08",
+              "precio_previo": "S/4.13",
+              "var_pct": -1.3
+            },
+            {
+              "producto": "PRECIO UNO YOG BEB FRESA 1.6K",
+              "canal": "MODERNO",
+              "precio": "S/4.55",
+              "precio_previo": "S/4.61",
+              "var_pct": -1.2
+            },
+            {
+              "producto": "PRECIO UNO YOG BEB VAINILLA 1.6K",
+              "canal": "MODERNO",
+              "precio": "S/4.55",
+              "precio_previo": "S/4.60",
+              "var_pct": -1.1
+            },
+            {
+              "producto": "B&D KETCHUP DOYPACK 850 X 6  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/5.81",
+              "precio_previo": "S/5.87",
+              "var_pct": -1.0
+            },
+            {
+              "producto": "PRECIO UNO YOG BEB FRUTOS DEL BOSQUE 900G",
+              "canal": "MODERNO",
+              "precio": "S/4.78",
+              "precio_previo": "S/4.83",
+              "var_pct": -1.0
+            },
+            {
+              "producto": "TIGO YOG GRANOLA ARANDANO CON CHIA 175G",
+              "canal": "MODERNO",
+              "precio": "S/20.74",
+              "precio_previo": "S/20.93",
+              "var_pct": -0.9
+            },
+            {
+              "producto": "B&D MAYONESA RT DOYPACK 190G X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/21.65",
+              "precio_previo": "S/21.83",
+              "var_pct": -0.8
+            },
+            {
+              "producto": "TIGO YOG GRANOLA ALBARI/DURAZNO 155G",
+              "canal": "HORECA",
+              "precio": "S/19.44",
+              "precio_previo": "S/19.58",
+              "var_pct": -0.7
+            },
+            {
+              "producto": "TIGO YOG PRE LIGHT FRUTOS ROJOS 1K (POTE)",
+              "canal": "MODERNO",
+              "precio": "S/10.85",
+              "precio_previo": "S/10.92",
+              "var_pct": -0.6
+            },
+            {
+              "producto": "B&D MOSTAZA CAJA 4K X 4  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/3.71",
+              "precio_previo": "S/3.73",
+              "var_pct": -0.6
+            },
+            {
+              "producto": "TIGO YOG NATURAL SIN AZUCAR 1K (POTE)",
+              "canal": "MODERNO",
+              "precio": "S/10.95",
+              "precio_previo": "S/11.00",
+              "var_pct": -0.5
+            },
+            {
+              "producto": "B&D MOSTAZA DOYPACK 200G X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/11.87",
+              "precio_previo": "S/11.93",
+              "var_pct": -0.5
+            },
+            {
+              "producto": "TOTTUS YOG BEB VAINILLA 900G",
+              "canal": "MODERNO",
+              "precio": "S/4.78",
+              "precio_previo": "S/4.80",
+              "var_pct": -0.5
+            },
+            {
+              "producto": "TOTTUS YOG BEB VAINILLA 1.6K",
+              "canal": "MODERNO",
+              "precio": "S/4.55",
+              "precio_previo": "S/4.57",
+              "var_pct": -0.5
+            },
+            {
+              "producto": "B&D SALSA INGLESA 500ML X 12",
+              "canal": "MODERNO",
+              "precio": "S/13.89",
+              "precio_previo": "S/13.95",
+              "var_pct": -0.4
+            },
+            {
+              "producto": "TIGO YOG NATURAL SIN AZUCAR 1K (POTE)",
+              "canal": "HORECA",
+              "precio": "S/10.33",
+              "precio_previo": "S/10.37",
+              "var_pct": -0.4
+            },
+            {
+              "producto": "TOTTUS YOG BEB DURAZNO 1.6K",
+              "canal": "MODERNO",
+              "precio": "S/4.55",
+              "precio_previo": "S/4.57",
+              "var_pct": -0.4
+            },
+            {
+              "producto": "PRECIO UNO YOG BEB FRUTOS DEL BOSQUE 1.6K",
+              "canal": "MODERNO",
+              "precio": "S/4.55",
+              "precio_previo": "S/4.57",
+              "var_pct": -0.4
+            },
+            {
+              "producto": "TOTTUS YOG BEB FRUTOS DEL BOSQUE 1.6K",
+              "canal": "MODERNO",
+              "precio": "S/4.55",
+              "precio_previo": "S/4.57",
+              "var_pct": -0.4
+            },
+            {
+              "producto": "PRECIO UNO YOG BEB FRESA 900G",
+              "canal": "MODERNO",
+              "precio": "S/4.78",
+              "precio_previo": "S/4.80",
+              "var_pct": -0.4
+            },
+            {
+              "producto": "TIGO QUESO CREMA PASTELERO 1KG",
+              "canal": "HORECA",
+              "precio": "S/16.25",
+              "precio_previo": "S/16.30",
+              "var_pct": -0.3
+            },
+            {
+              "producto": "TOTTUS YOG BEB FRUTOS DEL BOSQUE 900G",
+              "canal": "MODERNO",
+              "precio": "S/4.78",
+              "precio_previo": "S/4.79",
+              "var_pct": -0.3
+            },
+            {
+              "producto": "TOTTUS YOG BEB FRESA 1.6K",
+              "canal": "MODERNO",
+              "precio": "S/4.55",
+              "precio_previo": "S/4.56",
+              "var_pct": -0.3
+            },
+            {
+              "producto": "TIGO YOG PREMIUM FRESA 160G",
+              "canal": "MODERNO",
+              "precio": "S/20.22",
+              "precio_previo": "S/20.26",
+              "var_pct": -0.2
+            },
+            {
+              "producto": "B&D KETCHUP BALDE 4K X 4  ND",
+              "canal": "HORECA",
+              "precio": "S/4.23",
+              "precio_previo": "S/4.24",
+              "var_pct": -0.2
+            },
+            {
+              "producto": "TIGO YOG PRE ARANDANO CON CHIA 1K (POTE)",
+              "canal": "HORECA",
+              "precio": "S/10.85",
+              "precio_previo": "S/10.87",
+              "var_pct": -0.2
+            },
+            {
+              "producto": "TIGO GRIEGO BEBIBLE ARANDANO CON CHIA 285G",
+              "canal": "HORECA",
+              "precio": "S/8.74",
+              "precio_previo": "S/8.75",
+              "var_pct": -0.1
+            },
+            {
+              "producto": "TOTTUS YOG BEB FRESA 900G",
+              "canal": "MODERNO",
+              "precio": "S/4.78",
+              "precio_previo": "S/4.78",
+              "var_pct": -0.1
+            },
+            {
+              "producto": "TIGO YOG PRE ARANDANO CON CHIA 1K (POTE)",
+              "canal": "MODERNO",
+              "precio": "S/10.86",
+              "precio_previo": "S/10.86",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "TIGO YOG GRIEGO VIDRIO 850G (NATURAL)",
+              "canal": "MODERNO",
+              "precio": "S/14.48",
+              "precio_previo": "S/14.48",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "TIGO YOG PREMIUM DURAZNO 160G",
+              "canal": "MODERNO",
+              "precio": "S/20.38",
+              "precio_previo": "S/20.37",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "TIGO GRIEGO BEBIBLE FRESA 285G",
+              "canal": "MODERNO",
+              "precio": "S/9.30",
+              "precio_previo": null,
+              "var_pct": null
+            },
+            {
+              "producto": "TIGO YOG PREMIUM NATURAL 160G",
+              "canal": "MODERNO",
+              "precio": "S/20.51",
+              "precio_previo": "S/20.52",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "TIGO YOG GRIEGO VIDRIO 850G (ARANDANO)",
+              "canal": "MODERNO",
+              "precio": "S/14.48",
+              "precio_previo": "S/14.48",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "TIGO YOG FRUTADO VIDRIO 850G (FRESA)",
+              "canal": "MODERNO",
+              "precio": "S/9.16",
+              "precio_previo": "S/9.16",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "TIGO YOG GRIEGO VIDRIO 850G (FRESA)",
+              "canal": "MODERNO",
+              "precio": "S/14.48",
+              "precio_previo": "S/14.48",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "B&D MAYONESA RT DOYPACK 95G X 24  ND",
+              "canal": "MODERNO",
+              "precio": "S/22.63",
+              "precio_previo": "S/22.63",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "VALIDA PASTA DE TOMATE 100GX40",
+              "canal": "MODERNO",
+              "precio": "S/6.00",
+              "precio_previo": "S/6.00",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D MAYONESA RT (SACHET 8G X 240) X4",
+              "canal": "MODERNO",
+              "precio": "S/21.15",
+              "precio_previo": "S/21.15",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "ARO PASTA DE TOMATE 3K X 4",
+              "canal": "MODERNO",
+              "precio": "S/6.53",
+              "precio_previo": "S/6.53",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "B&D CREMA DE AJI (SACHET 8G X 240) X4  ND",
+              "canal": "MODERNO",
+              "precio": "S/24.78",
+              "precio_previo": "S/24.78",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D PURE DE TOMATE 4K X2 ND",
+              "canal": "MODERNO",
+              "precio": "S/8.46",
+              "precio_previo": "S/8.46",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "VILLA FRESCA MIX YOG VAINILLA C/GRAGEAS X 115G",
+              "canal": "MODERNO",
+              "precio": "S/15.13",
+              "precio_previo": "S/15.13",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "VILLA FRESCA YOG BEBIBLE VAINILLA X 170 G",
+              "canal": "MODERNO",
+              "precio": "S/6.59",
+              "precio_previo": null,
+              "var_pct": null
+            },
+            {
+              "producto": "VILLA FRESCA YOG BEBIBLE FRESA X170G",
+              "canal": "MODERNO",
+              "precio": "S/6.59",
+              "precio_previo": "S/6.59",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D TRIO (MAYONESA 190G + KETCHUP 200G + MOSTAZA 200G) X 12  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/12.39",
+              "precio_previo": null,
+              "var_pct": null
+            },
+            {
+              "producto": "TIGO YOG GRANOLA ARANDANO CON CHIA 175G",
+              "canal": "HORECA",
+              "precio": "S/20.17",
+              "precio_previo": "S/20.16",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D MAYONESA CAJA SACHET 252 X 8GR",
+              "canal": "TRADICIONAL",
+              "precio": "S/15.12",
+              "precio_previo": null,
+              "var_pct": null
+            },
+            {
+              "producto": "B&D KETCHUP 425G + MOSTAZA 220G X 12 (CAJA)  ND",
+              "canal": "HORECA",
+              "precio": "S/9.52",
+              "precio_previo": "S/9.52",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D TRÍO (MAYONESA 95G + KETCHUP 245G + MOSTAZA 220G ) X 12 ND",
+              "canal": "MODERNO",
+              "precio": "S/12.73",
+              "precio_previo": "S/12.73",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D TRIO (MAYONESA 95G + KETCHUP 100G + MOSTAZA 100G) X 10  ND",
+              "canal": "MODERNO",
+              "precio": "S/11.56",
+              "precio_previo": "S/11.56",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D SALSA INGLESA 500ML X UNID",
+              "canal": "HORECA",
+              "precio": "S/9.00",
+              "precio_previo": "S/9.00",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D KETCHUP DOYPACK 850 X 6  ND",
+              "canal": "HORECA",
+              "precio": "S/7.24",
+              "precio_previo": "S/7.24",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "B&D KETCHUP 425G X 24 (CAJA )  ND",
+              "canal": "HORECA",
+              "precio": "S/9.30",
+              "precio_previo": "S/9.30",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D MAYONESA CAJA SACHET 252 X 8GR",
+              "canal": "HORECA",
+              "precio": "S/9.55",
+              "precio_previo": null,
+              "var_pct": null
+            },
+            {
+              "producto": "B&D PASTA DE TOMATE 4K",
+              "canal": "HORECA",
+              "precio": "S/7.13",
+              "precio_previo": null,
+              "var_pct": null
+            },
+            {
+              "producto": "DON CHEF CREMA DE AJI 200GX12",
+              "canal": "MODERNO",
+              "precio": "S/14.00",
+              "precio_previo": "S/14.00",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "DON CHEF MAYONESA 200GX12",
+              "canal": "MODERNO",
+              "precio": "S/7.95",
+              "precio_previo": "S/7.95",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "DON CHEF MAYONESA 100GX24",
+              "canal": "MODERNO",
+              "precio": "S/8.30",
+              "precio_previo": "S/8.30",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "DON CHEF KETCHUP 100GX24",
+              "canal": "MODERNO",
+              "precio": "S/8.60",
+              "precio_previo": "S/8.60",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "DON CHEF KETCHUP 200GX12",
+              "canal": "MODERNO",
+              "precio": "S/8.20",
+              "precio_previo": "S/8.20",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "DON CHEF MOSTAZA 200GX12",
+              "canal": "MODERNO",
+              "precio": "S/7.20",
+              "precio_previo": "S/7.20",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "DON CHEF MOSTAZA 100GX24",
+              "canal": "MODERNO",
+              "precio": "S/7.70",
+              "precio_previo": "S/7.70",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "NUESTRA COCINA MAYONESA 95GX24",
+              "canal": "MODERNO",
+              "precio": "S/11.89",
+              "precio_previo": "S/11.89",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "NUESTRA COCINA KETCHUP 100GX24",
+              "canal": "MODERNO",
+              "precio": "S/9.20",
+              "precio_previo": "S/9.20",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "NUESTRA COCINA SALSA DE TOMATE 100GX40",
+              "canal": "MODERNO",
+              "precio": "S/7.40",
+              "precio_previo": "S/7.40",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "B&D CREMA DE AJI CAJA 3K  ND",
+              "canal": "HORECA",
+              "precio": "S/20.18",
+              "precio_previo": "S/20.18",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "TOTTUS YOG BEB DURAZNO 900G",
+              "canal": "MODERNO",
+              "precio": "S/4.78",
+              "precio_previo": "S/4.78",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "TIGO STRAAL PRO YOG ALTO PROTEINA NATURAL 500G",
+              "canal": "MODERNO",
+              "precio": "S/21.48",
+              "precio_previo": null,
+              "var_pct": null
+            },
+            {
+              "producto": "PRECIO UNO YOG BEB VAINILLA 900G",
+              "canal": "MODERNO",
+              "precio": "S/4.78",
+              "precio_previo": "S/4.78",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "CUISINE & CO. YOG SMOOTHIE FRESA 980G",
+              "canal": "MODERNO",
+              "precio": "S/7.09",
+              "precio_previo": null,
+              "var_pct": null
+            },
+            {
+              "producto": "BIANCA YOG BEBIBLE VAINILLA 1.7K",
+              "canal": "MODERNO",
+              "precio": "S/3.52",
+              "precio_previo": "S/3.52",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "BIANCA YOG BEBIBLE FRESA 1.7K",
+              "canal": "MODERNO",
+              "precio": "S/3.52",
+              "precio_previo": "S/3.52",
+              "var_pct": 0.0
+            },
+            {
+              "producto": "BIANCA YOGURT FRUTADO ARANDANO Y CHIA 800G",
+              "canal": "MODERNO",
+              "precio": "S/6.12",
+              "precio_previo": "S/6.13",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "BIANCA MIX YOG VAINILLA C/BOLITAS CHOC. X 115G",
+              "canal": "MODERNO",
+              "precio": "S/13.91",
+              "precio_previo": "S/13.91",
+              "var_pct": -0.0
+            },
+            {
+              "producto": "TIGO YOG FRUTADO VIDRIO 850G (FRESA)",
+              "canal": "HORECA",
+              "precio": "S/8.98",
+              "precio_previo": "S/8.98",
+              "var_pct": 0.1
+            },
+            {
+              "producto": "B&D KETCHUP CAJA 4K  ND",
+              "canal": "HORECA",
+              "precio": "S/3.83",
+              "precio_previo": "S/3.83",
+              "var_pct": 0.1
+            },
+            {
+              "producto": "VILLA FRESCA MIX YOG VAINILLA C/BOLITAS CHOC. X 115G",
+              "canal": "MODERNO",
+              "precio": "S/13.91",
+              "precio_previo": "S/13.88",
+              "var_pct": 0.2
+            },
+            {
+              "producto": "TIGO YOG PREMIUM ARANDANO 160G",
+              "canal": "MODERNO",
+              "precio": "S/20.54",
+              "precio_previo": "S/20.48",
+              "var_pct": 0.3
+            },
+            {
+              "producto": "VILLA FRESCA YOGURT GRIEGO FRESA GRANOLA 120G",
+              "canal": "MODERNO",
+              "precio": "S/16.83",
+              "precio_previo": "S/16.77",
+              "var_pct": 0.4
+            },
+            {
+              "producto": "B&D PURE DE TOMATE 4K  ND",
+              "canal": "HORECA",
+              "precio": "S/7.64",
+              "precio_previo": "S/7.61",
+              "var_pct": 0.4
+            },
+            {
+              "producto": "TIGO YOG PRE LIGHT NATURAL 1K (POTE)",
+              "canal": "MODERNO",
+              "precio": "S/11.01",
+              "precio_previo": "S/10.95",
+              "var_pct": 0.5
+            },
+            {
+              "producto": "B&D KETCHUP DOYPACK 200G X 12  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/11.66",
+              "precio_previo": "S/11.60",
+              "var_pct": 0.5
+            },
+            {
+              "producto": "TIGOMIX YOG BOLITAS C/CHOC 125G",
+              "canal": "MODERNO",
+              "precio": "S/15.73",
+              "precio_previo": "S/15.64",
+              "var_pct": 0.6
+            },
+            {
+              "producto": "B&D MOSTAZA DOYPACK 850G X 6  ND",
+              "canal": "MODERNO",
+              "precio": "S/7.48",
+              "precio_previo": "S/7.43",
+              "var_pct": 0.6
+            },
+            {
+              "producto": "VILLA FRESCA YOGURT GRIEGO NATURAL 120G",
+              "canal": "MODERNO",
+              "precio": "S/10.67",
+              "precio_previo": "S/10.60",
+              "var_pct": 0.6
+            },
+            {
+              "producto": "VILLA FRESCA YOGURT GRIEGO FRUTOS ROJOS 800G BOLSA",
+              "canal": "MODERNO",
+              "precio": "S/5.18",
+              "precio_previo": "S/5.15",
+              "var_pct": 0.6
+            },
+            {
+              "producto": "TIGO YOG GRANOLA FRESAS 155G",
+              "canal": "HORECA",
+              "precio": "S/20.54",
+              "precio_previo": "S/20.41",
+              "var_pct": 0.6
+            },
+            {
+              "producto": "B&D PURE DE TOMATE 200G X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/12.03",
+              "precio_previo": "S/11.96",
+              "var_pct": 0.6
+            },
+            {
+              "producto": "B&D KETCHUP DOYPACK 850 X 6  ND",
+              "canal": "MODERNO",
+              "precio": "S/8.44",
+              "precio_previo": "S/8.38",
+              "var_pct": 0.7
+            },
+            {
+              "producto": "B&D MOSTAZA BALDE 4K X 4  ND",
+              "canal": "MODERNO",
+              "precio": "S/4.85",
+              "precio_previo": "S/4.81",
+              "var_pct": 0.7
+            },
+            {
+              "producto": "B&D KETCHUP BALDE 20K X2  ND",
+              "canal": "MODERNO",
+              "precio": "S/4.69",
+              "precio_previo": "S/4.66",
+              "var_pct": 0.8
+            },
+            {
+              "producto": "VILLA FRESCA YOG BEBIBLE VAINILLA X 1.7 K",
+              "canal": "MODERNO",
+              "precio": "S/3.42",
+              "precio_previo": "S/3.40",
+              "var_pct": 0.8
+            },
+            {
+              "producto": "VILLA FRESCA YOG BEBIBLE FRESA X 1.7K",
+              "canal": "MODERNO",
+              "precio": "S/3.42",
+              "precio_previo": "S/3.40",
+              "var_pct": 0.8
+            },
+            {
+              "producto": "VILLA FRESCA YOG BEBIBLE VAINILLA X 900G",
+              "canal": "MODERNO",
+              "precio": "S/3.79",
+              "precio_previo": "S/3.76",
+              "var_pct": 0.8
+            },
+            {
+              "producto": "TIGO YOG PRE LIGHT NATURAL 1K (POTE)",
+              "canal": "HORECA",
+              "precio": "S/10.87",
+              "precio_previo": "S/10.79",
+              "var_pct": 0.8
+            },
+            {
+              "producto": "B&D MAYONESA DOYPACK 850 X 6  ND",
+              "canal": "HORECA",
+              "precio": "S/13.37",
+              "precio_previo": "S/13.27",
+              "var_pct": 0.8
+            },
+            {
+              "producto": "TIGO GRIEGO BEBIBLE FRESA 1.6K",
+              "canal": "MODERNO",
+              "precio": "S/7.96",
+              "precio_previo": "S/7.89",
+              "var_pct": 0.9
+            },
+            {
+              "producto": "B&D MOSTAZA CAJA 4K X 4  ND",
+              "canal": "MODERNO",
+              "precio": "S/4.41",
+              "precio_previo": "S/4.37",
+              "var_pct": 0.9
+            },
+            {
+              "producto": "TIGO YOG GRANOLA ALBARI/DURAZNO 155G",
+              "canal": "MODERNO",
+              "precio": "S/21.55",
+              "precio_previo": "S/21.34",
+              "var_pct": 1.0
+            },
+            {
+              "producto": "B&D KETCHUP DOYPACK 200G X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/12.18",
+              "precio_previo": "S/12.06",
+              "var_pct": 1.0
+            },
+            {
+              "producto": "B&D MOSTAZA (SACHET 8G X 240) X4",
+              "canal": "MODERNO",
+              "precio": "S/13.94",
+              "precio_previo": "S/13.80",
+              "var_pct": 1.0
+            },
+            {
+              "producto": "VILLA FRESCA YOG BEBIBLE FRESA X 900G",
+              "canal": "MODERNO",
+              "precio": "S/3.79",
+              "precio_previo": "S/3.75",
+              "var_pct": 1.0
+            },
+            {
+              "producto": "B&D KETCHUP 425G + MOSTAZA 220G X 12 (CAJA)  ND",
+              "canal": "MODERNO",
+              "precio": "S/10.11",
+              "precio_previo": "S/10.00",
+              "var_pct": 1.1
+            },
+            {
+              "producto": "B&D KETCHUP CAJA 4K X 4  ND",
+              "canal": "MODERNO",
+              "precio": "S/4.65",
+              "precio_previo": "S/4.60",
+              "var_pct": 1.1
+            },
+            {
+              "producto": "B&D CREMA DE AJI CAJA 3K  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/19.24",
+              "precio_previo": "S/19.03",
+              "var_pct": 1.1
+            },
+            {
+              "producto": "TIGO YOG FRUTADO VIDRIO 850G (ARANDANOS)",
+              "canal": "HORECA",
+              "precio": "S/9.06",
+              "precio_previo": "S/8.96",
+              "var_pct": 1.1
+            },
+            {
+              "producto": "B&D KETCHUP BALDE 4K X 4  ND",
+              "canal": "MODERNO",
+              "precio": "S/4.91",
+              "precio_previo": "S/4.85",
+              "var_pct": 1.2
+            },
+            {
+              "producto": "B&D MOSTAZA DOYPACK 200G X 12  ND",
+              "canal": "HORECA",
+              "precio": "S/11.78",
+              "precio_previo": "S/11.65",
+              "var_pct": 1.2
+            },
+            {
+              "producto": "B&D MOSTAZA CAJA 4K  ND",
+              "canal": "HORECA",
+              "precio": "S/3.79",
+              "precio_previo": "S/3.75",
+              "var_pct": 1.2
+            },
+            {
+              "producto": "TIGO GRIEGO BEBIBLE FRESA 1.6K",
+              "canal": "HORECA",
+              "precio": "S/5.78",
+              "precio_previo": "S/5.71",
+              "var_pct": 1.2
+            },
+            {
+              "producto": "TIGO YOG FRUTADO VIDRIO 850G (FRUTAS TROPICALES)",
+              "canal": "HORECA",
+              "precio": "S/9.06",
+              "precio_previo": "S/8.94",
+              "var_pct": 1.3
+            },
+            {
+              "producto": "TIGO YOG PRE MANGO MARACUYA 1K (POTE)",
+              "canal": "MODERNO",
+              "precio": "S/10.87",
+              "precio_previo": "S/10.72",
+              "var_pct": 1.4
+            },
+            {
+              "producto": "B&D MAYONESA RT DOYPACK 95G X 24  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/21.90",
+              "precio_previo": "S/21.60",
+              "var_pct": 1.4
+            },
+            {
+              "producto": "TIGOMIX YOG BLACK 125G",
+              "canal": "MODERNO",
+              "precio": "S/19.74",
+              "precio_previo": "S/19.45",
+              "var_pct": 1.5
+            },
+            {
+              "producto": "B&D MAYONESA DOYPACK 850 X 6  ND",
+              "canal": "MODERNO",
+              "precio": "S/12.75",
+              "precio_previo": "S/12.56",
+              "var_pct": 1.5
+            },
+            {
+              "producto": "B&D MAYONESA RT DOYPACK 400G X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/20.74",
+              "precio_previo": "S/20.45",
+              "var_pct": 1.5
+            },
+            {
+              "producto": "B&D MOSTAZA BALDE 20K X2  ND",
+              "canal": "MODERNO",
+              "precio": "S/4.50",
+              "precio_previo": "S/4.44",
+              "var_pct": 1.5
+            },
+            {
+              "producto": "B&D KETCHUP DOYPACK 200G X 12  ND",
+              "canal": "HORECA",
+              "precio": "S/11.48",
+              "precio_previo": "S/11.31",
+              "var_pct": 1.5
+            },
+            {
+              "producto": "TIGO YOG PREMIUM ARANDANO 160G",
+              "canal": "HORECA",
+              "precio": "S/16.66",
+              "precio_previo": "S/16.42",
+              "var_pct": 1.5
+            },
+            {
+              "producto": "BELLS YOG BEB DURAZNO 1.7K",
+              "canal": "MODERNO",
+              "precio": "S/3.32",
+              "precio_previo": "S/3.26",
+              "var_pct": 1.7
+            },
+            {
+              "producto": "B&D PURE DE TOMATE 200G X 12  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/16.06",
+              "precio_previo": "S/15.80",
+              "var_pct": 1.7
+            },
+            {
+              "producto": "B&D KETCHUP 245G + MOSTAZA 220G X 12 (CAJA)  ND",
+              "canal": "HORECA",
+              "precio": "S/11.30",
+              "precio_previo": "S/11.11",
+              "var_pct": 1.7
+            },
+            {
+              "producto": "B&D KETCHUP DOYPACK 100G X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/16.10",
+              "precio_previo": "S/15.81",
+              "var_pct": 1.8
+            },
+            {
+              "producto": "B&D MOSTAZA 425G X 24 (CAJA )  ND",
+              "canal": "HORECA",
+              "precio": "S/8.58",
+              "precio_previo": "S/8.43",
+              "var_pct": 1.8
+            },
+            {
+              "producto": "B&D MOSTAZA 220G X 24 (CAJA )  ND",
+              "canal": "MODERNO",
+              "precio": "S/14.82",
+              "precio_previo": "S/14.53",
+              "var_pct": 2.0
+            },
+            {
+              "producto": "B&D KETCHUP BALDE 4K X 4  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/4.42",
+              "precio_previo": "S/4.34",
+              "var_pct": 2.0
+            },
+            {
+              "producto": "BELLS YOGURT FRESA BEBIBLE 0% AZUCAR X 1.7 KG",
+              "canal": "MODERNO",
+              "precio": "S/3.33",
+              "precio_previo": "S/3.26",
+              "var_pct": 2.1
+            },
+            {
+              "producto": "TIGO GRIEGO BEBIBLE ARANDANO CON CHIA 1.6K",
+              "canal": "MODERNO",
+              "precio": "S/7.96",
+              "precio_previo": "S/7.80",
+              "var_pct": 2.1
+            },
+            {
+              "producto": "B&D KETCHUP CAJA 4K X 4  ND",
+              "canal": "HORECA",
+              "precio": "S/3.04",
+              "precio_previo": "S/2.98",
+              "var_pct": 2.1
+            },
+            {
+              "producto": "BELLS YOG BEB VAINILLA 1.7K",
+              "canal": "MODERNO",
+              "precio": "S/3.33",
+              "precio_previo": "S/3.26",
+              "var_pct": 2.2
+            },
+            {
+              "producto": "B&D MOSTAZA DOYPACK 100G X 12  ND",
+              "canal": "MODERNO",
+              "precio": "S/15.20",
+              "precio_previo": "S/14.87",
+              "var_pct": 2.2
+            },
+            {
+              "producto": "B&D KETCHUP 245G + MOSTAZA 220G X 12 (CAJA)  ND",
+              "canal": "MODERNO",
+              "precio": "S/11.91",
+              "precio_previo": "S/11.65",
+              "var_pct": 2.2
+            },
+            {
+              "producto": "B&D KETCHUP 425G + MOSTAZA 425G X 12 (CAJA)  ND",
+              "canal": "MODERNO",
+              "precio": "S/8.92",
+              "precio_previo": "S/8.71",
+              "var_pct": 2.3
+            },
+            {
+              "producto": "TIGO YOG PREMIUM DURAZNO 160G",
+              "canal": "HORECA",
+              "precio": "S/16.00",
+              "precio_previo": "S/15.61",
+              "var_pct": 2.5
+            },
+            {
+              "producto": "BELLS YOGURT VAINILLA BEBIBLE 0% AZUCAR X 1.7 KG",
+              "canal": "MODERNO",
+              "precio": "S/3.35",
+              "precio_previo": "S/3.26",
+              "var_pct": 2.7
+            },
+            {
+              "producto": "B&D KETCHUP 245G X 24 (CAJA )  ND",
+              "canal": "MODERNO",
+              "precio": "S/13.92",
+              "precio_previo": "S/13.55",
+              "var_pct": 2.7
+            },
+            {
+              "producto": "B&D KETCHUP 245G + MOSTAZA 220G X 12 (CAJA)  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/10.07",
+              "precio_previo": "S/9.80",
+              "var_pct": 2.7
+            },
+            {
+              "producto": "TIGO YOG GRIEGO VIDRIO 850G (NATURAL)",
+              "canal": "HORECA",
+              "precio": "S/13.84",
+              "precio_previo": "S/13.48",
+              "var_pct": 2.7
+            },
+            {
+              "producto": "TIGO YOG GRANOLA FRESAS 155G",
+              "canal": "TRADICIONAL",
+              "precio": "S/19.70",
+              "precio_previo": "S/19.18",
+              "var_pct": 2.7
+            },
+            {
+              "producto": "TIGO YOG PRE LIGHT FRUTOS ROJOS 1K (POTE)",
+              "canal": "HORECA",
+              "precio": "S/9.80",
+              "precio_previo": "S/9.52",
+              "var_pct": 2.9
+            },
+            {
+              "producto": "BELLS YOG BEB FRESA 1.7K",
+              "canal": "MODERNO",
+              "precio": "S/3.36",
+              "precio_previo": "S/3.26",
+              "var_pct": 3.0
+            },
+            {
+              "producto": "B&D MOSTAZA BALDE 4K X 4  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/4.34",
+              "precio_previo": "S/4.22",
+              "var_pct": 3.1
+            },
+            {
+              "producto": "TIGO YOG FRUTADO VIDRIO 850G (FRUTAS TROPICALES)",
+              "canal": "MODERNO",
+              "precio": "S/9.26",
+              "precio_previo": "S/8.92",
+              "var_pct": 3.9
+            },
+            {
+              "producto": "B&D SALSA BARBECUE DOYPACK 200G X 12  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/13.74",
+              "precio_previo": "S/13.22",
+              "var_pct": 3.9
+            },
+            {
+              "producto": "B&D MAYONESA CAJA 2 BOLSA 4KG   ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/8.49",
+              "precio_previo": "S/8.17",
+              "var_pct": 4.0
+            },
+            {
+              "producto": "TIGO YOG GRIEGO VIDRIO 850G (FRESA)",
+              "canal": "HORECA",
+              "precio": "S/13.63",
+              "precio_previo": "S/13.11",
+              "var_pct": 4.0
+            },
+            {
+              "producto": "TIGO YOG GRANOLA ALBARI/DURAZNO 155G",
+              "canal": "TRADICIONAL",
+              "precio": "S/19.70",
+              "precio_previo": "S/18.86",
+              "var_pct": 4.4
+            },
+            {
+              "producto": "BELLS MIX GRAGEAS 125G",
+              "canal": "MODERNO",
+              "precio": "S/14.56",
+              "precio_previo": "S/13.92",
+              "var_pct": 4.6
+            },
+            {
+              "producto": "ARO MIX BOLITAS CHOCO 125G",
+              "canal": "MODERNO",
+              "precio": "S/14.40",
+              "precio_previo": "S/13.76",
+              "var_pct": 4.7
+            },
+            {
+              "producto": "B&D CREMA DE AJI DOYPACK 190G X 12  ND",
+              "canal": "HORECA",
+              "precio": "S/26.64",
+              "precio_previo": "S/25.45",
+              "var_pct": 4.7
+            },
+            {
+              "producto": "ARO YOG BEB VAINILLA 1.7K",
+              "canal": "MODERNO",
+              "precio": "S/3.53",
+              "precio_previo": "S/3.36",
+              "var_pct": 5.1
+            },
+            {
+              "producto": "BELLS MIX GALLETAS VAINILLA 125G",
+              "canal": "MODERNO",
+              "precio": "S/14.00",
+              "precio_previo": "S/13.31",
+              "var_pct": 5.2
+            },
+            {
+              "producto": "ARO MIX GRAGEAS 125G",
+              "canal": "MODERNO",
+              "precio": "S/14.40",
+              "precio_previo": "S/13.67",
+              "var_pct": 5.3
+            },
+            {
+              "producto": "BELLS MIX GALLETAS CHOCO 125G",
+              "canal": "MODERNO",
+              "precio": "S/14.00",
+              "precio_previo": "S/13.28",
+              "var_pct": 5.4
+            },
+            {
+              "producto": "B&D MAYONESA RT SACHET 8G X 258  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/17.74",
+              "precio_previo": "S/16.83",
+              "var_pct": 5.4
+            },
+            {
+              "producto": "BELLS MIX BOLITAS CHOCO 125G",
+              "canal": "MODERNO",
+              "precio": "S/14.56",
+              "precio_previo": "S/13.81",
+              "var_pct": 5.5
+            },
+            {
+              "producto": "BELLS YOG BEB VAINILLA 900G",
+              "canal": "MODERNO",
+              "precio": "S/3.90",
+              "precio_previo": "S/3.70",
+              "var_pct": 5.5
+            },
+            {
+              "producto": "TIGO YOG FRUTADO VIDRIO 850G (ARANDANOS)",
+              "canal": "MODERNO",
+              "precio": "S/9.30",
+              "precio_previo": "S/8.80",
+              "var_pct": 5.7
+            },
+            {
+              "producto": "ARO YOG BEB FRESA 1.7K",
+              "canal": "MODERNO",
+              "precio": "S/3.53",
+              "precio_previo": "S/3.33",
+              "var_pct": 5.9
+            },
+            {
+              "producto": "TIGO YOG PRE ARANDANO CON CHIA 1K (POTE)",
+              "canal": "TRADICIONAL",
+              "precio": "S/10.79",
+              "precio_previo": "S/10.16",
+              "var_pct": 6.2
+            },
+            {
+              "producto": "ARO YOG BEB LUCUMA 1.7K",
+              "canal": "MODERNO",
+              "precio": "S/3.53",
+              "precio_previo": "S/3.32",
+              "var_pct": 6.3
+            },
+            {
+              "producto": "BELLS YOG BEB FRESA 900G",
+              "canal": "MODERNO",
+              "precio": "S/3.90",
+              "precio_previo": "S/3.67",
+              "var_pct": 6.3
+            },
+            {
+              "producto": "B&D KETCHUP 425G + MOSTAZA 220G X 12 (CAJA)  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/8.92",
+              "precio_previo": "S/8.38",
+              "var_pct": 6.3
+            },
+            {
+              "producto": "TIGO YOG NATURAL SIN AZUCAR 1K (POTE)",
+              "canal": "TRADICIONAL",
+              "precio": "S/10.79",
+              "precio_previo": "S/10.15",
+              "var_pct": 6.3
+            },
+            {
+              "producto": "TIGO YOG GRIEGO VIDRIO 850G (ARANDANO)",
+              "canal": "HORECA",
+              "precio": "S/14.10",
+              "precio_previo": "S/13.19",
+              "var_pct": 6.9
+            },
+            {
+              "producto": "TIGO YOG GRANOLA ARANDANO CON CHIA 175G",
+              "canal": "TRADICIONAL",
+              "precio": "S/19.70",
+              "precio_previo": "S/18.39",
+              "var_pct": 7.1
+            },
+            {
+              "producto": "TIGO GRIEGO BEBIBLE ARANDANO CON CHIA 1.6K",
+              "canal": "HORECA",
+              "precio": "S/6.11",
+              "precio_previo": "S/5.69",
+              "var_pct": 7.4
+            },
+            {
+              "producto": "B&D MOSTAZA BALDE 20K  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/4.10",
+              "precio_previo": "S/3.80",
+              "var_pct": 7.7
+            },
+            {
+              "producto": "B&D MAYONESA RT DOYPACK 190G X 12  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/22.95",
+              "precio_previo": "S/21.30",
+              "var_pct": 7.8
+            },
+            {
+              "producto": "B&D MOSTAZA CAJA 4K X 4  ND",
+              "canal": "HORECA",
+              "precio": "S/3.85",
+              "precio_previo": "S/3.57",
+              "var_pct": 7.8
+            },
+            {
+              "producto": "TIGO YOG PRE LIGHT FRUTOS ROJOS 1K (POTE)",
+              "canal": "TRADICIONAL",
+              "precio": "S/10.79",
+              "precio_previo": "S/9.93",
+              "var_pct": 8.7
+            },
+            {
+              "producto": "B&D CREMA DE AJI DOYPACK 190G X 12  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/25.15",
+              "precio_previo": "S/23.01",
+              "var_pct": 9.3
+            },
+            {
+              "producto": "TIGOMIX YOG BOLITAS C/CHOC 125G",
+              "canal": "HORECA",
+              "precio": "S/11.87",
+              "precio_previo": "S/10.83",
+              "var_pct": 9.5
+            },
+            {
+              "producto": "B&D MOSTAZA DOYPACK 200G X 12  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/11.37",
+              "precio_previo": "S/10.37",
+              "var_pct": 9.6
+            },
+            {
+              "producto": "B&D KETCHUP CAJA SACHET 252 X 8GR",
+              "canal": "HORECA",
+              "precio": "S/6.51",
+              "precio_previo": "S/5.88",
+              "var_pct": 10.9
+            },
+            {
+              "producto": "B&D MAYONESA DOYPACK 850 X 6  ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/12.39",
+              "precio_previo": "S/11.06",
+              "var_pct": 12.0
+            },
+            {
+              "producto": "B&D SALSA INGLESA 3K",
+              "canal": "HORECA",
+              "precio": "S/7.20",
+              "precio_previo": "S/6.41",
+              "var_pct": 12.4
+            },
+            {
+              "producto": "B&D SALSA INGLESA 3K",
+              "canal": "TRADICIONAL",
+              "precio": "S/6.17",
+              "precio_previo": "S/5.41",
+              "var_pct": 14.1
+            },
+            {
+              "producto": "B&D MOSTAZA CAJA SACHET 252 X 8GR",
+              "canal": "TRADICIONAL",
+              "precio": "S/9.69",
+              "precio_previo": "S/8.25",
+              "var_pct": 17.5
+            },
+            {
+              "producto": "TIGO YOG PRE LIGHT NATURAL 1K (POTE)",
+              "canal": "TRADICIONAL",
+              "precio": "S/10.79",
+              "precio_previo": "S/9.08",
+              "var_pct": 18.8
+            },
+            {
+              "producto": "B&D KETCHUP 425G X 24 (CAJA )  ND",
+              "canal": "MODERNO",
+              "precio": "S/10.39",
+              "precio_previo": "S/8.59",
+              "var_pct": 20.9
+            },
+            {
+              "producto": "B&D PURE DE TOMATE 200G X 12  ND",
+              "canal": "HORECA",
+              "precio": "S/16.35",
+              "precio_previo": "S/12.94",
+              "var_pct": 26.4
+            },
+            {
+              "producto": "B&D MOSTAZA 425G X 24 (CAJA )  ND",
+              "canal": "MODERNO",
+              "precio": "S/9.83",
+              "precio_previo": "S/7.74",
+              "var_pct": 26.9
+            },
+            {
+              "producto": "B&D KETCHUP CAJA SACHET 252 X 8GR",
+              "canal": "TRADICIONAL",
+              "precio": "S/9.69",
+              "precio_previo": "S/7.55",
+              "var_pct": 28.5
+            },
+            {
+              "producto": "B&D MOSTAZA BALDE 4K   ND",
+              "canal": "TRADICIONAL",
+              "precio": "S/34.26",
+              "precio_previo": "S/4.02",
+              "var_pct": 752.6
+            }
           ]
-        }
+        },
+        "ppto_al_dia": [
+          {
+            "canal": "Total",
+            "facturado": "S/18.63M",
+            "ppto_hasta_ayer": "S/0",
+            "cuota_mes": "S/7.79M",
+            "avance_dia": "0.0%"
+          },
+          {
+            "canal": "MODERNO",
+            "facturado": "S/13.57M",
+            "ppto_hasta_ayer": "S/0",
+            "cuota_mes": "S/5.82M",
+            "avance_dia": "0.0%"
+          },
+          {
+            "canal": "TRADICIONAL",
+            "facturado": "S/4.23M",
+            "ppto_hasta_ayer": "S/0",
+            "cuota_mes": "S/1.71M",
+            "avance_dia": "0.0%"
+          },
+          {
+            "canal": "HORECA",
+            "facturado": "S/831,427",
+            "ppto_hasta_ayer": "S/0",
+            "cuota_mes": "S/260,000",
+            "avance_dia": "0.0%"
+          }
+        ]
       }
     }
   },
@@ -4112,19 +5545,59 @@
   },
   "diagnostico": [
     {
-      "consulta": "captura:PRECIO UNITARIO#793034878518",
-      "http": 200,
-      "error": "columnas sin mapear: ['producto ([DESCRIPCION])']. Claves reales: ['Exl Cliente x Vendedor[Canal]', '[ColumnIndex]', '[IsGrandTotalRowTotal]', '[Precio_unitario]']"
-    },
-    {
       "consulta": "captura:Matriz#38e3644b220b",
       "http": 200,
-      "error": "ninguna tabla del resultado contiene las columnas ['[CANAL]', '[JEFE_VENTA]', '[EJECUTIVO]', '[POR VENCER]', '[0 A 15 DÍAS]', '[16 A 30 DÍAS]', '[MAS DE 30 DÍAS]', '[SumTotal_fact]']. Devueltas: []"
+      "error": "columnas sin mapear: ['por_vencer ([POR VENCER])', 't15 ([0 A 15 DÍAS])', 't30 ([16 A 30 DÍAS])', 't30mas ([MAS DE 30 DÍAS])']. Claves reales: ['DATA_FACTURACION[CANAL]', 'DATA_FACTURACION[EJECUTIVO]', 'DATA_FACTURACION[JEFE_VENTA]', '[IsDM1Total]', '[IsDM3Total]', '[IsGrandTotalRowTotal]', '[MAS_DE_30_DÍAS]', '[POR_VENCER]', '[SortBy_DM1_0]', '[SortBy_DM3_0]', '[SumTotal_fact]', '[v0_A_15_DÍAS]', '[v16_A_30_DÍAS]']"
+    },
+    {
+      "consulta": "captura:Merma Diaria#363813631d90#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (49, 27) Cannot find table '<oii>Tabla Mermas</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:Merma Diaria#363813631d90#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (49, 27) Cannot find table '<oii>Tabla Mermas</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:Merma Diaria#363813631d90",
+      "http": 200,
+      "error": "columnas sin mapear: ['mes ([MES])', 'anio ([Año])']. Claves reales: ['Tabla Mermas[Turno]', 'Tabla Mermas[almacen]', '[ColumnIndex]', '[IsDM0Total]', '[IsGrandTotalRowTotal]', '[v__MERMAS__TABLA_MERMAS]']"
+    },
+    {
+      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (13, 23) Column '<oii>Turno</oii>' in table '<oii>Maestra de Kardex (Total)</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]"
+    },
+    {
+      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (13, 23) Column '<oii>Turno</oii>' in table '<oii>Maestra de Kardex (Total)</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]"
+    },
+    {
+      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (57, 4) Cannot find table '<oii>Maestra de Kardex (Total)</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (57, 4) Cannot find table '<oii>Maestra de Kardex (Total)</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (57, 4) Cannot find table '<oii>Maestra de Kardex (Total)</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (57, 4) Cannot find table '<oii>Maestra de Kardex (Total)</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
     },
     {
       "consulta": "captura:Produccion Dia (Ton)#ac90f6b11dc2",
       "http": 200,
-      "error": "ninguna tabla del resultado contiene las columnas ['[DIA]', '[MARCA 2]', '[categoria_hijo]', '[NroMes]', '[Semana]', '[SumPeso_Producido_Kg_]']. Devueltas: []"
+      "error": "columnas sin mapear: ['anio ([Año])']. Claves reales: ['Maestra de Kardex (Total)[MARCA 2]', 'Maestra de Kardex (Total)[categoria_hijo]', '[ColumnIndex]', '[IsDM0Total]', '[IsGrandTotalRowTotal]', '[SumPeso_Producido_Kg_]']"
     },
     {
       "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
@@ -4137,11 +5610,87 @@
       "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (9, 16) Column '<oii>Mes Nº</oii>' in table '<oii>Calendario</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]}}}"
     },
     {
-      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d",
-      "http": 200,
-      "error": "ninguna tabla del resultado contiene las columnas ['[Canal]', '[SumMonto_Neto_Factura]', '[SumCUOTA_DIRECTORIO]', '[PPTO_Acumulado_Hasta_Ayer]', '[v_Av_vs_PPTO_AL_DIA]', '[SumMonto_Neto_Pendiente]']. Devueltas: []"
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
     },
     {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (9, 16) Cannot find table '<oii>Calendario</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (9, 16) Cannot find table '<oii>Calendario</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#1",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "captura:FACTURACION AL 05 SETIEMBRE#60f2fadf1a5d#2",
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (4, 23) Cannot find table '<oii>Exl Cliente x Vendedor</oii>'.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803779\"}}]}}}"
+    },
+    {
+      "consulta": "__merma_dia",
+      "http": 200,
+      "error": "249 filas diarias sin mes: la captura agrupa por día pero el mes lo pone el filtro de página del visual. Sin mes no se puede comparar el mismo tramo de dos meses, así que no se publica."
+    },
+    {
+      "consulta": "__produccion_dia",
+      "http": 200,
+      "error": "211 filas diarias sin mes: la captura agrupa por día pero el mes lo pone el filtro de página del visual. Sin mes no se puede comparar el mismo tramo de dos meses, así que no se publica."
+    },
+    {
+      "tipo": "aviso",
       "consulta": "merma_total_incoherente",
       "http": 200,
       "error": "Merma Total = 4.87% es mayor que el peor segmento (4.25%); un total no puede superar a sus partes. Se publica sin dato."
