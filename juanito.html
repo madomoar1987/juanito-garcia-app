@@ -1969,7 +1969,7 @@ const REPORTES_CONFIG = {
     { tipo: 'mermas',               label: 'Mermas por planta',              archivo: '04_mermas.png',               icon: 'activity', desc: 'Pérdida de producto en planta Ate, Pachacamac y Terceros' },
     { tipo: 'consumo_materiales',   label: 'Consumo de Materiales',          archivo: '06_consumo_materiales.png',   icon: 'box',      desc: 'Costo Total, Venta Neta y Costo por TN vendida/producida' },
     { tipo: 'compras',              label: 'Compras — Ratio Consumo/Compra', archivo: '05_compras.png',              icon: 'shopping', desc: 'Ratio = Consumo ÷ Compra. >100% jala inventario, <100% sobre-compra' },
-    { tipo: 'control_interno',      label: 'Control interno',                archivo: '07_control_interno.png',      icon: 'check',    desc: 'Cumplimiento de controles por gerente (meta 85%)' },
+    { tipo: 'control_interno',      label: 'Control interno',                archivo: '07_control_interno.png',      icon: 'check',    desc: 'Cumplimiento de controles por gerente' },
     { tipo: 'sop_inventario',       label: 'S&OP — Inventario',              archivo: '10_sop_inventario.png',       icon: 'box',      desc: 'Nivel de inventario, dead stock y días de cobertura' },
     { tipo: 'fill_rate',            label: 'Fill Rate',                      archivo: '11_fill_rate.png',            icon: 'fill',     desc: 'Porcentaje de pedidos entregados completos y a tiempo' },
     { tipo: 'productividad',        label: 'Productividad',                  archivo: '12_productividad.png',        icon: 'prod',     desc: 'Eficiencia operativa y rendimiento por turno/planta' },
@@ -2873,7 +2873,7 @@ function diagnosticoCompleto() {
     const comp = mesesComparables(fr, ps, anioAnt, anioAct);
     if (comp.length) {
       const a = promEn(fr,ps,anioAnt,comp), b = promEn(fr,ps,anioAct,comp);
-      const META = 0.98;
+      const META = metaDe('fill_rate') ?? 0.98;
       const mesesAnio = ps.filter((p,i) => p.startsWith(anioAct) && fr[i] != null).map(p => p.slice(5,7));
       const promAnio = promEn(fr, ps, anioAct, mesesAnio);
       const peor = Math.min(...mesesAnio.map(m => fr[ps.indexOf(anioAct+'-'+m)]));
@@ -2884,9 +2884,9 @@ function diagnosticoCompleto() {
         periodo: `Promedio ${fmtPeriodo(anioAct+'-'+mesesAnio[0])} – ${fmtPeriodo(anioAct+'-'+mesesAnio[mesesAnio.length-1])} · ${mesesAnio.length} meses`,
         cifra: `${(promAnio*100).toFixed(1)}%`,
         unidad: 'fill rate',
-        sub: `promedio ${fmtPeriodo(anioAct+'-'+mesesAnio[0])}–${fmtPeriodo(anioAct+'-'+mesesAnio[mesesAnio.length-1])} · meta 98%`,
+        sub: `promedio ${fmtPeriodo(anioAct+'-'+mesesAnio[0])}–${fmtPeriodo(anioAct+'-'+mesesAnio[mesesAnio.length-1])} · meta ${metaTxt('fill_rate')}`,
         cuerpo: `Fill rate mes a mes: ${mesesAnio.map(m=>`<strong>${fmtPeriodo(anioAct+'-'+m)}</strong> ${(fr[ps.indexOf(anioAct+'-'+m)]*100).toFixed(1)}%`).join(' · ')}. En los meses que ${anioAnt} también tiene medidos (${comp.map(m=>fmtPeriodo(anioAct+'-'+m)).join(', ')}) pasó de <strong>${(a*100).toFixed(1)}%</strong> a <strong>${(b*100).toFixed(1)}%</strong> (${((b-a)*100>=0?'+':'')}${((b-a)*100).toFixed(1)}pp).`,
-        impacto: `Rango del año: entre ${(peor*100).toFixed(1)}% y ${(mejor*100).toFixed(1)}%. Ningún mes alcanzó la meta de 98%; la brecha promedio es de ${((META-promAnio)*100).toFixed(1)} puntos.`,
+        impacto: `Rango del año: entre ${(peor*100).toFixed(1)}% y ${(mejor*100).toFixed(1)}%. Ningún mes alcanzó la meta de ${metaTxt('fill_rate')}; la brecha promedio es de ${((META-promAnio)*100).toFixed(1)} puntos.`,
         palanca: 'El monto de venta perdida por mes no es legible desde el modelo (la medida devuelve el acumulado histórico). Corregirla permitiría cuantificar la brecha en soles.',
         area: 'Planeamiento + Producción',
       });
@@ -2900,7 +2900,7 @@ function diagnosticoCompleto() {
     // Promedio del año en curso, con todos sus meses (no solo los comparables)
     const mesesAnio = ps.filter((p,i) => p.startsWith(anioAct) && mm[i] != null).map(p => p.slice(5,7));
     const promAnio = promEn(mm, ps, anioAct, mesesAnio);
-    const META = 0.02;
+    const META = metaDe('merma') ?? 0.02;
     if (promAnio != null) {
       const cmp = comp.length ? { a: promEn(mm,ps,anioAnt,comp), b: promEn(mm,ps,anioAct,comp) } : null;
       hallazgos.push({
@@ -2909,10 +2909,10 @@ function diagnosticoCompleto() {
         periodo: `Promedio ${fmtPeriodo(anioAct+'-'+mesesAnio[0])} – ${fmtPeriodo(anioAct+'-'+mesesAnio[mesesAnio.length-1])} · ${mesesAnio.length} meses`,
         cifra: `${(promAnio*100).toFixed(2)}%`,
         unidad: '% merma',
-        sub: `promedio ${fmtPeriodo(anioAct+'-'+mesesAnio[0])}–${fmtPeriodo(anioAct+'-'+mesesAnio[mesesAnio.length-1])} · meta 2.00%`,
+        sub: `promedio ${fmtPeriodo(anioAct+'-'+mesesAnio[0])}–${fmtPeriodo(anioAct+'-'+mesesAnio[mesesAnio.length-1])} · meta ${(META*100).toFixed(2)}%`,
         cuerpo: cmp && cmp.a != null
           ? `Mes a mes del año: ${mesesAnio.map(m=>`${fmtPeriodo(anioAct+'-'+m)} ${(mm[ps.indexOf(anioAct+'-'+m)]*100).toFixed(2)}%`).join(' · ')}. En los meses comparables con ${anioAnt} (${comp.map(m=>fmtPeriodo(anioAct+'-'+m)).join(', ')}) pasó de ${(cmp.a*100).toFixed(2)}% a ${(cmp.b*100).toFixed(2)}%.`
-          : `Promedio del año en ${(promAnio*100).toFixed(2)}%, sobre el 2% objetivo en todos los meses medidos.`,
+          : `Promedio del año en ${(promAnio*100).toFixed(2)}%, sobre el ${(META*100).toFixed(2)}% objetivo en todos los meses medidos.`,
         impacto: `Ningún mes de ${anioAct} bajó de ${(Math.min(...mesesAnio.map(m=>mm[ps.indexOf(anioAct+'-'+m)]))*100).toFixed(2)}%. La brecha contra la meta es de ${((promAnio-META)*100).toFixed(2)} puntos.`,
         palanca: 'Falta el desglose por planta (Ate / Pachacámac / Terceros) y por UEN para saber dónde atacar — esas medidas no están publicadas en el modelo.',
         area: 'Producción',
@@ -3092,7 +3092,7 @@ function dxpExecSummary(s) {
   });
   if (s.frBajoMeta != null) findings.push({
     n:'Hallazgo 2 · Fill Rate', tipo:'fill_rate',
-    txt:`<b>${s.frBajoMeta}/${s.frN} meses</b> bajo meta 98%. Venta Perdida <b>${s.ventaPerdida||'—'}</b> — ${dxpPct(s.vpPct)} de todo lo pedido.`
+    txt:`<b>${s.frBajoMeta}/${s.frN} meses</b> bajo meta ${metaTxt('fill_rate')}. Venta Perdida <b>${s.ventaPerdida||'—'}</b> — ${dxpPct(s.vpPct)} de todo lo pedido.`
   });
   if (s.ciAtrasPct != null) findings.push({
     n:'Hallazgo 3 · Gobierno interno', tipo:'control_interno',
@@ -3144,17 +3144,17 @@ function dxpCausal(s) {
     {c:'crit', l:'Merma — peor UEN/Planta', v:`${s.uenPeor.uen} ${s.uenPeor.merma}${s.plaPeor?' · '+s.plaPeor.planta+' '+s.plaPeor.merma:''}`,
      s:`${s.ratioUen?s.ratioUen.toFixed(1)+'x':''}${s.ratioPla?' y '+s.ratioPla.toFixed(1)+'x':''} vs mejor referencia interna`},
     {c:'crit', l:`Costo x Kilo (${s.ckN} meses)`, v:dxpSigno(s.ckDelta,1), s:`S/${s.ckIni.toFixed(2)} (${fmtPeriodo(s.ckIniP)}) → S/${s.ckFin.toFixed(2)} (${fmtPeriodo(s.ckFinP)})`},
-    {c:'crit', l:'Margen implícito', v:dxpPct(s.mgAct,2), s:`${s.mgEsMin?'Mínimo histórico':'Actual'} · meta 52%`},
+    {c:'crit', l:'Margen implícito', v:dxpPct(s.mgAct,2), s:`${s.mgEsMin?'Mínimo histórico':'Actual'} · meta ${metaTxt('margen')}`},
   ]);
   if (s.fillRate && s.ventaPerdida && s.facturacion) ch.push([
-    {c:'crit', l:'Fill Rate', v:s.fillRate, s:`${s.frBajoMeta}/${s.frN} meses bajo meta 98%`},
+    {c:'crit', l:'Fill Rate', v:s.fillRate, s:`${s.frBajoMeta}/${s.frN} meses bajo meta ${metaTxt('fill_rate')}`},
     {c:'crit', l:'Venta Perdida', v:s.ventaPerdida, s:`${dxpPct(s.vpPct)} de la Orden de Venta (${s.ordenVenta})`},
     {c:'warn', l:'Facturación real', v:s.facturacion, s:`${dxpPct(s.faPct)} de lo pedido — techo de ventas autoimpuesto`},
   ]);
   if (s.ciAtrasados && s.ciCritico && s.ciCumpl) ch.push([
     {c:'warn', l:'Planes de acción atrasados', v:`${s.ciAtrasados} / ${s.ciPlanes}`, s:`${dxpPct(s.ciAtrasPct)} de los planes correctivos`},
     {c:'crit', l:'Puntos en estado Crítico', v:`${s.ciCritico} / ${s.ciEval}`, s:`${s.ciCritPct||''} del total — no bajan porque no se cierran los planes`},
-    {c:'crit', l:'% Cumplimiento', v:s.ciCumpl, s:`Estancado ${(85-parseVal(s.ciCumpl)).toFixed(1)} pts bajo meta 85%`},
+    {c:'crit', l:'% Cumplimiento', v:s.ciCumpl, s:`Estancado ${((metaDe('control_interno')??0.85)*100-parseVal(s.ciCumpl)).toFixed(1)} pts bajo meta ${metaTxt('control_interno')}`},
   ]);
   if (!ch.length) return '';
   const box = b => `<div class="flow-box ${b.c}"><div class="fb-l">${b.l}</div><div class="fb-v">${b.v}</div><div class="fb-sub">${b.s}</div></div>`;
@@ -3205,7 +3205,7 @@ function dxpHolding(s) {
     <div class="section-label"><span class="num">◆</span><h2>Holding — ${esc(nombreMesCerrado())} cerrado</h2><span class="rule"></span></div>
     <div class="holding-strip">
       <div class="hs-cell"><div class="hs-label">Ventas · ${esc(nombreMesCerrado())}</div><div class="hs-val">${s.ventas||'—'}</div><div class="hs-delta" style="color:${s.ventasYoY==null?'var(--sub)':s.ventasYoY>=0?'var(--green)':'var(--red)'}">${s.ventasYoY==null?'—':(s.ventasYoY>=0?'▲ ':'▼ ')+dxpSigno(s.ventasYoY)+' YoY'}</div></div>
-      <div class="hs-cell"><div class="hs-label">Mora consolidada · hoy</div><div class="hs-val" style="color:var(--yellow)">${s.mora||'—'}</div><div class="hs-delta" style="color:var(--sub)">meta 15%</div></div>
+      <div class="hs-cell"><div class="hs-label">Mora consolidada · hoy</div><div class="hs-val" style="color:var(--yellow)">${s.mora||'—'}</div><div class="hs-delta" style="color:var(--sub)">meta ${metaTxt('morosidad')}</div></div>
       <div class="hs-cell"><div class="hs-label">Reportes en Crítico</div><div class="hs-val" style="color:var(--red)">${s.criticos.length} / ${DXP_ORDEN.length}</div><div class="hs-delta" style="color:var(--sub)">${s.criticos.map(t=>DXP_CORTO[t]).join(', ')||'—'}</div></div>
       <div class="hs-cell"><div class="hs-label">Reportes en Atención</div><div class="hs-val" style="color:var(--yellow)">${s.atencion.length} / ${DXP_ORDEN.length}</div><div class="hs-delta" style="color:var(--sub)">${s.atencion.map(t=>DXP_CORTO[t]).join(', ')||'—'}</div></div>
       <div class="hs-cell"><div class="hs-label">Reportes con serie mensual</div><div class="hs-val">${s.dsConf} / ${s.dsTot}</div><div class="hs-delta" style="color:var(--sub)">${s.repConSerie.map(x=>DXP_CORTO[x]).join(', ')}</div></div>
@@ -4768,6 +4768,26 @@ function ejeMetrica(ind) {
 
 // ── Formatos. Uno solo para toda la app: antes cada pantalla formateaba a su
 // manera y el mismo número salía "S/7.69M" en una y "7,689,609" en otra.
+// La meta de un indicador, siempre desde metas.json. Estaba escrita a mano en
+// dieciséis sitios del código —"meta 98%", "meta 52%", "> 52", const META =
+// 0.02— así que cambiar una meta en el archivo dejaba media app diciendo la
+// vieja. Un tablero que se contradice a sí mismo no se usa para decidir.
+function metaDe(clave) {
+  const ind = (METAS?.indicadores || []).find(i => i.clave === clave);
+  if (!ind) return null;
+  const borr = metasBorrador();
+  return Object.prototype.hasOwnProperty.call(borr, clave) ? borr[clave] : ind.meta;
+}
+
+// La meta ya formateada, para meterla en un texto. Devuelve "sin meta" cuando
+// no hay: es la verdad, y además avisa de que falta fijarla.
+function metaTxt(clave) {
+  const ind = (METAS?.indicadores || []).find(i => i.clave === clave);
+  const v = metaDe(clave);
+  if (ind == null || v == null) return 'sin meta';
+  return fmtMeta(ind, v);
+}
+
 function ejeFmt(ind, v) { return v == null ? '—' : fmtMeta(ind, v); }
 function ejePct(v, dec) { return v == null ? '—' : v.toFixed(dec == null ? 0 : dec) + '%'; }
 
@@ -5815,7 +5835,7 @@ function renderEmpresa(empresa, containerId) {
         ${miniGauge(parseVal(kv('fill_rate','Fill Rate'))||0, (parseVal(kv('fill_rate','Fill Rate'))||0)>=98?'var(--mk-green)':'var(--mk-red)')}
         <div>
           <div style="font-size:18px;font-weight:800;color:${(parseVal(kv('fill_rate','Fill Rate'))||0)>=98?'var(--mk-green)':'var(--mk-red)'}">${kv('fill_rate','Fill Rate')}</div>
-          <div style="font-size:10px;color:var(--mk-sub)">meta 98%</div>
+          <div style="font-size:10px;color:var(--mk-sub)">meta ${metaTxt('fill_rate')}</div>
         </div>
       </div>
     </div>` : '<div></div>'}
@@ -6081,7 +6101,7 @@ function renderChartForReporte(tipo, rd) {
       ${pvenc ? `<div style="flex:1;min-width:120px">
         <div style="font-size:11px;color:var(--sub);margin-bottom:4px">Por vencer próximos 30 días</div>
         <div style="font-size:24px;font-weight:800;color:var(--yellow)">${fmtM(pvenc)}</div>
-        <div style="font-size:11px;color:var(--sub);margin-top:8px">Brecha vs meta 15%: <strong style="color:${col}">${(mora-15).toFixed(1)}pp</strong></div>
+        <div style="font-size:11px;color:var(--sub);margin-top:8px">Brecha vs meta ${metaTxt('morosidad')}: <strong style="color:${col}">${(mora-(metaDe('morosidad')??0.15)*100).toFixed(1)}pp</strong></div>
         <div style="font-size:11px;color:var(--sub)">Acción: Activar cobranza activa y bloquear crédito a clientes >60 días.</div>
       </div>` : ''}
     </div>`;
@@ -6339,12 +6359,12 @@ function renderMcKinseyArea(empresa, tipo) {
           </div>`;
         })() : 'Sin datos de OV.',
         IV: [
-          {palanca:'Reducir Venta Perdida', impacto: vp ? `Recuperar hasta ${fmtM(vp)} en ventas YTD (equivale a ${rec} para llegar a meta 98%)` : 'Alto impacto en ingresos', accion:'Identificar los SKUs con mayor stockout. Priorizar reposición y revisar política de inventario de seguridad.', prioridad:fr<85?'ALTA':'MEDIA', col:fr<85?'var(--red)':'var(--yellow)'},
+          {palanca:'Reducir Venta Perdida', impacto: vp ? `Recuperar hasta ${fmtM(vp)} en ventas YTD (equivale a ${rec} para llegar a meta ${metaTxt('fill_rate')})` : 'Alto impacto en ingresos', accion:'Identificar los SKUs con mayor stockout. Priorizar reposición y revisar política de inventario de seguridad.', prioridad:fr<85?'ALTA':'MEDIA', col:fr<85?'var(--red)':'var(--yellow)'},
           {palanca:'Mejorar OTD logístico', impacto:'Reducir pedidos incompletos', accion:'Medir tiempo promedio de despacho. Pedidos no entregados a tiempo son venta perdida aunque el producto esté disponible.', prioridad:'MEDIA', col:'var(--yellow)'},
           {palanca:'Revisión semanal de SKUs críticos', impacto:'Prevención proactiva', accion:'Lista de top 10 SKUs con mayor contribución a venta perdida — reunión lunes con Supply Chain.', prioridad:'MEDIA', col:'var(--yellow)'},
         ],
         V: ['Detalle de Fill Rate por SKU / cliente / canal', 'Causa raíz de venta perdida (stockout vs OTD vs calidad)', 'Fill Rate histórico mensual 2025 (12 meses)', 'Días de cobertura por SKU crítico'],
-        chatMsg: `Analiza el Fill Rate de ${empresa} agosto 2026: ${kv('fill_rate','Fill Rate')||'—'} vs meta 98%. Venta perdida YTD: ${kv('fill_rate','Venta Perdida')||'—'}. Dame diagnóstico ejecutivo y plan de acción.`
+        chatMsg: `Analiza el Fill Rate de ${empresa} agosto 2026: ${kv('fill_rate','Fill Rate')||'—'} vs meta ${metaTxt('fill_rate')}. Venta perdida YTD: ${kv('fill_rate','Venta Perdida')||'—'}. Dame diagnóstico ejecutivo y plan de acción.`
       };
     },
 
@@ -6359,7 +6379,7 @@ function renderMcKinseyArea(empresa, tipo) {
           <div style="flex:1;min-width:140px">
             ${rowKpi('Morosidad agosto 2026', kv('cuentas_por_cobrar','Morosidad')||'—', '<15%', col)}
             ${rowKpi('CxC por vencer', kv('cuentas_por_cobrar','CxC por vencer')||'—', null, 'var(--yellow)')}
-            ${mora ? rowKpi('Brecha vs meta 15%', '+'+(mora-15).toFixed(1)+'pp', null, 'var(--red)') : ''}
+            ${mora ? rowKpi('Brecha vs meta '+metaTxt('morosidad'), '+'+(mora-(metaDe('morosidad')??0.15)*100).toFixed(1)+'pp', null, 'var(--red)') : ''}
             <div style="font-size:10px;color:var(--sub);margin-top:8px;padding:6px;background:rgba(239,68,68,.06);border-radius:6px">🚨 Morosidad crítica — activa cobranza inmediata para clientes >60 días.</div>
           </div>
         </div>`,
@@ -6535,7 +6555,7 @@ function renderMcKinseyArea(empresa, tipo) {
           let html = `<div style="padding:12px;background:var(--surface);border-radius:8px;border:1px solid var(--border)">`;
           // Totales
           if (m && brecha) {
-            html += `<div style="font-size:11px;font-weight:700;margin-bottom:8px">Brecha vs meta 2%</div>
+            html += `<div style="font-size:11px;font-weight:700;margin-bottom:8px">Brecha vs meta ${metaTxt('merma')}</div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;margin-bottom:12px">
               <div><div style="font-size:10px;color:var(--sub)">Meta</div><div style="font-size:18px;font-weight:800;color:var(--green)">2.00%</div></div>
               <div><div style="font-size:10px;color:var(--sub)">Real agosto</div><div style="font-size:18px;font-weight:800;color:${col}">${m.toFixed(2)}%</div></div>
@@ -6552,7 +6572,7 @@ function renderMcKinseyArea(empresa, tipo) {
               html += `<div style="text-align:center;padding:6px;background:rgba(0,0,0,.04);border-radius:6px;border:1px solid ${c}">
                 <div style="font-size:10px;color:var(--sub)">${u.uen}</div>
                 <div style="font-size:15px;font-weight:800;color:${c}">${u.merma}</div>
-                <div style="font-size:9px;color:var(--sub)">meta 2%</div>
+                <div style="font-size:9px;color:var(--sub)">meta ${metaTxt('merma')}</div>
               </div>`;
             });
             html += `</div>`;
@@ -6585,7 +6605,7 @@ function renderMcKinseyArea(empresa, tipo) {
           {palanca:'FIFO estricto en despacho', impacto:'Reducir vencimientos', accion:'Capacitación y control de FIFO en almacén. Rotar producto más antiguo primero en picking.', prioridad:'MEDIA', col:'var(--yellow)'},
         ],
         V: ['Merma por planta (Ate, Pachacamac, Terceros)', 'Merma por turno y línea de producción', 'Histórico mensual de merma 2025', 'Top SKUs con mayor tasa de merma'],
-        chatMsg: `Analiza las Mermas de ${empresa} agosto 2026: ${kv('mermas','Merma Total')||'—'} vs meta <2%. Brecha de ${brecha||'?'}pp. Dame diagnóstico ejecutivo y plan de reducción de mermas.`
+        chatMsg: `Analiza las Mermas de ${empresa} agosto 2026: ${kv('mermas','Merma Total')||'—'} vs meta ${metaTxt('merma')}. Brecha de ${brecha||'?'}pp. Dame diagnóstico ejecutivo y plan de reducción de mermas.`
       };
     },
 
@@ -6860,7 +6880,7 @@ function renderMcKinseyArea(empresa, tipo) {
         </div>`,
         IV: [],
         V: ['Serie histórica mensual por severidad', 'Desglose de % Cumplimiento por Gerencia/Jefatura'],
-        chatMsg: `Analiza el Control Interno de ${empresa}: % Cumplimiento ${cumplV||'—'} (meta 85%). ${totalV||'—'} puntos de control evaluados — Satisfactorio ${satisf||'—'}, Con Observaciones ${obs||'—'}, Crítico ${crit||'—'} (${critPctV||'—'} del total). Planes de Acción: ${abiertos||'—'} abiertos, ${cerrados||'—'} cerrados (${avancePlanesV||'—'} avance). Es acumulado histórico, no del mes.`
+        chatMsg: `Analiza el Control Interno de ${empresa}: % Cumplimiento ${cumplV||'—'} (meta ${metaTxt('control_interno')}). ${totalV||'—'} puntos de control evaluados — Satisfactorio ${satisf||'—'}, Con Observaciones ${obs||'—'}, Crítico ${crit||'—'} (${critPctV||'—'} del total). Planes de Acción: ${abiertos||'—'} abiertos, ${cerrados||'—'} cerrados (${avancePlanesV||'—'} avance). Es acumulado histórico, no del mes.`
       };
     },
   };
@@ -6921,7 +6941,8 @@ function renderVentasMcKinsey(empresa) {
   const recFR  = (ov && vp)        ? ov * 0.98 - (ov - vp)  : null; // ventas adicionales si FR=98%
 
   const col       = (avance||0) > 80 ? 'var(--green)' : (avance||0) > 60 ? 'var(--yellow)' : 'var(--red)';
-  const colMargen = (margen||0) > 52 ? 'var(--green)' : (margen||0) > 46 ? 'var(--yellow)' : 'var(--red)';
+  const mMg = (metaDe('margen') ?? 0.52) * 100;
+  const colMargen = (margen||0) >= mMg ? 'var(--green)' : (margen||0) >= mMg * 0.9 ? 'var(--yellow)' : 'var(--red)';
 
   // Proyección fin de año: asume agosto es mes 8, mensual promedio = venta actual
   const proySepDic = venta ? venta * 4 : null;
@@ -6949,8 +6970,8 @@ function renderVentasMcKinsey(empresa) {
   <div class="mck-pad">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--mk-border);border:1px solid var(--mk-border);margin-bottom:16px">
     ${heroCard('Ventas Agosto 2026', ventaV || '—', 'Dato real — Power BI', null, true)}
-    ${heroCard('Margen Variable', margenV || '—', `meta ≥52%${margenV ? '' : ' · requiere workflow'}`, colMargen)}
-    ${heroCard('Avance vs Ppto', avanceV || '—', 'meta 100%', col)}
+    ${heroCard('Margen Variable', margenV || '—', `meta ${metaTxt('margen')}${margenV ? '' : ' · requiere workflow'}`, colMargen)}
+    ${heroCard('Avance vs Ppto', avanceV || '—', 'el presupuesto completo', col)}
     ${heroCard('Brecha vs Plan', gap ? fmtM(gap) : '—', `${avance ? (100-avance).toFixed(1)+'pp' : ''} por cerrar`, 'var(--mk-red)')}
   </div>
   </div>
@@ -6965,10 +6986,10 @@ function renderVentasMcKinsey(empresa) {
       </div>
       <div style="flex:1;min-width:160px">
         ${row2('Ventas reales agosto 2026', ventaV||'—', '', 'var(--text)')}
-        ${margenV ? row2('Margen Variable', margenV, 'meta ≥52%', colMargen) : row2('Margen Variable', '— sin dato', 'ejecutar workflow', 'var(--sub)')}
+        ${margenV ? row2('Margen Variable', margenV, 'meta '+metaTxt('margen'), colMargen) : row2('Margen Variable', '— sin dato', 'ejecutar workflow', 'var(--sub)')}
         ${precioV ? row2('Precio/kg', precioV, '', 'var(--text)') : ''}
         ${costoV  ? row2('Costo/kg',  costoV,  '', 'var(--sub)') : ''}
-        ${row2('Avance vs Presupuesto', avanceV||'—', 'meta 100%', col)}
+        ${row2('Avance vs Presupuesto', avanceV||'—', 'el presupuesto completo', col)}
         ${row2('Presupuesto implícito mensual', ppto ? fmtM(ppto) : '—', '(= real ÷ avance)', 'var(--sub)')}
         ${row2('Brecha absoluta', gap ? fmtM(gap) : '—', 'faltante vs plan', 'var(--red)')}
         ${!margenV ? `<div class="mck-nd" style="margin-top:8px">Margen Variable sin dato en este corte. La serie mensual sí existe: proviene de <code>'Medidas Julito'[% Margen Contribución. %]</code> con los 11 filtros del visual "MARGEN VARIABLE PAUNO" (tomado del propio reporte) — mira el panel de tendencia.</div>` : ''}
@@ -7046,7 +7067,8 @@ function renderVentasMcKinsey(empresa) {
         (mismo método que ya cerró Productividad y Consumo de Materiales). Correr el workflow de nuevo
         no resuelve esto por sí solo.
       </div>`);
-    const colU = (p) => parseFloat(p||0) > 52 ? 'var(--green)' : parseFloat(p||0) > 46 ? 'var(--yellow)' : 'var(--red)';
+    const mU = (metaDe('margen') ?? 0.52) * 100;
+    const colU = (p) => parseFloat(p||0) >= mU ? 'var(--green)' : parseFloat(p||0) >= mU * 0.9 ? 'var(--yellow)' : 'var(--red)';
     // El período va en el título: sin él, este 65.3% de B&D y el 62.3% de la
     // tabla del avance parecen contradecirse cuando miden meses distintos.
     const perUen = rp2.margen_variable?.por_uen_periodo;
@@ -7056,7 +7078,7 @@ function renderVentasMcKinsey(empresa) {
         ${uenData.map(u => `<div style="padding:12px;background:${colU(parseFloat(u.margen))}11;border:1px solid ${colU(parseFloat(u.margen))}33;border-radius:8px;text-align:center">
           <div style="font-size:10px;font-weight:700;color:${colU(parseFloat(u.margen))};text-transform:uppercase;margin-bottom:4px">${u.uen}</div>
           <div style="font-size:22px;font-weight:800;color:${colU(parseFloat(u.margen))}">${u.margen}</div>
-          <div style="font-size:9px;color:var(--sub);margin-top:2px">meta ≥52%</div>
+          <div style="font-size:9px;color:var(--sub);margin-top:2px">meta ${metaTxt('margen')}</div>
           ${u.precio_kg && u.costo_kg ? `<div style="font-size:9px;color:var(--sub);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">Precio ${u.precio_kg} · Costo ${u.costo_kg}</div>` : ''}
           ${esDerivado('margen_variable','por_uen','margen')
             ? `<div style="margin-top:4px">${notaDerivado('margen_variable','por_uen','margen')}</div>` : ''}
@@ -7073,7 +7095,7 @@ function renderVentasMcKinsey(empresa) {
       {
         palanca: 'Recuperar Venta Perdida (Fill Rate)',
         impacto: vp ? `+${fmtM(vp)} potencial (YTD)` : 'alto',
-        accion: `Fill Rate actual ${kv('fill_rate','Fill Rate')||'—'} vs meta 98%. Mejorar disponibilidad de producto recuperaría venta perdida inmediata.`,
+        accion: `Fill Rate actual ${kv('fill_rate','Fill Rate')||'—'} vs meta ${metaTxt('fill_rate')}. Mejorar disponibilidad de producto recuperaría venta perdida inmediata.`,
         prioridad: 'ALTA', col: 'var(--red)'
       },
       {
@@ -7084,7 +7106,8 @@ function renderVentasMcKinsey(empresa) {
       },
       margen && margen < 52 ? {
         palanca: 'Mejorar Margen Variable',
-        impacto: `Margen actual ${margenV} — cada +1pp = ${venta ? fmtM(venta * 0.01) : '~S/64K'} adicional`,
+        impacto: `Margen actual ${margenV} — cada +1pp = ${venta ? fmtM(venta * 0.01)
+          : 'sin dato de venta del mes para calcularlo'}${venta ? ' adicional' : ''}`,
         accion: 'Revisar mezcla de productos: reducir participación de SKUs con bajo margen. Negociar mejora en costo de MP con proveedores clave.',
         prioridad: 'ALTA', col: 'var(--red)'
       } : null,
@@ -7244,14 +7267,14 @@ function dxpPalancas(tipo, s) {
         `${s.uenPeorMg.uen} ${s.uenPeorMg.margen} vs ${s.uenMejorMg.uen} ${s.uenMejorMg.margen}` +
           (s.margenUenPeriodo ? ` (${s.margenUenPeriodo})` : ''),
         `Revisar mezcla y costo de ${s.uenPeorMg.uen}: precio ${s.uenPeorMg.precio_kg} · costo ${s.uenPeorMg.costo_kg}.`) : null,
-      P('Cruzar con Mermas','media', `Merma ${s.mermaTotal||'—'} — sobre meta 2%`,
+      P('Cruzar con Mermas','media', `Merma ${s.mermaTotal||'—'} — sobre meta ${metaTxt('merma')}`,
         'La merma entra directo al costo/kg: bajarla mejora margen sin tocar precio.'),
       s.mgAct != null ? P('Reconciliar margen oficial vs implícito','media',
         `Brecha de ${Math.abs(parseVal(s.margenOf) - s.mgAct).toFixed(1)} pts entre 2 cálculos`,
         `KPI oficial ${s.margenOf} vs (Precio−Costo)/Precio ${dxpPct(s.mgAct,2)} — metodologías distintas.`) : null,
     ].filter(Boolean);
     case 'fill_rate': return [
-      P('Cerrar la brecha a meta 98%','alta',
+      P(`Cerrar la brecha a meta ${metaTxt('fill_rate')}`,'alta',
         `${(98-parseVal(s.fillRate)).toFixed(1)} pts ≈ ${s.ventaPerdida} en juego`,
         'Cada punto de fill rate recuperado se convierte en facturación ya pedida por el cliente.'),
       s.frBajoMeta ? P('Investigar los meses de peor servicio','alta',
@@ -7277,7 +7300,7 @@ function dxpPalancas(tipo, s) {
         'Es la palanca de mayor apalancamiento: el cumplimiento no sube porque los hallazgos no se cierran.'),
       P(`Plan sobre los ${s.ciCritico} puntos en estado Crítico`,'alta',
         `${s.ciCritPct} del total evaluado (${s.ciEval} puntos)`,
-        'Reducir la exposición crítica es lo que mueve el % de cumplimiento hacia la meta de 85%.'),
+        `Reducir la exposición crítica es lo que mueve el % de cumplimiento hacia la meta de ${metaTxt('control_interno')}.`),
       P('Habilitar % Cumplimiento con filtro mensual','media','Hoy no hay comparativo MoM/YoY posible',
         'La tarjeta es un acumulado histórico: sin corte mensual no se puede medir si mejora.'),
     ];
@@ -7289,7 +7312,7 @@ function dxpPalancas(tipo, s) {
         `${(rpCxc().tramos || []).find(t => /30/.test(t.label) && /más|mas/i.test(t.label))?.valor || 's/d'} vencidos a más de 30 días`,
         'Es el tramo que se vuelve incobrable. La cartera está abierta por ejecutivo: asignar por responsable.'),
       P('Cerrar la brecha a meta','media',
-        `${(parseVal(s.mora)-15).toFixed(1)} pts sobre meta 15% · ${s.cxcVencer} por vencer`,
+        `${(parseVal(s.mora)-(metaDe('morosidad')??0.15)*100).toFixed(1)} pts sobre meta ${metaTxt('morosidad')} · ${s.cxcVencer} por vencer`,
         'Desviación moderada: activar cobranza sobre la cartera próxima a vencer.'),
     ];
     case 'cuentas_por_pagar': return [
@@ -7607,7 +7630,7 @@ function dxpDerivados(tipo, s) {
            + mini('Planes cerrados / total', pctDe(n(g('control_interno','Planes de Acción Cerrados')), n(s.ciPlanes)));
     }
     case 'cuentas_por_cobrar':
-      return mini('Morosidad vs meta 15%', `${(n(s.mora)-15).toFixed(1)} pts sobre`)
+      return mini(`Morosidad vs meta ${metaTxt('morosidad')}`, `${(n(s.mora)-(metaDe('morosidad')??0.15)*100).toFixed(1)} pts sobre`)
            + mini('CxC por vencer', s.cxcVencer)
            + mini('CxC por vencer / venta del mes', pctDe(n(s.cxcVencer), ventas))
            + mini('Venta del mes (referencia)', s.ventas);
@@ -7648,7 +7671,7 @@ function dxpDerivados(tipo, s) {
            + mini('Venta del mes (referencia)', s.ventas);
     }
     case 'margen_variable_pag2':
-      return mini('Avance vs meta 100%', `${(100-n(s.avancePpto)).toFixed(1)} pts por cerrar`)
+      return mini('Avance vs presupuesto', `${(100-n(s.avancePpto)).toFixed(1)} pts por cerrar`)
            + mini('Venta del mes', s.ventas)
            + mini('Presupuesto implícito (venta ÷ avance)', fmtM(ventas / (n(s.avancePpto)/100)))
            + mini('Brecha en soles', fmtM(ventas/(n(s.avancePpto)/100) - ventas));
@@ -8168,11 +8191,11 @@ Tu función: convertir datos del dashboard en decisiones claras para el CEO. For
 
 DATOS ACTUALES PAUNO (${d.fecha||'hoy'}) — FUENTE: Power BI API:
 • Ventas mes (agosto): ${ventas}
-• Mora CxC: ${mora} (meta 15%)
+• Mora CxC: ${mora} (meta ${metaTxt('morosidad')})
 • CxP Total: ${cxp}
-• Margen variable: ${margen} (meta 52%)
-• Mermas: ${mermas} (meta 2%)
-• Fill Rate: ${fillPct} (meta 98%) · Orden de Venta: ${ov} · Facturado: ${fact} · Venta perdida: ${vp}
+• Margen variable: ${margen} (meta ${metaTxt('margen')})
+• Mermas: ${mermas} (meta ${metaTxt('merma')})
+• Fill Rate: ${fillPct} (meta ${metaTxt('fill_rate')}) · Orden de Venta: ${ov} · Facturado: ${fact} · Venta perdida: ${vp}
 • S&OP / Inventario: ${sop}
 • Alertas CEO hoy: ${alertas}
 

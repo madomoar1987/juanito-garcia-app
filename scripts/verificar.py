@@ -21,6 +21,7 @@ Uso:  python3 scripts/verificar.py
 import importlib.util
 import os
 import ast
+import json
 from collections import Counter
 import collections
 import re
@@ -390,6 +391,42 @@ def test_js_sin_nombres_repetidos(html):
 
 
 
+def test_metas_no_escritas_a_mano(html, metas):
+    """Metas escritas dentro del código en vez de leerse de metas.json.
+
+    Había dieciséis: "meta 98%", "meta ≥52%", "const META = 0.02", umbrales de
+    color con "> 52". Cambiar una meta en el archivo dejaba media app diciendo
+    la vieja, y un tablero que se contradice a sí mismo no se usa para decidir.
+
+    Se busca cada meta publicada, escrita como la escribiría una persona, en
+    cualquier parte del HTML que no sea un comentario.
+    """
+    print("\n10. Metas escritas a mano en juanito.html")
+    valores = []
+    for ind in (metas.get("indicadores") or []):
+        v = ind.get("meta")
+        if v is None:
+            continue
+        if ind.get("unidad") in ("pct", "ratio"):
+            valores.append((ind["clave"], f"{v * 100:g}%"))
+        elif ind.get("unidad") == "dias":
+            valores.append((ind["clave"], f"{v:g} d"))
+
+    lineas = [l for l in html.split("\n")
+              if not l.strip().startswith(("//", "*", "/*"))]
+    cuerpo = "\n".join(lineas)
+    malas = []
+    for clave, txt in valores:
+        # "meta 98%", "meta ≥52%", "meta <2%", "meta de 15%"
+        pat = re.compile(r"meta\s*(?:de\s*)?[≥≤<>]?\s*" + re.escape(txt), re.I)
+        for m in pat.finditer(cuerpo):
+            malas.append(f"{clave}: «{m.group(0)}»")
+    revisar(not malas,
+            f"{len(valores)} metas publicadas, ninguna escrita a mano en el HTML"
+            if not malas else "ESCRITAS A MANO: " + "; ".join(sorted(set(malas))[:5]))
+
+
+
 def main():
     src_pbi = leer("scripts", "fetch_powerbi.py")
     src_ser = leer("scripts", "fetch_series.py")
@@ -405,6 +442,12 @@ def main():
     test_variable_antes_de_asignar(src_pbi, "fetch_powerbi.py")
     test_variable_antes_de_asignar(src_ser, "fetch_series.py")
     test_js_sin_nombres_repetidos(html)
+    try:
+        metas_json = json.loads(leer("data", "metas.json"))
+    except Exception as e:
+        metas_json = {}
+        revisar(False, f"metas.json ilegible: {e}")
+    test_metas_no_escritas_a_mano(html, metas_json)
     salidas = test_construccion(cargar_fetch_powerbi())
     test_campos(salidas, html)
 
