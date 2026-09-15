@@ -1,0 +1,15 @@
+{
+  "_leeme": [
+    "Matriz de riesgos: riesgo, probabilidad, impacto, mitigación y dueño.",
+    "",
+    "Este archivo existe vacío a propósito. La app lo pedía y no estaba, así que",
+    "cada carga dejaba cuatro errores 404 en la consola del navegador — ruido que",
+    "tapa los errores de verdad y que además reintenta en cada visita.",
+    "",
+    "'configurado': false significa que el módulo está apagado y la app lo trata",
+    "igual que si el archivo no existiera. Para encenderlo, poner los datos y",
+    "cambiarlo a true."
+  ],
+  "configurado": false,
+  "datos": []
+}

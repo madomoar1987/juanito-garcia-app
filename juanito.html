@@ -2068,10 +2068,18 @@ async function loadData() {
       if (backup) { DATA = JSON.parse(backup); }
       else throw new Error('Sin datos válidos');
     }
-    if (rb && rb.ok) BOARD_PLANS = await rb.json();
-    if (rr && rr.ok) RISK_REGISTER = await rr.json();
-    if (rh && rh.ok) HITOS = await rh.json();
-    if (rc && rc.ok) CASHFLOW = await rc.json();
+    // Los cuatro módulos opcionales viven en archivos que existen vacíos y
+    // marcados con "configurado": false. Antes no existían y cada carga dejaba
+    // cuatro 404 en la consola: ruido que tapa los errores de verdad.
+    const opcional = async (r) => {
+      if (!r || !r.ok) return null;
+      try { const j = await r.json(); return j && j.configurado === false ? null : j; }
+      catch (e) { return null; }
+    };
+    BOARD_PLANS   = await opcional(rb) || BOARD_PLANS;
+    RISK_REGISTER = await opcional(rr) || RISK_REGISTER;
+    HITOS         = await opcional(rh) || HITOS;
+    CASHFLOW      = await opcional(rc) || CASHFLOW;
     if (rhi && rhi.ok) HISTORICO = await rhi.json();
     try {
       const rs = await fetch('data/latest/series.json?t=' + t);
