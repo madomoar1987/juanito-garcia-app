@@ -29,6 +29,7 @@
     "cxc": "LocalDateTable_9de71e0e-3dad-40db-b49a-7124064ba537[Año] + 'Calendario (FACT)'[Mes Numero]",
     "mermas": "Calendario[Año] + Calendario[MES] (6 filtros del visual)",
     "cxp": "Calendario[Date]",
+    "margen": "Calendario[Date]",
     "inventario": "Calendario[Date]",
     "planificacion": "Calendario[Date]"
   },
@@ -59,16 +60,6 @@
           "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
         }
       ]
-    },
-    "margen": {
-      "medidas": [
-        "Venta Total",
-        "Precio x Kilo",
-        "Costo x Kilo"
-      ],
-      "tablas": [],
-      "columnas_fecha": [],
-      "esquema_rest_error": "HTTP 404"
     },
     "inventario": {
       "medidas": [],
