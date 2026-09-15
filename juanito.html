@@ -1649,6 +1649,30 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   .av-an { width:auto !important; position:static !important; }
 }
 
+/* Dashboard de un reporte: secciones apiladas con una jerarquía clara en vez
+   de una rejilla de cajas de alturas distintas. */
+.rep-sec { margin:24px 0 0; }
+.rep-h { font-size:14px; margin:0 0 12px; padding-bottom:7px;
+  border-bottom:1px solid var(--border); letter-spacing:-.01em; }
+.rep-grid { display:grid; gap:12px;
+  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); align-items:start; }
+.rep-alerta { background:var(--yellow-bg); border:1px solid var(--yellow-border);
+  border-left:3px solid var(--yellow); border-radius:7px; padding:12px 14px;
+  font-size:13.5px; line-height:1.5; }
+/* El contenedor de análisis acá no vive dentro de una tabla que se desplaza,
+   así que no necesita quedarse pegado a la izquierda ni medir el viewport. */
+.rep-an { position:static !important; width:auto !important; max-width:none !important;
+  border-top:none !important; padding:0 !important; background:none !important; }
+.rep-an .av-an-blq:first-child { border-top:none; margin-top:0; padding-top:0; }
+.rep-vacios { display:grid; gap:6px;
+  grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); }
+.rep-sec .eje-card { cursor:default; }
+/* Con un solo indicador, auto-fit estiraba la tarjeta a todo el ancho y sus
+   columnas internas quedaban separadas por medio metro de vacío. */
+.rep-sec .eje-cards { grid-template-columns:repeat(auto-fit, minmax(330px, 460px));
+  justify-content:start; }
+.rep-sec .eje-go { display:none; }
+
 .flt { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:flex-end;
   justify-content:space-between; padding:12px 14px; margin:14px 0;
   background:var(--card2); border:1px solid var(--border); border-radius:8px; }
@@ -4293,6 +4317,19 @@ const DESGLOSES_PUBLICADOS = [
   ['responsables', 'Por responsable'],
 ];
 
+// Los nombres de campo del extractor no son títulos de columna: "label" y
+// "pct" salían tal cual en la cabecera de la tabla.
+const COL_NOMBRE = {
+  label: 'Tramo', valor: 'Valor', pct: '% del total', monto: 'Monto',
+  categoria: 'Categoría', nombre: 'Nombre', grupo: 'Grupo', marca: 'Marca',
+  planta: 'Planta', sku: 'SKU', almacen: 'Almacén', pedidos: 'Pedidos',
+  responsable: 'Responsable', nivel: 'Nivel', canal: 'Canal', total: 'Total',
+  vencido: 'Vencido', merma: 'Merma', desvio: 'Desvío', estandar: 'Estándar',
+  consumido: 'Consumido', cliente: 'Cliente', ejecutivo: 'Ejecutivo',
+  jefe: 'Jefe de venta', por_vencer: 'Por vencer', t15: '0-15 d',
+  t30: '16-30 d', t30mas: '+30 d', pct_t30mas: '% en +30 d',
+};
+
 function avBloquesPublicados(ind) {
   const rd = avReporte(ind.reporte);
   const out = [];
@@ -4312,7 +4349,8 @@ function avBloquesPublicados(ind) {
       periodo: undefined,
       titulo: titulo,
       por: `Desglose publicado por el reporte, ${filas.length} filas.`,
-      cabecera: cols.map(c => c.replace(/_/g, ' ').replace(/^./, x => x.toUpperCase())),
+      cabecera: cols.map(c => COL_NOMBRE[c] ||
+        c.replace(/_/g, ' ').replace(/^./, x => x.toUpperCase())),
       cuerpo, lecturas: [],
     });
   });
@@ -4518,8 +4556,11 @@ function analisisDe(ind, meta, segNombre) {
   return { tesis, parrafos, bloques, nota, titulo: esUEN ? `${uen} · ${ind.label}` : ind.label };
 }
 
-function avAnalisisHTML(an, id) {
-  const blqs = an.bloques.map(b => `
+// El cuerpo de un análisis, sin el envoltorio de fila de tabla: así el mismo
+// render sirve dentro del avance y dentro del dashboard de cada reporte, y las
+// dos pantallas no se van separando con el tiempo.
+function avBloquesHTML(bloques) {
+  return bloques.map(b => `
     <div class="av-an-blq">
       <h4>${b.titulo} ${b.periodo === undefined ? '' : avPeriodoEtiqueta(b.periodo)}</h4>
       <p class="av-an-por">${b.por}</p>
@@ -4532,6 +4573,10 @@ function avAnalisisHTML(an, id) {
       </div>
       ${b.lecturas.join('')}
     </div>`).join('');
+}
+
+function avAnalisisHTML(an, id) {
+  const blqs = avBloquesHTML(an.bloques);
   return `<tr class="av-an-fila" id="${id}" hidden><td colspan="8"><div class="av-an">
     <span class="av-an-cerrar" onclick="avanceAnalisis(event,'${id}')">cerrar ✕</span>
     <div class="av-an-k">Análisis · ${esc(an.titulo)} · ${esc(avCorteTexto())}</div>
@@ -7237,8 +7282,12 @@ function dxpPalancas(tipo, s) {
         'La tarjeta es un acumulado histórico: sin corte mensual no se puede medir si mejora.'),
     ];
     case 'cuentas_por_cobrar': return [
-      P('Capturar el tramo de vencimiento (aging)','alta','Hoy imposible priorizar cobranza',
-        'Sin 30/60/90 días ni desglose por cliente no se sabe qué cobrar primero.'),
+      // La palanca de "capturar el aging" se retiró: el aging ya se publica en
+      // cuatro tramos y la cartera ya viene abierta por ejecutivo. Una palanca
+      // que pide algo que ya está hecho enseña a no leer las palancas.
+      P('Priorizar el tramo de más de 30 días','alta',
+        `${(rpCxc().tramos || []).find(t => /30/.test(t.label) && /más|mas/i.test(t.label))?.valor || 's/d'} vencidos a más de 30 días`,
+        'Es el tramo que se vuelve incobrable. La cartera está abierta por ejecutivo: asignar por responsable.'),
       P('Cerrar la brecha a meta','media',
         `${(parseVal(s.mora)-15).toFixed(1)} pts sobre meta 15% · ${s.cxcVencer} por vencer`,
         'Desviación moderada: activar cobranza sobre la cartera próxima a vencer.'),
@@ -7280,6 +7329,52 @@ function dxpPalancas(tipo, s) {
     default: return [];
   }
 }
+function rpCxc() {
+  return (DATA?.empresas?.PAUNO?.reportes?.cuentas_por_cobrar) || {};
+}
+
+// Qué le falta a un reporte, COMPROBADO contra los datos publicados.
+//
+// Antes era una lista escrita a mano y había envejecido: decía que cuentas por
+// cobrar no tenía aging ni desglose por cliente ni serie mensual, cuando ya
+// tiene las tres cosas. Un inventario de carencias que miente es peor que no
+// tenerlo, porque frena trabajo que ya está hecho.
+function dxpVaciosCalculados(tipo) {
+  const rd = avReporte(tipo);
+  const falta = [];
+  const inds = (METAS?.indicadores || []).filter(i => i.reporte === tipo);
+
+  const conSerie = inds.some(i => serieDe(i.serie));
+  if (!conSerie) {
+    falta.push('Sin serie mensual: solo se puede ver el corte actual, no la tendencia');
+  }
+  if (inds.length && !inds.some(i => (i.segmentos || []).length)) {
+    falta.push('Sin apertura por unidad de negocio o planta');
+  }
+  if (inds.some(i => i.meta == null)) {
+    const sinMeta = inds.filter(i => i.meta == null).map(i => i.label);
+    falta.push(`Falta definir la meta de ${sinMeta.join(' y ')}`);
+  }
+  // Cualquier desglose cuenta, no solo los de la lista de render: margen
+  // publica clientes, SKU por unidad y detalle de costos, y decía "no publica
+  // ningún desglose" porque ninguno estaba en esa lista.
+  const desg = Object.entries(rd).filter(([k, v]) =>
+    k !== 'kpis' && !k.startsWith('_') &&
+    ((Array.isArray(v) && v.length > 1) ||
+     (v && typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length > 1)));
+  if (!desg.length) {
+    falta.push('El reporte no publica ningún desglose: no se puede ver de dónde viene el resultado');
+  }
+  // Notas del propio dato: si la extracción dejó constancia de una limitación,
+  // vale más que cualquier lista escrita a mano.
+  (rd.kpis || []).forEach(k => {
+    if (k.nota_periodo && /no guarda|sin mes|acumulado/i.test(k.nota_periodo)) {
+      falta.push(`${k.label}: ${k.nota_periodo}`);
+    }
+  });
+  return [...new Set(falta)];
+}
+
 function dxpVacios(tipo, s) {
   switch (tipo) {
     case 'margen_variable': return ['Sin desglose del Costo x Kilo (materia prima / mano de obra / merma)',
@@ -7941,46 +8036,65 @@ function showDetail(empresa, tipo, label, archivo, desc) {
       <span class="pill ${est}">${estTxt}</span>
     </div>
 
-    <div class="roman-grid">
-      <div>
-        <div class="roman-h"><span class="rn">I</span>KPIs</div>
-        ${hero.valor ? `<div class="hero-l">${hero.label}</div><div class="hero-v" style="color:${stripe}">${fmtKpi(hero.valor)}</div>` : ''}
-        ${hero.meta ? `<div class="kv"><span class="l">Meta</span><span class="v">${hero.meta}</span></div>` : ''}
-        ${brecha != null ? `<div class="kv"><span class="l">Brecha</span><span class="v ${est}">${(brecha>=0?'+':'')+brecha.toFixed(2)} pts</span></div>` : ''}
-        ${resto.map(k => `<div class="kv"><span class="l">${k.label}</span><span class="v ${cls(k.estado)}">${fmtKpi(k.valor)}${k.meta?` <small>meta ${k.meta}</small>`:''}</span></div>`).join('')}
-        ${extras.map(e => `<div class="kv"><span class="l">${e.label}</span><span class="v">${e.valor}<small>${fmtPeriodo(e.periodo)}</small></span></div>`).join('')}
-        ${rd.alerta ? `<div class="nd" style="margin-top:12px">${rd.alerta}</div>` : ''}
-      </div>
+    ${(() => {
+      // El dashboard de un reporte se arma con las mismas piezas que el resto
+      // de la app: las tarjetas ejecutivas de sus indicadores y los bloques de
+      // análisis. Antes era una rejilla de cinco cajas de alturas distintas
+      // —KPIs, comparativo, desglose, palancas, vacíos— que quedaba despareja
+      // y no traía ni evolución, ni comparación contra el mes anterior, ni
+      // detalle para validar.
+      const inds = (METAS?.indicadores || []).filter(i => i.reporte === tipo);
+      const tarjetas = inds.map(i => { try { return ejeTarjeta(ejeMetrica(i)); }
+                                       catch (e) { return ''; } }).join('');
+      const bloques = [];
+      inds.forEach(i => {
+        try {
+          const an = analisisDe(i, ejeMetrica(i).meta, null);
+          if (an) an.bloques.forEach(b => {
+            if (!bloques.some(x => x.titulo === b.titulo)) bloques.push(b);
+          });
+        } catch (e) {}
+      });
+      // Un reporte sin indicador en metas.json igual muestra lo suyo.
+      if (!bloques.length) {
+        const falso = { clave: tipo, label: nombre, reporte: tipo,
+                        unidad: 'soles', direccion: 'mayor', tipo: 'tasa' };
+        avBloquesPublicados(falso).forEach(b => bloques.push(b));
+        const ci = avBloqueCifras(falso);
+        if (ci) bloques.push(ci);
+      }
 
-      <div>
-        <div class="roman-h"><span class="rn">II</span>Comparativo</div>
-        ${dxpComparativo(tipo, s)}
-      </div>
+      return `
+      ${tarjetas ? `<section class="rep-sec">
+        <h3 class="rep-h">Indicadores de este reporte</h3>
+        <div class="eje-cards">${tarjetas}</div>
+      </section>` : ''}
 
-      <div>
-        <div class="roman-h"><span class="rn">III</span>${desg.t}</div>
-        ${desg.h}
-      </div>
+      ${(rd.alerta || pal.length) ? `<section class="rep-sec">
+        <h3 class="rep-h">Alertas y palancas</h3>
+        <div class="rep-grid">
+          ${rd.alerta ? `<div class="rep-alerta">${rd.alerta}</div>` : ''}
+          ${pal.map(p => `<div class="palanca">
+            <div class="palanca-top"><span class="palanca-nombre">${p.n}</span><span class="pr ${p.pr}">${p.pr}</span></div>
+            <div class="palanca-impacto">${p.imp}</div>
+            <div class="nd" style="margin-top:4px">${p.acc}</div>
+          </div>`).join('')}
+        </div>
+      </section>` : ''}
 
-      <div>
-        <div class="roman-h"><span class="rn">IV</span>Palancas</div>
-        ${pal.length ? pal.map(p => `<div class="palanca">
-          <div class="palanca-top"><span class="palanca-nombre">${p.n}</span><span class="pr ${p.pr}">${p.pr}</span></div>
-          <div class="palanca-impacto">${p.imp}</div>
-          <div class="nd" style="margin-top:4px">${p.acc}</div>
-        </div>`).join('') : '<div class="nd">Sin palancas pendientes para este reporte.</div>'}
-      </div>
+      ${bloques.length ? `<section class="rep-sec">
+        <h3 class="rep-h">Análisis</h3>
+        <div class="av-an rep-an">${avBloquesHTML(bloques)}</div>
+      </section>` : ''}
 
-      <div>
-        <div class="roman-h"><span class="rn">V</span>Vacíos</div>
-        ${vac.length ? vac.map(v => `<div class="vacio-item"><span class="mk">▸</span>${v}</div>`).join('') : '<div class="nd">Sin vacíos de información registrados.</div>'}
-      </div>
-
-      ${dxpTrendPanel(tipo, s)}
       ${dxpAvisoVigencia(tipo)}
-      ${dxpPanelSegmentos(tipo, s)}
-      ${dxpOtrasSeries(tipo)}
-    </div>
+
+      ${(() => { const vacCalc = dxpVaciosCalculados(tipo); return vacCalc.length ? `<section class="rep-sec">
+        <h3 class="rep-h">Lo que este reporte no publica</h3>
+        <div class="rep-vacios">${vacCalc.map(v =>
+          `<div class="vacio-item"><span class="mk">▸</span>${esc(v)}</div>`).join('')}</div>
+      </section>` : ''; })()}`;
+    })()}
 
     <div class="cta-ia"><button data-msg="${chat.replace(/"/g,'&quot;')}" onclick="openChatWithMsg(this.dataset.msg)">Preguntar a Juanito sobre este reporte</button></div>
     <div class="deck-footer"><span>PAUNO — Diagnóstico Ejecutivo</span><span class="conf">Confidencial · Uso interno</span><span>${idx>=0?String(idx+1).padStart(2,'0')+' · ':''}${nombre}</span></div>
