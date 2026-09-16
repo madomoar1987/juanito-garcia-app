@@ -1,7 +1,7 @@
 {
   "fecha": "16/09/2026",
   "fecha_actualizacion": "2026-09-16",
-  "hora_actualizacion": "12:20",
+  "hora_actualizacion": "13:02",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "green"
@@ -9,7 +9,7 @@
   "semaforo_razon": {
     "PAUNO": "Morosidad 14.8% — OK"
   },
-  "holding_ventas": "S/8.03M",
+  "holding_ventas": "S/7.95M",
   "holding_mora": "14.8%",
   "agenda_ceo": {
     "decidir_hoy": [],
@@ -3801,11 +3801,11 @@
           "necesidad_compra": [
             {
               "momento": "Comprar-( Oct 2026)",
-              "items": 195
+              "items": 193
             },
             {
               "momento": "Comprar-( Nov 2026)",
-              "items": 163
+              "items": 165
             },
             {
               "momento": "Comprar-( Set 2026)",
@@ -3825,8 +3825,7 @@
               "label": "Inventario Total",
               "valor": "S/6.66M",
               "fuente": "reporte",
-              "periodo": "2026-09",
-              "periodo_fuente": "inventario/Consumo acumulado"
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Dead Stock",

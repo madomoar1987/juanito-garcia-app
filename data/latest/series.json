@@ -961,7 +961,7 @@
         79.0,
         74.0,
         63.0,
-        56.0
+        55.0
       ],
       "Consumo acumulado": [
         null,
@@ -982,9 +982,9 @@
         7203643.6463621855,
         7405257.1593263745,
         8862521.331503332,
-        8422304.42832619,
+        8422304.42832625,
         7269527.38117522,
-        6648294.65878427
+        6500906.514372349
       ]
     },
     "fill_rate": {
@@ -1110,6 +1110,11 @@
       "consulta": "mermas:Planta Terceros",
       "http": 200,
       "error": "la medida '% Merma total MAQUILA' devuelve porcentaje (máx 1.8556) mientras las otras plantas devuelven fracción; se normalizó dividiendo entre 100"
+    },
+    {
+      "consulta": "compras:ratio-detalle",
+      "http": 200,
+      "error": "dataset 06408938 · 1 tabla(s) · filas por tabla [14] · claves de la 1a ['Calendario[Año]', 'LocalDateTable_42b93aac-d3d2-4a95-b7b8-66bfc130de2b[Mes]', 'LocalDateTable_42b93aac-d3d2-4a95-b7b8-66bfc130de2b[NroMes]']"
     },
     {
       "consulta": "compras:ratio",
