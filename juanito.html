@@ -4082,6 +4082,8 @@ function avBloqueClientes() {
          `tabla y no del KPI del tablero, que es del mes cerrado y de otra base.`,
     cabecera: ['Cliente', colMes('Venta'), colMes('% venta'), colMes('Margen'),
                colMes('Impacto')],
+    ficha: { compara: 'sin columna de agosto: el reporte no publica el mes anterior por cliente',
+             unidad: 'soles y % de margen', filtro: 'los 12 clientes con más venta' },
     cuerpo, lecturas,
   };
 }
@@ -4279,10 +4281,14 @@ function avBloqueSKU(uen) {
       `recorrido del año, no solo el último salto. Ningún visual del reporte cruza ` +
       `producto con unidad de negocio: esta tabla se arma con una consulta propia que ` +
       `reusa los filtros del reporte sin cambiarlos.`,
+    ficha: { compara: `cada SKU contra su propio ${nombreMesCerrado()} cerrado, columna a columna`,
+             unidad: 'soles, % de margen y precio por kilo',
+             filtro: 'todos los SKU de la unidad, sin recorte' },
     cabecera: ['Producto', colMes('Venta'), colMes('% venta'),
                'Precio/kg ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
                colMes('Precio/kg'),
-               'Margen enero', 'Margen previo', 'Margen', 'Impacto', 'S/ del mes'],
+               'Margen enero', 'Margen ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
+               colMes('Margen'), colMes('Impacto'), colMes('S/'),],
     cuerpo, lecturas,
   };
 }
@@ -4349,9 +4355,13 @@ function avBloqueSubcategorias(uen) {
         `vienen avanzando o retrocediendo. Es el mayor detalle que el reporte entrega ` +
         `dentro de una unidad de negocio.`
       : 'Precio y costo por kilo por subcategoría, ordenadas por venta.',
+    ficha: { compara: `cada subcategoría contra su propio ${nombreMesCerrado()} cerrado y contra enero`,
+             unidad: 'soles, % de margen y precio por kilo',
+             filtro: 'subcategorías del nivel más fino, sin subtotales del ROLLUP' },
     cabecera: ['Subcategoría', colMes('Venta'), colMes('% venta'),
                colMes('Precio/kg'), colMes('Costo/kg'),
-               'Margen enero', 'Margen previo', 'Margen', 'Impacto', 'S/ del mes'],
+               'Margen enero', 'Margen ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
+               colMes('Margen'), colMes('Impacto'), colMes('S/'),],
     cuerpo, lecturas,
   };
 }
@@ -4413,8 +4423,13 @@ function avBloqueCanal() {
     titulo: 'Por canal — dónde se vende',
     por: `Venta de cada canal en ${esc(nombreMesCerrado())} y en ${esc(nombreMes(act))}, ` +
          `con su peso sobre la venta del mes en curso.`,
-    cabecera: ['Canal', nombreMesCerrado(), nombreMes(act) || 'mes en curso',
-               '% venta', 'Diferencia'],
+    ficha: { compara: `cada canal contra su propio ${nombreMesCerrado()} cerrado, columna a columna`,
+             unidad: 'soles de venta', filtro: 'los canales del reporte de margen' },
+    cabecera: ['Canal', nombreMesCerrado() + ' (cerrado)',
+               (nombreMes(act) || 'mes en curso') + ' (al día ' +
+                 ((avanceDelMes() || {}).dia || '') + ')',
+               colMes('% venta'), 'Diferencia set. − ' +
+                 (nombreMesCerrado() || '').slice(0, 3) + '.'],
     cuerpo, lecturas,
   };
 }
@@ -4452,6 +4467,8 @@ function avBloqueCartera() {
     titulo: 'Por ejecutivo — quién responde por lo vencido',
     por: 'Cartera de cada ejecutivo abierta en sus cuatro tramos de antigüedad, ' +
          'ordenada por lo que tiene vencido a más de 30 días.',
+    ficha: { compara: 'no es un mes: es el saldo vivo al día del corte',
+             unidad: 'soles de cartera', filtro: 'ejecutivos con cartera vencida' },
     cabecera: ['Ejecutivo', 'Cartera al corte', 'Por vencer', '0-15 d', '16-30 d',
                '+30 d', '% en +30 d'],
     cuerpo, lecturas,
@@ -4480,6 +4497,8 @@ function avBloquePpto() {
     por: 'Lo facturado contra el presupuesto acumulado hasta ayer — no contra el mes ' +
          'entero. Es la comparación que sí respeta los días transcurridos, y la calcula ' +
          'el propio reporte.',
+    ficha: { compara: 'contra el presupuesto proporcional a los días transcurridos, que calcula el propio reporte',
+             unidad: 'soles', filtro: 'los canales del reporte 11' },
     cabecera: ['Canal', colMes('Facturado'), 'Ppto. al día (set.)',
                'Cuota del mes (set.)', '% avance set.'],
     cuerpo,
@@ -4582,6 +4601,9 @@ function avBloqueEvolucion(ind, meta) {
     por: `Los últimos ${ult.length} meses con dato, su variación contra el mes ` +
          `anterior y su distancia a la meta. El mes en curso va marcado: lleva ` +
          `${(avanceDelMes() || {}).dia || ''} de ${(avanceDelMes() || {}).dias || ''} días.`,
+    ficha: { compara: 'cada mes contra el inmediatamente anterior, meses completos',
+             unidad: 'la del indicador, en la columna Valor',
+             filtro: 'últimos meses con dato · la fila marcada es setiembre, parcial' },
     cabecera: ['Mes', 'Valor', 'vs mes anterior', 'vs meta'],
     cuerpo, lecturas,
   };
@@ -4618,6 +4640,8 @@ function avBloqueCifras(ind) {
     titulo: `Las cifras del reporte ${DXP_NOMBRE[ind.reporte] || ind.reporte}`,
     por: 'Todo lo que publica el reporte de origen, con el período de cada cifra. ' +
          'Sirve para validar contra Power BI lo que muestra el resto de la pantalla.',
+    ficha: { compara: 'cada cifra trae su propio período en la última columna: no todas son de setiembre',
+             unidad: 'la del propio reporte', filtro: 'las cifras que publica el reporte' },
     cabecera: ['Cifra', 'Valor', 'Meta', 'Período'],
     cuerpo, lecturas: lectura,
   };
@@ -4732,6 +4756,13 @@ function avBloquesPublicados(ind) {
     out.push({
       periodo: undefined,
       titulo: titulo,
+      // Estos desgloses vienen tal cual del reporte y NO traen el mes
+      // anterior: son una foto del período de su propia tarjeta. Decir
+      // "comparado con agosto" ahí sería inventar una comparación que la
+      // tabla no hace.
+      ficha: { compara: 'foto del período de la tarjeta: este desglose no trae el mes anterior',
+               unidad: 'la del propio reporte',
+               filtro: `las ${Math.min(filas.length, 20)} filas que publica el reporte` },
       por: `Desglose publicado por el reporte, ${filas.length} filas.`,
       cabecera: cols.map(c => COL_NOMBRE[c] ||
         c.replace(/_/g, ' ').replace(/^./, x => x.toUpperCase())),
@@ -4805,6 +4836,8 @@ function avBloquePrecioCanal() {
       `${esc(nombreMes(meses[0]))} contra ${esc(nombreMes(meses[1]))}. Están las ` +
       `${muestra.length} mayores caídas de ${filas.length} combinaciones. Es la única ` +
       `tabla que separa una decisión de precios de una negociación con un canal.`,
+    ficha: { compara: 'el precio por kilo de cada producto y canal contra el mes anterior',
+             unidad: 'soles por kilo', filtro: 'productos presentes en los dos meses' },
     cabecera: ['Producto', 'Canal', nombreMes(meses[0]) || 'mes previo',
                nombreMes(meses[1]) || 'mes actual', 'Variación'],
     cuerpo, lecturas,
@@ -4891,6 +4924,8 @@ function avBloqueSegmentos(ind, meta, segsDadas, corte) {
                   : 'Por segmento — de dónde viene la desviación',
     por: `Cada ${corte || 'segmento'} contra la meta del indicador, y cómo se movió ` +
          `desde ${nombreMesCerrado()}.`,
+    ficha: { compara: `cada segmento contra su propio ${nombreMesCerrado()} cerrado, columna a columna`,
+             unidad: 'la del indicador', filtro: 'los segmentos que publica el reporte' },
     cabecera: [corte ? corte[0].toUpperCase() + corte.slice(1) : 'Segmento', nombreMesCerrado(), nombreMes(mesParcial()) || 'mes en curso',
                'vs meta', 'vs ' + nombreMesCerrado()],
     cuerpo, lecturas,
@@ -5155,6 +5190,8 @@ function ejeComparable(ind, dias) {
 }
 
 // Todo lo que la pantalla necesita saber de un indicador, calculado una vez.
+function m_meta_nula(meta) { return meta == null; }
+
 function ejeMetrica(ind) {
   const borr = metasBorrador();
   const propia = Object.prototype.hasOwnProperty.call(borr, ind.clave);
@@ -5183,6 +5220,22 @@ function ejeMetrica(ind) {
   const cumplCurso = ejeCumplimiento(ind, curso, metaAlDia);
   const cumplCierre = ejeCumplimiento(ind, cerrado, meta);
   const cumplProy = proy ? ejeCumplimiento(ind, proy.valor, meta) : null;
+
+  // Brecha del cierre proyectado contra la meta, en unidad y en porcentaje.
+  // "83% de cumplimiento" no dice cuánto falta; "faltan S/1.2M (17%)" sí, y
+  // es la cifra con la que se decide si el mes todavía se puede salvar.
+  const brechaCierre = (() => {
+    if (m_meta_nula(meta) || !proy || proy.valor == null) return null;
+    const v1 = escalaMeta(ind, proy.valor), v0 = escalaMeta(ind, meta);
+    if (v1 == null || v0 == null) return null;
+    const d = v1 - v0;
+    if (Math.abs(d) < 1e-9) return 'justo en la meta';
+    const falta = ind.direccion === 'menor' ? d > 0 : d < 0;
+    const rel = v0 ? Math.abs(d / v0) * 100 : null;
+    return `${falta ? 'faltan' : 'sobran'} ${ejeFmt(ind, Math.abs(
+        ind.unidad === 'pct' || ind.unidad === 'ratio' ? Math.abs(d) / 100 : Math.abs(d)))}` +
+      (rel != null ? ` (${rel.toFixed(0)}%)` : '');
+  })();
 
   // El semáforo mira hacia dónde va, no dónde está: para lo que se acumula
   // manda la proyección de cierre; para una tasa, el valor de hoy.
@@ -5233,7 +5286,7 @@ function ejeMetrica(ind) {
 
   return { ind, meta, metaPropia: propia, metaAlDia, curso, cerrado, previo, serie,
            sinSerie, dias, proy, cumplCurso, cumplCierre, cumplProy, sem, comp,
-           variacion, tri, dist, sospecha };
+           variacion, tri, dist, sospecha, brechaCierre };
 }
 
 
@@ -5320,19 +5373,34 @@ function ejeTarjeta(m) {
       <div class="eje-row-c">${ejePct(m.cumplCierre)}</div>
     </div>`;
 
-  // La proyección solo se muestra cuando dice algo nuevo. En una tasa el
-  // cierre proyectado ES el valor de hoy, y repetir la misma cifra dos filas
-  // seguidas hacía dudar de si eran la misma o dos distintas.
-  const filaProy = (m.proy && m.proy.metodo === 'ritmo') ? `
+  // La proyección de cierre va SIEMPRE, también en las tasas.
+  //
+  // Antes se ocultaba en las tasas porque el cierre proyectado es el valor de
+  // hoy y repetir la cifra hacía dudar. Pero omitirla dejaba a nueve de trece
+  // indicadores sin responder la pregunta que importa —"¿cómo cierra el
+  // mes?"— y obligaba a deducir que no había proyección. Se muestra, y el
+  // método se dice en la propia fila: en una tasa el cierre estimado es el
+  // valor que lleva el mes, porque una tasa no se acumula.
+  const filaProy = m.proy ? `
     <div class="eje-row eje-row-proy">
       <div class="eje-row-k">cierre de ${esc(nombreMes(mesParcial()) || 'mes')}
-        <small class="eje-calc" title="${esc(m.proy.nota)}">proyección</small></div>
+        <small class="eje-calc" title="${esc(m.proy.nota)}">${
+          m.proy.metodo === 'ritmo' ? 'proyección al ritmo actual'
+                                    : 'estimado = lo que lleva el mes'}</small></div>
       <div class="eje-row-v">${esc(ejeFmt(ind, m.proy.valor))}</div>
       <div class="eje-row-m">${m.meta == null ? '—'
         : 'meta ' + esc(ejeFmt(ind, m.meta)) +
-          (m.dist ? '<small>' + esc(m.dist.txt) + '</small>' : '')}</div>
+          (m.brechaCierre ? '<small>' + esc(m.brechaCierre) + '</small>' : '')}</div>
       <div class="eje-row-c" style="color:${col}">${ejePct(m.cumplProy)}</div>
-    </div>` : '';
+    </div>` : `
+    <div class="eje-row eje-row-proy">
+      <div class="eje-row-k">cierre de ${esc(nombreMes(mesParcial()) || 'mes')}
+        <small>no se puede proyectar</small></div>
+      <div class="eje-row-v"><span class="eje-na">sin dato de ${
+        esc(nombreMes(mesParcial()) || 'este mes')}</span></div>
+      <div class="eje-row-m">${m.meta == null ? '—' : 'meta ' + esc(ejeFmt(ind, m.meta))}</div>
+      <div class="eje-row-c"><span class="eje-na">—</span></div>
+    </div>`;
 
   // Variación: solo la que es metodológicamente comparable.
   const varTxt = (() => {
@@ -5487,7 +5555,7 @@ function ejeHallazgos() {
     out.push({
       kpi: ind.label, clave: ind.clave,
       segmento: 'total de la empresa',
-      desvio: m.dist.txt + ' vs meta',
+      desvio: m.dist.txt + ' vs meta de setiembre',
       soles: null,
       tendencia: m.tri ? (m.tri.cls === 't-peor' ? 'empeora' :
                           m.tri.cls === 't-mejor' ? 'mejora' : 'estable') : null,
@@ -5507,7 +5575,9 @@ function ejeHallazgos() {
       .forEach(f => out.push({
         kpi: 'Margen variable', clave: 'margen',
         segmento: `${uen} · ${f.producto}`,
-        desvio: `${f.margen_previo} → ${f.margen}`,
+        // Sin los meses, "39.9% → 38.3%" obliga a deducir cuál es cuál.
+        desvio: `${nombreMesCerrado().slice(0, 3)}. ${f.margen_previo} → ` +
+                `set. ${f.margen}`,
         soles: f.soles_mes,
         tendencia: (avNum(f.margen_enero) != null && avNum(f.margen) < avNum(f.margen_enero))
           ? 'cae desde enero' : 'cayó este mes',
@@ -5545,7 +5615,8 @@ function ejeHallazgos() {
     cli.__filas.filter(f => f.impacto < -0.2).slice(0, 3).forEach(f => out.push({
       kpi: 'Margen variable', clave: 'margen',
       segmento: `Cliente · ${avNombreCorto(f.nombre)}`,
-      desvio: `${f.margen.toFixed(1)}% de margen con ${f.pct.toFixed(1)}% de la venta`,
+      desvio: `${f.margen.toFixed(1)}% de margen con ${f.pct.toFixed(1)}% de la venta ` +
+              `· setiembre al día ${(ejeDias() || {}).dia || ''}`,
       soles: null,
       tendencia: null,
       prioridad: f.impacto < -0.5 ? 'crit' : 'warn',
@@ -5560,7 +5631,7 @@ function ejeHallazgos() {
   cart.filter(c => (c.pct_t30mas || 0) > 10).slice(0, 3).forEach(c => out.push({
     kpi: 'Morosidad', clave: 'morosidad',
     segmento: `${c.ejecutivo}${c.canal ? ' · ' + c.canal : ''}`,
-    desvio: `${c.pct_t30mas}% de su cartera con más de 30 días`,
+    desvio: `${c.pct_t30mas}% de su cartera con más de 30 días · saldo al corte`,
     soles: -Math.abs(localNum(c.t30mas) || 0),
     tendencia: null,
     prioridad: c.pct_t30mas > 20 ? 'crit' : 'warn',
