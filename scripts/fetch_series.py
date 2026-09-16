@@ -2369,8 +2369,11 @@ def main():
     ent_ratio = cargar_catalogo().get(
         "Eficiencia de Costo de compra  de materiales  (Operación)#4db75af70c3b")
     if ent_ratio:
-        cand = [compras_id] + [DATASET_IDS.get(k) for k in
-                               ("planificacion", "inventario", "mermas", "margen", "consumo")]
+        # TODOS los datasets conocidos, no una lista corta: la captura no dice
+        # de qué modelo salió y acotarla a seis dejaba fuera al que la
+        # contesta. Probar de más cuesta una petición por candidato y solo la
+        # primera vez, porque el que acierta queda de primero para el resto.
+        cand = [compras_id] + [v for v in DATASET_IDS.values() if v]
         ds_ok, _ = dataset_de_captura(token, ent_ratio, cand)
         if ds_ok and ds_ok != compras_id:
             print(f"    · el ratio de compras vive en {ds_ok[:8]}, no en "

@@ -1335,29 +1335,43 @@ def clave_por_sufijo(fila, sufijo):
 def dax_facturacion_por_cliente():
     """Facturación por cliente y mes — lo VENDIDO, no lo pedido.
 
-    La tabla de clientes salía del visual de ÓRDENES DE VENTA, que es lo
-    colocado en el sistema. Sirve para ver qué pidió cada cliente, pero no
-    para ver cuánto de eso ya se facturó, que es lo que dice si el mes avanza.
-
     Ningún visual publica facturación por cliente. Sí existe por canal
-    —"FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO"—, y sale de la misma tabla
-    'Exl Cliente x Vendedor' que tiene el cliente. Se copian sus filtros
-    literalmente y se cambia solo la columna de agrupación, que es la misma
-    mecánica de dax_precio_producto_canal.
+    —"FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO"— y el cliente, [RAZON
+    SOCIAL], vive en la MISMA tabla que el importe: 'Exl A Maestra de Facturas
+    de Venta'. El cruce no necesita ninguna relación nueva.
+
+    Se copia el bloque DEFINE de la captura LITERAL —son sus once filtros, que
+    son los que definen qué cuenta como facturación— y se escribe una
+    agrupación limpia. El primer intento reemplazó solo el
+    ROLLUPADDISSUBTOTAL y dejó atrás las otras tres referencias a
+    [IsGrandTotalRowTotal] que la matriz usa para su fila Total: Power BI
+    respondió que esa columna no existe. La maquinaria de subtotales pinta el
+    visual y aquí no hace falta.
     """
     entrada = catalogo_capturas().get("FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO#d37f17982d3b")
     if not entrada or not entrada.get("dax"):
         return None
-    # El cliente NO está en 'Exl Cliente x Vendedor'.
-    #
-    # El nombre engaña: esa tabla solo tiene Vendedor, Region, Jefe, GRUPO,
-    # Canal y Canal2 — lo confirmó el diagnóstico de la corrida del 16/09, que
-    # por eso lista las columnas en vez de decir solo que no encontró la que
-    # buscaba. El cliente es [RAZON SOCIAL] y vive en la MISMA tabla que el
-    # importe facturado, así que el cruce no necesita ninguna relación nueva.
-    return entrada["dax"].replace(
-        "ROLLUPADDISSUBTOTAL('Exl Cliente x Vendedor'[Canal], \"IsGrandTotalRowTotal\")",
-        "'Exl A Maestra de Facturas de Venta'[RAZON SOCIAL]"
+    dax = entrada["dax"]
+    i = dax.find("VAR __DS0Core")
+    if i < 0:
+        return None
+    define = dax[:i].rstrip()
+    n = len(re.findall(r"VAR __DS0FilterTable\d*\s*=", define))
+    if not n:
+        return None
+    usados = "".join(f"\t\t__DS0FilterTable{'' if k == 1 else k},\n"
+                     for k in range(1, n + 1))
+    ld = "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75"
+    return (
+        define + "\n\nEVALUATE\n"
+        "\tSUMMARIZECOLUMNS(\n"
+        "\t\t'Exl A Maestra de Facturas de Venta'[RAZON SOCIAL],\n"
+        f"\t\t'{ld}'[Año],\n"
+        f"\t\t'{ld}'[NroMes],\n"
+        + usados +
+        "\t\t\"Monto_Neto_Factura\", CALCULATE(SUM("
+        "'Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura]))\n"
+        "\t)"
     )
 
 
