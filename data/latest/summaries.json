@@ -354,7 +354,15 @@
               "monto": "S/256,008",
               "pct": 2.1
             }
-          ]
+          ],
+          "_no_cuadran": {
+            "tramos": {
+              "kpi": "CxP Total",
+              "suma": 10263592,
+              "kpi_valor": 16720000,
+              "motivo": "el aging son los vencimientos corrientes; el total incluye además la deuda refinanciada, que no vence por tramos"
+            }
+          }
         },
         "margen_variable": {
           "estado": "yellow",
@@ -3317,7 +3325,21 @@
               "fuente": "calculado"
             }
           ],
-          "por_uen_periodo": "acumulado 2026"
+          "por_uen_periodo": "acumulado 2026",
+          "_no_cuadran": {
+            "por_cliente": {
+              "kpi": "Ventas mes",
+              "suma": 4092285,
+              "kpi_valor": 7690000,
+              "motivo": "son ORDENES DE VENTA del mes en curso y el KPI es FACTURACION del mes cerrado: dos bases y dos periodos distintos"
+            },
+            "por_documento": {
+              "kpi": "Ventas mes",
+              "suma": 2359330,
+              "kpi_valor": 7690000,
+              "motivo": "es la facturacion del mes EN CURSO a la fecha y el KPI es el mes cerrado completo"
+            }
+          }
         },
         "consumo_materiales": {
           "estado": "green",
@@ -6063,7 +6085,7 @@
     ]
   ],
   "validacion": {
-    "cuadran": 27,
+    "cuadran": 35,
     "no_cuadran": [
       {
         "prueba": "B&D MOSTAZA BALDE 4K   ND: precio por kilo x8.5 en un mes",

@@ -1698,6 +1698,13 @@ small { font-size:13px; line-height:1.4; }
 /* Ficha de corte al pie de cada bloque. Discreta pero siempre presente: el
    lector no tiene que subir al encabezado para saber de qué mes es la tabla
    que está mirando, ni deducirlo del contexto. */
+/* Aviso de que la tabla no suma la tarjeta. Va ARRIBA, antes de que el
+   lector empiece a sumar la columna, no al pie. */
+.av-an-ojo { margin:0 0 12px; padding:9px 12px; font-size:13.5px; line-height:1.5;
+  background:var(--yellow-bg); border-left:3px solid var(--yellow);
+  border-radius:0 6px 6px 0; color:var(--text2); }
+.av-an-ojo b { color:var(--text); }
+
 .av-an-ficha { margin:10px 0 0; font-size:13px; color:var(--text3);
   border-top:1px solid var(--border); padding-top:8px; line-height:1.5; }
 .av-an-ficha b { color:var(--text2); font-weight:600; }
@@ -3783,6 +3790,19 @@ function colMes(base, periodo) {
 // Pie de bloque con el corte, la unidad y la base de comparación. Va en todos
 // los bloques de análisis para que ninguno dependa de lo que diga el de
 // arriba: cada tabla se puede leer sola.
+// Aviso de que un desglose NO suma lo que dice la tarjeta de su reporte, con
+// el motivo que declara el propio dato. Sin esto el lector suma la columna,
+// le da distinto al KPI de arriba y concluye que falta información — cuando
+// lo que pasa es que miden cosas distintas.
+function avNoCuadra(reporte, clave) {
+  const nc = ((avReporte(reporte) || {})._no_cuadran || {})[clave];
+  if (!nc) return '';
+  return `<p class="av-an-ojo"><b>Esta tabla no suma el KPI de la tarjeta</b> —
+    ${esc(Number(nc.suma).toLocaleString('es-PE'))} contra
+    ${esc(Number(nc.kpi_valor).toLocaleString('es-PE'))} de «${esc(nc.kpi)}»— y es
+    correcto: ${esc(nc.motivo)}.</p>`;
+}
+
 function avFichaBloque(opciones, periodo) {
   const o = opciones || {};
   const m = avanceDelMes();
@@ -4049,6 +4069,8 @@ function avBloqueClientes() {
   const filas = cli.map(c => {
     const m = avNum(c.margen), w = avNum(c.pct_venta);
     return { nombre: c.cliente, venta: c.venta, pct: w, margen: m,
+             ventaCerr: c.venta_cerrado, margenCerr: avNum(c.margen_cerrado),
+             deltaPp: c.delta_pp,
              impacto: (m != null && w != null) ? (m - mgEmpresa) * w / 100 : null };
   }).filter(f => f.impacto != null);
   if (filas.length < 3) return null;
@@ -4060,13 +4082,19 @@ function avBloqueClientes() {
   const pesoMal = arrastran.reduce((s, f) => s + (f.pct || 0), 0);
   const cubre = filas.reduce((s, f) => s + (f.pct || 0), 0);
 
+  const hayCerr = filas.some(f => f.margenCerr != null);
   const cuerpo = filas.map(f => `
     <tr${f.impacto < -0.2 ? ' class="av-an-foco"' : ''}>
       <td>${esc(avNombreCorto(f.nombre))}</td>
+      <td class="av-an-ene">${esc(f.ventaCerr || '—')}</td>
       <td>${esc(f.venta || '—')}</td>
       <td>${f.pct == null ? '—' : f.pct.toFixed(1) + '%'}</td>
+      <td class="av-an-ene">${f.margenCerr == null ? '—' : f.margenCerr.toFixed(1) + '%'}</td>
       <td style="color:${f.margen < mgEmpresa ? 'var(--red)' : 'var(--green)'}">
         ${f.margen.toFixed(1)}%</td>
+      <td style="color:${f.deltaPp == null ? 'var(--text3)'
+        : f.deltaPp < 0 ? 'var(--red)' : 'var(--green)'}">
+        ${f.deltaPp == null ? '—' : avPP(f.deltaPp)}</td>
       <td style="color:${f.impacto < 0 ? 'var(--red)' : 'var(--green)'}">
         ${avPP(f.impacto)}</td>
     </tr>`).join('');
@@ -4077,8 +4105,8 @@ function avBloqueClientes() {
     lecturas.push(`<p class="av-an-lee rojo"><b>Dónde enfocarse:</b> ` +
       `${arrastran.length === 1 ? 'un cliente explica' : 'los ' + arrastran.length +
         ' clientes que más arrastran explican'} ${avPP(sumaMal)} de margen y son el ` +
-      `${pesoMal.toFixed(0)}% de la venta. ${esc(avNombreCorto(p.nombre))} solo, con ` +
-      `${p.pct.toFixed(1)}% de la venta a ${p.margen.toFixed(1)}% de margen, pesa ` +
+      `${pesoMal.toFixed(0)}% de las órdenes. ${esc(avNombreCorto(p.nombre))} solo, con ` +
+      `${p.pct.toFixed(1)}% de las órdenes a ${p.margen.toFixed(1)}% de margen, pesa ` +
       `${avPP(p.impacto)}.</p>`);
   }
   // Dos clientes de venta parecida y margen muy distinto son la comparación
@@ -4086,7 +4114,7 @@ function avBloqueClientes() {
   const par = avParComparable(filas);
   if (par) {
     lecturas.push(`<p class="av-an-lee">${esc(avNombreCorto(par.a.nombre))} y ` +
-      `${esc(avNombreCorto(par.b.nombre))} venden casi lo mismo ` +
+      `${esc(avNombreCorto(par.b.nombre))} tienen órdenes casi iguales ` +
       `(${esc(par.a.venta)} vs ${esc(par.b.venta)}) pero a ${par.a.margen.toFixed(1)}% ` +
       `contra ${par.b.margen.toFixed(1)}%. Misma escala de cliente, ` +
       `${Math.abs(par.a.margen - par.b.margen).toFixed(0)} puntos de diferencia: ahí hay ` +
@@ -4100,15 +4128,28 @@ function avBloqueClientes() {
     __filas: filas,
     periodo: avReporte('margen_variable').por_cliente_periodo || null,
     titulo: 'Por cliente — quién arrastra el margen',
-    por: `Los ${filas.length} clientes con más venta, que concentran el ` +
-         `${cubre.toFixed(1)}% del total. La última columna es lo que cada uno le suma o ` +
-         `le quita al margen: su diferencia contra el ${mgEmpresa.toFixed(1)}% que ` +
-         `promedian entre ellos, pesada por cuánto vende. La vara sale de esta misma ` +
-         `tabla y no del KPI del tablero, que es del mes cerrado y de otra base.`,
-    cabecera: ['Cliente', colMes('Venta'), colMes('% venta'), colMes('Margen'),
+    por: `<b>Ojo con la magnitud: esto son ÓRDENES DE VENTA en el sistema, no ` +
+         `facturación.</b> Salen del visual «Órdenes de venta en el sistema por ` +
+         `cliente», que incluye lo pedido y aún no facturado. Por eso los ` +
+         `${filas.length} clientes suman más que la venta facturada del mes que ` +
+         `muestra la tarjeta: son dos cosas distintas y no se restan entre sí.<br>` +
+         `Estos ${filas.length} concentran el ${cubre.toFixed(1)}% de las órdenes. ` +
+         `La última columna es lo que cada uno le suma o le quita al margen: su ` +
+         `diferencia contra el ${mgEmpresa.toFixed(1)}% que promedian entre ellos, ` +
+         `pesada por cuánto pesa. La vara sale de esta misma tabla y no del KPI del ` +
+         `tablero, que es del mes cerrado y de facturación.`,
+    cabecera: ['Cliente',
+               'Órdenes ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
+               colMes('Órdenes'), colMes('% órdenes'),
+               'Margen ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
+               colMes('Margen'), 'Δ pp vs ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
                colMes('Impacto')],
-    ficha: { compara: 'sin columna de agosto: el reporte no publica el mes anterior por cliente',
-             unidad: 'soles y % de margen', filtro: 'los 12 clientes con más venta' },
+    noCuadra: avNoCuadra('margen_variable', 'por_cliente'),
+    ficha: { compara: hayCerr
+               ? `cada cliente contra su propio ${nombreMesCerrado()} cerrado, misma consulta con el mes cambiado`
+               : `sin columna de ${nombreMesCerrado()}: aún no se ha traído ese corte`,
+             unidad: 'ÓRDENES DE VENTA en soles y % de margen — no es facturación',
+             filtro: 'los 12 clientes con más órdenes' },
     cuerpo, lecturas,
   };
 }
@@ -4810,6 +4851,7 @@ function avBloquesPublicados(ind) {
       // anterior: son una foto del período de su propia tarjeta. Decir
       // "comparado con agosto" ahí sería inventar una comparación que la
       // tabla no hace.
+      noCuadra: avNoCuadra(ind.reporte, clave),
       ficha: { compara: 'foto del período de la tarjeta: este desglose no trae el mes anterior',
                unidad: 'la del propio reporte',
                periodoTexto: notaRep ? `Período: ${notaRep}`
@@ -5110,6 +5152,7 @@ function avBloquesHTML(bloques) {
     <div class="av-an-blq">
       <h4>${b.titulo} ${b.periodo === undefined ? '' : avPeriodoEtiqueta(b.periodo)}</h4>
       <p class="av-an-por">${b.por}</p>
+      ${b.noCuadra || ''}
       ${b.prioridad || ''}
       <div class="av-scroll-x">
         <table class="av-an-tabla">
@@ -5672,8 +5715,8 @@ function ejeHallazgos() {
     cli.__filas.filter(f => f.impacto < -0.2).slice(0, 3).forEach(f => out.push({
       kpi: 'Margen variable', clave: 'margen',
       segmento: `Cliente · ${avNombreCorto(f.nombre)}`,
-      desvio: `${f.margen.toFixed(1)}% de margen con ${f.pct.toFixed(1)}% de la venta ` +
-              `· setiembre al día ${(ejeDias() || {}).dia || ''}`,
+      desvio: `${f.margen.toFixed(1)}% de margen con ${f.pct.toFixed(1)}% de las ` +
+              `órdenes · setiembre al día ${(ejeDias() || {}).dia || ''}`,
       soles: null,
       tendencia: null,
       prioridad: f.impacto < -0.5 ? 'crit' : 'warn',

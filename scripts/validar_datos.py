@@ -675,6 +675,72 @@ def main():
         inf.ok += 1
         print("  OK     cobertura, derivados y cifras de tarjeta presentes")
 
+    # Un desglose tiene que sumar lo que dice su propia tarjeta, o declarar
+    # por qué no. La tabla de clientes sumaba S/4.09M bajo un KPI de S/7.69M
+    # y nada lo advertía: son órdenes de venta contra facturación, y setiembre
+    # contra agosto. Dos diferencias legítimas, invisibles las dos.
+    #
+    # Las excepciones se declaran aquí con su motivo. Lo que no está en la
+    # lista tiene que cuadrar al 3%.
+    print("\nCada desglose suma lo que dice su tarjeta")
+    CUADRAN = [
+        ("cuentas_por_cobrar", "tramos", "valor", "CxC Total", None),
+        ("cuentas_por_cobrar", "responsables", "total", "CxC Total", None),
+        ("sop_inventario", "dead_por_categoria", "valor", "Dead Stock", None),
+        ("sop_inventario", "working_por_categoria", "valor", "Working Stock", None),
+        ("margen_variable_pag2", "por_canal", "facturado", "Facturado", None),
+        ("cuentas_por_pagar", "tramos", "valor", "CxP Total",
+         "el aging son los vencimientos corrientes; el total incluye además "
+         "la deuda refinanciada, que no vence por tramos"),
+        ("margen_variable", "por_cliente", "venta", "Ventas mes",
+         "son ORDENES DE VENTA del mes en curso y el KPI es FACTURACION del "
+         "mes cerrado: dos bases y dos periodos distintos"),
+        ("margen_variable", "por_documento", "venta", "Ventas mes",
+         "es la facturacion del mes EN CURSO a la fecha y el KPI es el mes "
+         "cerrado completo"),
+    ]
+
+    def _kpi_val(rep, etiqueta):
+        for k in rep.get("kpis", []) or []:
+            if (k.get("label") or "").lower().startswith(etiqueta.lower()):
+                return num(k.get("valor"))
+        return None
+
+    for rep_k, desg, campo, etiqueta, motivo in CUADRAN:
+        rep = rp.get(rep_k) or {}
+        filas = rep.get(desg)
+        if not isinstance(filas, list) or not filas:
+            continue
+        vals = [num(f.get(campo)) for f in filas if isinstance(f, dict)]
+        vals = [v for v in vals if v is not None]
+        tot = _kpi_val(rep, etiqueta)
+        if not vals or not tot:
+            continue
+        suma = sum(vals)
+        ratio = suma / tot
+        cuadra = 0.97 <= ratio <= 1.03
+        if motivo:
+            # Declarado: lo que se vigila es que SIGA sin cuadrar. Si un día
+            # cuadra, la excepción sobra y hay que quitarla.
+            if cuadra:
+                inf.afirmar(False, f"{rep_k}/{desg}: la excepción ya no aplica",
+                            f"suma {suma:,.0f} y {etiqueta} {tot:,.0f} ahora "
+                            f"coinciden; sobra la excepción «{motivo}»")
+            else:
+                inf.ok += 1
+                # El motivo viaja DENTRO del dato: si solo vive aquí, la app
+                # muestra una tabla que no suma su tarjeta y nadie sabe por qué.
+                rep.setdefault("_no_cuadran", {})[desg] = {
+                    "kpi": etiqueta, "suma": round(suma), "kpi_valor": round(tot),
+                    "motivo": motivo}
+                print(f"  OK     {rep_k}/{desg} no cuadra con {etiqueta} "
+                      f"({ratio:.2f}) y está explicado")
+        else:
+            inf.afirmar(cuadra, f"{rep_k}/{desg} vs {etiqueta}",
+                        f"suma {suma:,.0f} contra {tot:,.0f} ({ratio:.2f}): un "
+                        f"desglose que no suma lo que dice su tarjeta se lee "
+                        f"como si le faltaran filas")
+
     print("\nPorcentajes de la misma familia en la misma escala")
     mezcla = escalas_mezcladas(ser)
     if mezcla:

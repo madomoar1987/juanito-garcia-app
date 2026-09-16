@@ -1411,6 +1411,12 @@ def periodo_en_curso():
     return f"{h.year}-{h.month:02d}"
 
 
+def mes_cerrado_txt():
+    """El último mes CERRADO, como "2026-08". Es la referencia del tablero."""
+    h = hoy_lima()
+    return f"{h.year - 1}-12" if h.month == 1 else f"{h.year}-{h.month - 1:02d}"
+
+
 def dax_con_periodo(dax, periodo, columna="PERIODO"):
     """Cambia el mes de una consulta capturada por el mes en curso.
 
@@ -2914,15 +2920,40 @@ def build_margen(found):
         anotar_derivado("margen_variable", "por_cliente", "pct_venta",
                         "venta del cliente / venta total × 100", PART)
         res["por_cliente_periodo"] = found.get("__por_cliente_periodo")
+        res["por_cliente_cerrado_periodo"] = found.get("__por_cliente_cerrado_periodo")
+
+        # El mismo cliente en el mes cerrado, para poder decir si empeoró.
+        prev = {}
+        for c in (found.get("__por_cliente_cerrado") or []):
+            nom = (c.get("cliente") or "").strip()
+            if nom:
+                prev[nom] = (to_float(c.get("venta")), to_float(c.get("margen")))
+
+        def _pct(x):
+            return None if x is None else (x * 100 if abs(x) <= 1 else x)
+
         res["por_cliente"] = [{
             "cliente": n,
             "venta": fmt_soles(v),
             "pct_venta": round(v / total_v * 100, 1) if total_v else None,
-            "margen": (f"{(mg * 100 if abs(mg) <= 1 else mg):.1f}%"
-                       if mg is not None else "—"),
-            "caida": (f"{(ca * 100 if abs(ca) <= 1 else ca):.1f}%"
-                      if ca is not None else None),
+            "margen": (f"{_pct(mg):.1f}%" if mg is not None else "—"),
+            "margen_cerrado": (f"{_pct(prev[n][1]):.1f}%"
+                               if n in prev and prev[n][1] is not None else None),
+            "venta_cerrado": (fmt_soles(prev[n][0])
+                              if n in prev and prev[n][0] is not None else None),
+            # Puntos de margen ganados o perdidos contra el mes cerrado. Es la
+            # columna que dice si hay que llamar a ese cliente: un 48% puede
+            # ser su nivel de siempre o una caída de quince puntos.
+            "delta_pp": (round(_pct(mg) - _pct(prev[n][1]), 2)
+                         if n in prev and mg is not None
+                         and prev[n][1] is not None else None),
+            "caida": (f"{_pct(ca):.1f}%" if ca is not None else None),
         } for n, v, mg, ca in limpios[:12]]
+        if prev:
+            anotar_derivado("margen_variable", "por_cliente", "delta_pp",
+                            "margen del mes en curso − margen del mes cerrado",
+                            "el reporte publica cada mes por separado; la "
+                            "diferencia es la que dice si el cliente empeoró")
 
     # El costo por cliente viene de la tabla de órdenes de venta, que trae los
     # mismos clientes con las mismas ventas y márgenes. Se añade aquí en vez de
@@ -4762,6 +4793,26 @@ def main():
                 if cli:
                     scanned.setdefault("margen", {})["__por_cliente"] = cli
                     scanned["margen"]["__por_cliente_periodo"] = periodo_en_curso()
+
+                # El mismo corte del MES CERRADO. Sin él la tabla enseña el
+                # mes en curso a secas y no hay forma de saber si un cliente
+                # empeoró o si siempre estuvo ahí: "48.4% de margen" no dice
+                # nada sin saber en cuánto cerró agosto.
+                cerrado = mes_cerrado_txt()
+                if cerrado and cerrado != periodo_en_curso():
+                    cli0 = desglose_desde_captura(
+                        token, ws_id, [ids.get("margen")],
+                        "ORDENES DE VENTA EN EL SISTEMA POR CLIENTE",
+                        {"cliente": "[cliente]",
+                         "margen": "[v__Margen_Venta__]",
+                         "margen_caida": "[v__MARGEN_CAIDA__]",
+                         "venta": "[SumMonto_Neto_Venta]",
+                         "costo": "[SumCOSTO_TOTAL]"},
+                        periodo=cerrado)
+                    if cli0:
+                        scanned["margen"]["__por_cliente_cerrado"] = cli0
+                        scanned["margen"]["__por_cliente_cerrado_periodo"] = cerrado
+                        print(f"    ✓ Margen por cliente ({cerrado}): {len(cli0)} filas")
             except Exception as e:
                 print(f"    ✗ margen por cliente: {e}")
                 DIAGNOSTICO.append({"consulta": "margen_cliente", "http": 0,
