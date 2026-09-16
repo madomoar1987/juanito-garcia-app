@@ -710,12 +710,53 @@ def main():
     # avisar de una contradicción en la misma pantalla donde está la cifra, en
     # vez de dejarla escondida en el registro de una corrida que nadie abre.
     if anotar:
+        # Las diferencias ya investigadas se marcan aquí, en un solo sitio, y
+        # viajan marcadas dentro del dato. Antes solo las conocía el paso de
+        # verificación del workflow, así que la app pintaba en ámbar una
+        # diferencia explicada —el peso mal registrado de un SKU— sin forma de
+        # dejar de pintarla. Una alarma que suena siempre deja de mirarse.
+        conocidos = set()
+        try:
+            ruta_con = pathlib.Path("data/descuadres_conocidos.json")
+            if ruta_con.exists():
+                conocidos = {x["prueba"] for x in json.loads(
+                    ruta_con.read_text(encoding="utf-8"))["conocidos"]}
+        except Exception as e:
+            print(f"  · no se pudo leer descuadres_conocidos.json: {e}")
+
+        def _llano(x):
+            # Los nombres de producto traen espacios dobles del maestro; sin
+            # normalizarlos el emparejamiento fallaba en silencio.
+            return re.sub(r"\s+", " ", str(x)).strip().lower()
+
+        conocidos_llanos = {_llano(c) for c in conocidos}
+
+        def _conocido(titulo):
+            # Coincide por prefijo: el título lleva el nombre del SKU y la
+            # entrada conocida describe el caso, no la corrida.
+            t = _llano(titulo)
+            return any(t.startswith(c) or c.startswith(t)
+                       for c in conocidos_llanos)
+
         d["validacion"] = {
             "cuadran": inf.ok,
+            # OJO con el "if dif" que había aquí.
+            #
+            # Descartaba toda comprobación que no compare dos números —las de
+            # afirmar(): serie desalineada, margen sobre base negativa, precio
+            # imposible, metadatos ausentes—. Esas se imprimían en el log del
+            # workflow y NO llegaban nunca a los datos, así que la app no las
+            # mostraba y el paso de verificación posterior leía "0 no cuadran"
+            # con descuadres reales encima de la mesa. Una comprobación que no
+            # puede fallar a la vista no es una comprobación.
             "no_cuadran": [
-                {"prueba": t, "publicado": round(a, 4), "esperado": round(b, 4),
-                 "diferencia_pct": round(dif * 100, 1), "detalle": det}
-                for t, a, b, dif, det in inf.fallos if dif],
+                ({"prueba": t, "publicado": round(a, 4), "esperado": round(b, 4),
+                  "diferencia_pct": round(dif * 100, 1), "detalle": det}
+                 if dif else
+                 {"prueba": t, "publicado": None, "esperado": None,
+                  "diferencia_pct": None, "detalle": det})
+                | {"conocido": _conocido(t)}
+                for t, a, b, dif, det in inf.fallos],
             "sin_datos": inf.saltados,
         }
         ruta.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")

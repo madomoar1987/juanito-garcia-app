@@ -71,13 +71,29 @@ def revisar(datos, hoy):
 
     val = datos.get("validacion") or {}
     todos = val.get("no_cuadran") or []
-    descuadres = [x for x in todos if x["prueba"] not in conocidos]
-    ya_vistos = [x for x in todos if x["prueba"] in conocidos]
+    # El veredicto lo pone validar_datos al publicar, que normaliza los
+    # espacios dobles de los nombres de producto. Aquí se respeta en vez de
+    # repetir el emparejamiento: hecho dos veces, las dos versiones
+    # discrepaban y el mismo hallazgo salía "conocido" en un sitio y "nuevo"
+    # en el otro. La comparación por nombre queda de respaldo para datos
+    # antiguos, que aún no traen la marca.
+    def _nuevo(x):
+        if "conocido" in x:
+            return not x["conocido"]
+        return x["prueba"] not in conocidos
+
+    descuadres = [x for x in todos if _nuevo(x)]
+    ya_vistos = [x for x in todos if not _nuevo(x)]
     lineas.append(f"coherencia: {val.get('cuadran', '?')} cuadran · "
                   f"{len(descuadres)} no cuadran")
     for x in descuadres[:8]:
-        lineas.append(f"  ✗ {x['prueba']}: publicado {x['publicado']:,} · "
-                      f"esperado {x['esperado']:,} ({x['diferencia_pct']}%)")
+        # Las comprobaciones que no comparan dos números llegan sin cifras:
+        # su detalle ES el hallazgo.
+        if x.get("publicado") is None:
+            lineas.append(f"  ✗ {x['prueba']}: {x.get('detalle') or 'sin detalle'}")
+        else:
+            lineas.append(f"  ✗ {x['prueba']}: publicado {x['publicado']:,} · "
+                          f"esperado {x['esperado']:,} ({x['diferencia_pct']}%)")
     for x in ya_vistos:
         lineas.append(f"  · {x['prueba']}: diferencia conocida y explicada")
 

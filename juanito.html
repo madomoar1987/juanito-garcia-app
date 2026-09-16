@@ -5390,7 +5390,13 @@ function ejeVista() {
   const val = DATA.validacion || {};
   const vt = DATA.validacion_tarjetas || {};
   const cob = DATA.cobertura || {};
-  const nFallos = (val.fallos || []).length;
+  // OJO: el campo es 'no_cuadran', no 'fallos'. Con el nombre equivocado la
+  // franja decía "sin descuadres de coherencia" SIEMPRE, hubiera o no. Y las
+  // diferencias ya investigadas —marcadas al publicar— no cuentan: lo que
+  // enciende la franja es lo que aún no se ha explicado.
+  const noCuadran = val.no_cuadran || [];
+  const nFallos = noCuadran.filter(x => !x.conocido).length;
+  const nExplicadas = noCuadran.length - nFallos;
   const nDist = (vt.distintas || []).length;
   const derN = (DATA.derivados || []).length;
   // Una consulta que falla deja un bloque vacío, y un bloque vacío se lee como
@@ -5413,7 +5419,8 @@ function ejeVista() {
         <b>${vt.iguales != null ? vt.iguales : '—'}</b> tarjetas idénticas al reporte${
           nDist ? ` · <b>${nDist}</b> distintas` : ''}</span>
       <span class="eje-conf-i ${nFallos ? 'mal' : 'ok'}">
-        <b>${nFallos ? nFallos + ' descuadres' : 'sin descuadres'}</b> de coherencia</span>
+        <b>${nFallos ? nFallos + ' descuadres' : 'sin descuadres'}</b> de coherencia${
+          nExplicadas ? ` · <b>${nExplicadas}</b> ya investigad${nExplicadas > 1 ? 'as' : 'a'}` : ''}</span>
       <span class="eje-conf-i">${cob.pct != null
         ? `<b>${cob.pct}%</b> de los KPIs vienen del reporte (${cob.kpis_del_reporte}/${cob.kpis_totales})`
         : 'cobertura sin medir'}</span>
@@ -9872,7 +9879,17 @@ function bannerCobertura() {
       ? `<b>${t.iguales}</b> comparadas contra la tarjeta de Power BI: todas iguales`
       : `<b>${n}</b> difieren de la tarjeta de Power BI`);
   }
-  const mal = (DATA?.validacion?.no_cuadran || []).length
+  // Las diferencias ya investigadas y explicadas —marcadas al publicar— no
+  // encienden la franja: una alarma que suena todos los días por lo mismo
+  // deja de mirarse, y el día que aparece algo nuevo tampoco se ve. Siguen
+  // visibles en el diagnóstico, que es donde se revisan.
+  const nuevas = (DATA?.validacion?.no_cuadran || []).filter(x => !x.conocido);
+  const explicadas = (DATA?.validacion?.no_cuadran || []).length - nuevas.length;
+  if (explicadas) {
+    partes.push(`<b>${explicadas}</b> diferencia${explicadas > 1 ? 's' : ''} ` +
+      `ya investigada${explicadas > 1 ? 's' : ''}`);
+  }
+  const mal = nuevas.length
             + ((DATA?.validacion_tarjetas?.distintas || []).length);
   const fondo = mal ? 'var(--yellow-bg)' : 'var(--green-bg)';
   const borde = mal ? 'var(--yellow)' : 'var(--green)';
