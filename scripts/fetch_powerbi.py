@@ -4896,8 +4896,14 @@ def main():
                 # dos al lado es lo que permite leer el avance — cuánto de lo
                 # pedido en setiembre ya se convirtió en venta.
                 try:
+                    # TODOS los datasets como candidatos, no solo 'margen':
+                    # una captura no dice de qué modelo salió, y pasarle uno
+                    # solo hacía que volviera vacía sin llegar siquiera a la
+                    # comprobación de columnas —por eso no dejaba ni aviso—.
+                    # Es el mismo caso que tenía el ratio de compras.
                     fac = desglose_desde_captura(
-                        token, ws_id, [ids.get("margen")],
+                        token, ws_id,
+                        [ids.get("margen")] + [v for v in ids.values() if v],
                         "Matriz#7ea810d041c1",
                         {"cliente": "[RAZON SOCIAL]",
                          "anio": "[Año]", "mes": "[NroMes]",
@@ -4905,6 +4911,18 @@ def main():
                     if fac:
                         scanned.setdefault("margen", {})["__factura_cliente"] = fac
                         print(f"    ✓ Venta facturada por cliente: {len(fac)} filas")
+                    else:
+                        # Una consulta que vuelve vacía sin aviso es
+                        # indistinguible de una que no se pidió: la columna
+                        # sale en blanco y la corrida dice que todo bien.
+                        print("    · Venta facturada por cliente: sin filas")
+                        DIAGNOSTICO.append({
+                            "tipo": "aviso", "consulta": "factura_cliente",
+                            "http": 200,
+                            "error": "la captura 'Matriz#7ea810d041c1' no devolvió "
+                                     "filas en ninguno de los datasets probados; la "
+                                     "tabla de clientes se queda sin facturado ni "
+                                     "% convertido"})
                 except Exception as e:
                     print(f"    ✗ factura por cliente: {e}")
                     DIAGNOSTICO.append({"consulta": "factura_cliente", "http": 0,
