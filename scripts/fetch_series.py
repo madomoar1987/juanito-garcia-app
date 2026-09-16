@@ -2361,7 +2361,21 @@ def main():
         print(f"    ✗ {e}\n")
 
     # ── Compras: ratio consumo/compra con los filtros reales del visual
+    # El dataset NO se da por sabido: la captura se prueba en los candidatos
+    # hasta que uno la contesta. DATASET_IDS['compras'] era el del reporte,
+    # pero la consulta del ratio vive en otro modelo y devolvía cero filas sin
+    # que nada lo dijera — el KPI llevaba vacío por eso.
     compras_id = DATASET_IDS.get("compras")
+    ent_ratio = cargar_catalogo().get(
+        "Eficiencia de Costo de compra  de materiales  (Operación)#4db75af70c3b")
+    if ent_ratio:
+        cand = [compras_id] + [DATASET_IDS.get(k) for k in
+                               ("planificacion", "inventario", "mermas", "margen", "consumo")]
+        ds_ok, _ = dataset_de_captura(token, ent_ratio, cand)
+        if ds_ok and ds_ok != compras_id:
+            print(f"    · el ratio de compras vive en {ds_ok[:8]}, no en "
+                  f"{(compras_id or '')[:8]}")
+        compras_id = ds_ok or compras_id
     if compras_id:
         print("── compras (consulta exacta de 'Eficiencia de Costo de compra')")
         try:

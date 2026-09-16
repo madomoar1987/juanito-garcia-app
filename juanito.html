@@ -3542,6 +3542,26 @@ function avanceDelMes() {
 }
 
 // Valor del mes en curso y del último mes cerrado, de una serie.
+// Valor del mes en curso sacado del corte DIARIO, cuando la serie mensual no
+// lo trae.
+//
+// Producción salía "aún sin dato de setiembre" con el dato en Power BI: su
+// serie mensual termina en el mes cerrado —el reporte no grafica el mes
+// incompleto— pero el corte diario sí tiene los 16 días. Agosto diario suma
+// 1.239M kg y la tarjeta del mes marca 1.24M: cuadran, así que la suma de los
+// días ES el acumulado del mes.
+function valorDesdeDiario(ind) {
+  const pm = ejeSerieDiaria(ind.clave);
+  const mes = pm && pm[mesParcial()];
+  if (!mes || !Array.isArray(mes.valor)) return null;
+  const v = mes.valor.filter(x => x != null);
+  if (!v.length) return null;
+  // Lo que se acumula se suma; una tasa se promedia entre los días con dato.
+  return ind.tipo === 'acumula'
+    ? v.reduce((a, b) => a + b, 0)
+    : v.reduce((a, b) => a + b, 0) / v.length;
+}
+
 function valoresDe(ind) {
   const per = periodos();
   const arr = serieDe(ind.serie);
@@ -3550,8 +3570,10 @@ function valoresDe(ind) {
   const iCurso = idx(mesParcial());
   const iCerrado = idx(mesCerrado());
   const prev = per[per.indexOf(mesCerrado()) - 1];
+  const cursoSerie = iCurso >= 0 ? arr[iCurso] : null;
   return {
-    curso:   iCurso   >= 0 ? arr[iCurso]   : null,
+    curso:   cursoSerie != null ? cursoSerie : valorDesdeDiario(ind),
+    cursoDelDiario: cursoSerie == null && valorDesdeDiario(ind) != null,
     cerrado: iCerrado >= 0 ? arr[iCerrado] : null,
     previo:  prev ? arr[idx(prev)] : null,
     serie: arr,

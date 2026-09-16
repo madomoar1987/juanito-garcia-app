@@ -1332,44 +1332,7 @@ def clave_por_sufijo(fila, sufijo):
     return None
 
 
-def columna_cliente(token, ws, ds_id):
-    """Cómo se llama la columna de cliente en 'Exl Cliente x Vendedor'.
-
-    No se adivina: se lee una fila y se busca entre sus columnas, igual que se
-    hace con el año del calendario. Adivinar "[cliente]" o "[RAZON SOCIAL]"
-    fallaba en silencio y dejaba la columna vacía sin que nada lo dijera.
-    """
-    filas = _tablas_dax(token, ws, ds_id,
-                        "EVALUATE TOPN(1, 'Exl Cliente x Vendedor')",
-                        "cols-cliente")
-    if not filas or not filas[0]:
-        DIAGNOSTICO.append({
-            "tipo": "aviso", "consulta": "columna_cliente", "http": 200,
-            "error": "no se pudo leer 'Exl Cliente x Vendedor' (sin filas o "
-                     "limitado por peticiones); sin ella no hay facturado por cliente"})
-        return None
-    claves = list(filas[0][0].keys())
-    for c in claves:
-        base = c.split("[")[-1].rstrip("]").strip().lower()
-        if base in ("razon social", "razon_social", "cliente", "nombre cliente",
-                    "razón social", "razon  social", "nombre", "razonsocial",
-                    "desc_cliente", "descripcion cliente"):
-            return c.split("[")[-1].rstrip("]")
-    # Segunda pasada, más laxa: cualquier columna que mencione cliente o razón.
-    for c in claves:
-        base = c.split("[")[-1].rstrip("]").strip().lower()
-        if "client" in base or "razon" in base or "razón" in base:
-            return c.split("[")[-1].rstrip("]")
-    # Si no aparece, se dicen las columnas que SÍ tiene. Un diagnóstico que
-    # solo dice "no la encontré" obliga a otra corrida para saber qué buscar.
-    DIAGNOSTICO.append({
-        "tipo": "aviso", "consulta": "columna_cliente", "http": 200,
-        "error": "ninguna columna de cliente en 'Exl Cliente x Vendedor'. "
-                 f"Las que tiene: {', '.join(claves)[:400]}"})
-    return None
-
-
-def dax_facturacion_por_cliente(col_cliente):
+def dax_facturacion_por_cliente():
     """Facturación por cliente y mes — lo VENDIDO, no lo pedido.
 
     La tabla de clientes salía del visual de ÓRDENES DE VENTA, que es lo
@@ -1382,14 +1345,19 @@ def dax_facturacion_por_cliente(col_cliente):
     literalmente y se cambia solo la columna de agrupación, que es la misma
     mecánica de dax_precio_producto_canal.
     """
-    if not col_cliente:
-        return None
     entrada = catalogo_capturas().get("FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO#d37f17982d3b")
     if not entrada or not entrada.get("dax"):
         return None
+    # El cliente NO está en 'Exl Cliente x Vendedor'.
+    #
+    # El nombre engaña: esa tabla solo tiene Vendedor, Region, Jefe, GRUPO,
+    # Canal y Canal2 — lo confirmó el diagnóstico de la corrida del 16/09, que
+    # por eso lista las columnas en vez de decir solo que no encontró la que
+    # buscaba. El cliente es [RAZON SOCIAL] y vive en la MISMA tabla que el
+    # importe facturado, así que el cruce no necesita ninguna relación nueva.
     return entrada["dax"].replace(
         "ROLLUPADDISSUBTOTAL('Exl Cliente x Vendedor'[Canal], \"IsGrandTotalRowTotal\")",
-        f"'Exl Cliente x Vendedor'[{col_cliente}]"
+        "'Exl A Maestra de Facturas de Venta'[RAZON SOCIAL]"
     )
 
 
@@ -3028,7 +2996,7 @@ def build_margen(found):
         for f in (found.get("__facturado_cliente") or []):
             nom = None
             for k, val in f.items():
-                if "Exl Cliente x Vendedor" in k:
+                if "RAZON SOCIAL" in k.upper():
                     nom = (str(val) or "").strip()
                     break
             a = to_float(clave_por_sufijo(f, "Año"))
@@ -4976,8 +4944,7 @@ def main():
                 # son tres cosas distintas, y sin las tres no se puede decir si
                 # el mes avanza o solo se está llenando de pedidos.
                 try:
-                    col_cli = columna_cliente(token, ws_id, ids.get("margen"))
-                    q_fc = dax_facturacion_por_cliente(col_cli)
+                    q_fc = dax_facturacion_por_cliente()
                     if q_fc:
                         fc = (_tablas_dax(token, ws_id, ids.get("margen"), q_fc,
                                           "facturacion_cliente") or [[]])[0]
@@ -4989,9 +4956,9 @@ def main():
                     else:
                         DIAGNOSTICO.append({
                             "tipo": "aviso", "consulta": "facturacion_cliente", "http": 200,
-                            "error": "no se encontró la columna de cliente en "
-                                     "'Exl Cliente x Vendedor'; la tabla de clientes "
-                                     "se queda sin la columna de facturado"})
+                            "error": "falta la captura 'FACTURACIÓN - CANAL POR UNIDAD "
+                                     "DE NEGOCIO' en el catálogo; sin ella no hay "
+                                     "facturado por cliente"})
                 except Exception as e:
                     print(f"    ✗ facturación por cliente: {e}")
                     DIAGNOSTICO.append({"consulta": "facturacion_cliente", "http": 0,
