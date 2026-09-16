@@ -1465,6 +1465,17 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   color:var(--text3); font-weight:600; text-align:right; padding:10px 11px;
   border-bottom:1px solid var(--border); white-space:nowrap; }
 .av-tabla thead th:first-child { text-align:left; }
+/* Segunda línea del encabezado: dice de qué mes es la columna y hasta qué
+   día. Sin esto, "agosto" y "setiembre" uno al lado del otro parecen dos
+   meses comparables, y uno está cerrado y el otro va por la mitad. */
+/* La base de la comparación va abreviada en la celda y completa en el título:
+   la frase entera engordaba la fila a cinco líneas. */
+.av-base { border-bottom:1px dotted var(--border); cursor:help; }
+
+.av-tabla thead th small { display:block; font-weight:400; text-transform:none;
+  letter-spacing:0; font-size:12px; color:var(--text3); margin-top:3px; }
+.av-tabla thead th.av-th-hoy { color:var(--text); }
+.av-tabla thead th.av-th-ref { color:var(--text3); }
 .av-tabla td { padding:10px 11px; border-bottom:1px solid var(--bg3); text-align:right;
   font-variant-numeric:tabular-nums; vertical-align:middle; }
 .av-tabla td:first-child { text-align:left; }
@@ -1683,6 +1694,13 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
    de 13 px eso son 10: doce etiquetas —"al día 15", "sin confirmar"— se
    quedaban por debajo del piso aunque ninguna regla las pusiera ahí. */
 small { font-size:13px; line-height:1.4; }
+
+/* Ficha de corte al pie de cada bloque. Discreta pero siempre presente: el
+   lector no tiene que subir al encabezado para saber de qué mes es la tabla
+   que está mirando, ni deducirlo del contexto. */
+.av-an-ficha { margin:10px 0 0; font-size:13px; color:var(--text3);
+  border-top:1px solid var(--border); padding-top:8px; line-height:1.5; }
+.av-an-ficha b { color:var(--text2); font-weight:600; }
 
 .av-an-foco td { background:var(--red-bg); }
 .av-an-ene { color:var(--text3); }
@@ -3742,6 +3760,45 @@ function avNum(s) {
 // Etiqueta del período de un bloque. Si el dato no es del mes en curso hay
 // que decirlo en el mismo renglón del título: la tabla de clientes venía de
 // julio mientras el resto del análisis hablaba de setiembre.
+// Etiqueta de columna con su mes pegado.
+//
+// "Venta" no dice de cuándo es. En una tabla de clientes que sale dentro de un
+// análisis de setiembre parece obvio, pero no lo es: el lector que baja hasta
+// la tabla ya no tiene el encabezado a la vista, y la misma tabla convive con
+// columnas que sí son de agosto. Cada columna con dato de un mes lo lleva
+// escrito. Tres letras no cuestan sitio y quitan toda la deducción.
+function colMes(base, periodo) {
+  const n = nombreMes(periodo || mesParcial());
+  if (!n) return base;
+  return `${base} ${n.slice(0, 3)}.`;
+}
+
+// Pie de bloque con el corte, la unidad y la base de comparación. Va en todos
+// los bloques de análisis para que ninguno dependa de lo que diga el de
+// arriba: cada tabla se puede leer sola.
+function avFichaBloque(opciones, periodo) {
+  const o = opciones || {};
+  const m = avanceDelMes();
+  const partes = [];
+
+  // Qué mes es y hasta qué día. Si el bloque declara un período distinto del
+  // mes en curso se dice, en vez de titularlo "setiembre" por costumbre.
+  if (periodo && periodo !== mesParcial()) {
+    partes.push(`<b>${esc(nombreMes(periodo) || periodo)}</b>` +
+      (esParcial(periodo) ? '' : ' (mes cerrado)'));
+  } else if (m) {
+    partes.push(`<b>Setiembre</b> al día ${m.dia} de ${m.dias}`);
+  } else {
+    partes.push('<b>Setiembre</b>');
+  }
+
+  partes.push(o.compara || `comparado con ${nombreMesCerrado()} completo`);
+  if (o.unidad) partes.push(o.unidad);
+  partes.push(o.filtro || 'sin filtros adicionales');
+  partes.push(o.fuente || `Power BI · ${esc(DATA?.fecha || '')} ${esc(DATA?.hora_actualizacion || '')}`);
+  return `<p class="av-an-ficha">${partes.join(' · ')}</p>`;
+}
+
 function avPeriodoEtiqueta(periodo) {
   const curso = mesParcial();
   if (!periodo) return '<span class="av-an-mes av-an-mes-ojo">mes sin confirmar</span>';
@@ -4023,7 +4080,8 @@ function avBloqueClientes() {
          `le quita al margen: su diferencia contra el ${mgEmpresa.toFixed(1)}% que ` +
          `promedian entre ellos, pesada por cuánto vende. La vara sale de esta misma ` +
          `tabla y no del KPI del tablero, que es del mes cerrado y de otra base.`,
-    cabecera: ['Cliente', 'Venta', '% venta', 'Margen', 'Impacto'],
+    cabecera: ['Cliente', colMes('Venta'), colMes('% venta'), colMes('Margen'),
+               colMes('Impacto')],
     cuerpo, lecturas,
   };
 }
@@ -4221,7 +4279,9 @@ function avBloqueSKU(uen) {
       `recorrido del año, no solo el último salto. Ningún visual del reporte cruza ` +
       `producto con unidad de negocio: esta tabla se arma con una consulta propia que ` +
       `reusa los filtros del reporte sin cambiarlos.`,
-    cabecera: ['Producto', 'Venta', '% venta', 'Precio/kg previo', 'Precio/kg',
+    cabecera: ['Producto', colMes('Venta'), colMes('% venta'),
+               'Precio/kg ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
+               colMes('Precio/kg'),
                'Margen enero', 'Margen previo', 'Margen', 'Impacto', 'S/ del mes'],
     cuerpo, lecturas,
   };
@@ -4289,7 +4349,8 @@ function avBloqueSubcategorias(uen) {
         `vienen avanzando o retrocediendo. Es el mayor detalle que el reporte entrega ` +
         `dentro de una unidad de negocio.`
       : 'Precio y costo por kilo por subcategoría, ordenadas por venta.',
-    cabecera: ['Subcategoría', 'Venta', '% venta', 'Precio/kg', 'Costo/kg',
+    cabecera: ['Subcategoría', colMes('Venta'), colMes('% venta'),
+               colMes('Precio/kg'), colMes('Costo/kg'),
                'Margen enero', 'Margen previo', 'Margen', 'Impacto', 'S/ del mes'],
     cuerpo, lecturas,
   };
@@ -4391,7 +4452,7 @@ function avBloqueCartera() {
     titulo: 'Por ejecutivo — quién responde por lo vencido',
     por: 'Cartera de cada ejecutivo abierta en sus cuatro tramos de antigüedad, ' +
          'ordenada por lo que tiene vencido a más de 30 días.',
-    cabecera: ['Ejecutivo', 'Cartera', 'Por vencer', '0-15 d', '16-30 d',
+    cabecera: ['Ejecutivo', 'Cartera al corte', 'Por vencer', '0-15 d', '16-30 d',
                '+30 d', '% en +30 d'],
     cuerpo, lecturas,
   };
@@ -4419,7 +4480,8 @@ function avBloquePpto() {
     por: 'Lo facturado contra el presupuesto acumulado hasta ayer — no contra el mes ' +
          'entero. Es la comparación que sí respeta los días transcurridos, y la calcula ' +
          'el propio reporte.',
-    cabecera: ['Canal', 'Facturado', 'Presupuesto al día', 'Cuota del mes', '% avance'],
+    cabecera: ['Canal', colMes('Facturado'), 'Ppto. al día (set.)',
+               'Cuota del mes (set.)', '% avance set.'],
     cuerpo,
     lecturas: (() => {
       const conAv = p.filter(f => localNum(f.avance_dia) != null);
@@ -4966,6 +5028,7 @@ function avBloquesHTML(bloques) {
         </table>
       </div>
       ${b.lecturas.join('')}
+      ${avFichaBloque(b.ficha || {}, b.periodo)}
     </div>`).join('');
 }
 
@@ -5802,9 +5865,34 @@ function dxpAvanceView() {
     // es un porcentaje. Lo que se acumula, no — comparar trece días contra un
     // mes entero daría −60% en facturación sin que nada haya pasado. Para
     // esos se comparan los dos últimos meses cerrados y se dice cuáles son.
-    const compara = ind.tipo === 'acumula'
-      ? { a: cerrado, b: previo, pie: `${nombreMesCerrado()} vs el mes previo` }
-      : { a: curso,   b: cerrado, pie: '' };
+    // Contra qué se compara, y dicho siempre.
+    //
+    // Lo que se acumula no se puede comparar de frente: quince días de
+    // setiembre contra un agosto entero daría −60% sin que haya pasado nada.
+    // Cuando existe la serie diaria se compara con LOS MISMOS DÍAS de agosto,
+    // que es la comparación correcta. Cuando no existe, se comparan los dos
+    // últimos meses cerrados y se dice que la referencia es esa, en vez de
+    // rotularlo "vs agosto" y dejar que el lector suponga.
+    const cmp = ind.tipo === 'acumula' ? ejeComparable(ind, ejeDias()) : null;
+    const abrevia = m => (nombreMes(m) || '').slice(0, 3);
+    const compara = ind.tipo !== 'acumula'
+      ? { a: curso, b: cerrado,
+          pie: `set. vs ${abrevia(mesCerrado())}. cerrado`,
+          largo: `El valor de setiembre al día de hoy contra el cierre completo de ` +
+                 `${nombreMesCerrado()}. Es una tasa: un porcentaje se puede comparar ` +
+                 `aunque el mes vaya a medias.` }
+      : cmp
+        ? { a: curso, b: cmp.valor,
+            pie: `set. vs mismos ${cmp.dias} d. de ${abrevia(cmp.mes)}.`,
+            largo: `Setiembre acumulado hasta el día ${cmp.dias} contra los mismos ` +
+                   `${cmp.dias} días de ${nombreMes(cmp.mes)}, día calendario. Es la ` +
+                   `comparación pareja: medio mes contra un mes entero daría una caída ` +
+                   `que no existe.` }
+        : { a: cerrado, b: previo,
+            pie: `base: ${abrevia(mesCerrado())}. vs mes previo`,
+            largo: `No hay corte diario de este indicador, así que setiembre no se ` +
+                   `puede comparar por tramo. Se comparan los dos últimos meses ` +
+                   `CERRADOS: la flecha no habla de setiembre.` };
     const tri = triangulo(ind, compara.a, compara.b);
     const col  = dist ? (dist.bien ? 'var(--green)' : 'var(--red)') : 'var(--text3)';
 
@@ -5881,7 +5969,8 @@ function dxpAvanceView() {
         : '<span class="av-vacio">aún sin dato</span>'}${
         sinSerie ? '<small class="av-vacio">del día</small>' : ''}</td>
       <td data-lab="Variación">${triHtml}${compara.pie
-        ? `<small class="av-vacio">${esc(compara.pie)}</small>` : ''}</td>
+        ? `<small class="av-vacio av-base" title="${esc(compara.largo || '')}"
+             >${esc(compara.pie)}</small>` : ''}</td>
       <td data-lab="Ritmo / distancia">${centro}</td>
       <td data-lab="Tendencia 13 m">${sinSerie ? '<span class="av-vacio">sin corte mensual</span>'
                      : chispaSerie(serie, col)}</td>
@@ -5916,11 +6005,12 @@ function dxpAvanceView() {
   <div class="av-tabla-caja">
     <table class="av-tabla">
       <thead><tr>
-        <th>Indicador</th><th>Meta del mes</th>
-        <th>${esc(nombreMesCerrado())}</th>
-        <th>${esc(nombreMes(mes.periodo) || 'mes en curso')}</th>
-        <th>vs ${esc(nombreMesCerrado())}</th>
-        <th>Ritmo / distancia</th><th>Tendencia 13 m</th><th>Lectura</th>
+        <th>Indicador</th><th>Meta setiembre</th>
+        <th class="av-th-ref">${esc(nombreMesCerrado())}<small>cerrado · referencia</small></th>
+        <th class="av-th-hoy">${esc(nombreMes(mes.periodo) || 'mes en curso')}<small>al día ${mes.dia} de ${mes.dias}</small></th>
+        <th>Variación<small>base al pie de cada cifra</small></th>
+        <th>Ritmo / distancia<small>setiembre vs su meta</small></th>
+        <th>Tendencia 13 m</th><th>Lectura</th>
       </tr></thead>
       <tbody>${filas}</tbody>
     </table>

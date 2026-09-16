@@ -1655,6 +1655,42 @@ def build_dimensiones(found):
                               "filas": [{"canal": c, "por_mes": v} for c, v in
                                         sorted(canal.items(), key=lambda kv: -sum(kv[1].values()))]}
 
+    # ── Series diarias de merma y producción, un tramo por mes.
+    #
+    # La app las usa para la única comparación honesta del mes en curso:
+    # setiembre hasta el día 15 contra los mismos 15 días de agosto. Comparar
+    # medio mes contra un mes cerrado no dice nada.
+    #
+    # Se reactivaron las consultas y faltaba esto: publicarlas en la forma que
+    # la app lee. Sin este paso las traía y las tiraba.
+    for clave, prefijo, campo in (("merma_dia", "__merma_diaria_", "merma"),
+                                  ("produccion_dia", "__produccion_diaria_", "kg")):
+        por_mes = {}
+        for bolsa, filas in found.items():
+            if not bolsa.startswith(prefijo):
+                continue
+            periodo = bolsa[len(prefijo):].replace("_", "-")
+            acum = {}
+            for f in (filas or []):
+                dia = to_float(f.get("dia"))
+                v = to_float(f.get(campo))
+                if dia is None or v is None:
+                    continue
+                # La captura trae subtotales del ROLLUP mezclados con las
+                # filas: se suman los días, y un total repetido inflaría el
+                # tramo. Se acumula por día y se queda el mayor de cada uno,
+                # que es la fila del total de ese día.
+                d = int(dia)
+                acum[d] = max(acum.get(d, 0), v) if campo == "kg" else v
+            if len(acum) >= 3:
+                dias = sorted(acum)
+                por_mes[periodo] = {"dias": dias,
+                                    "valor": [acum[d] for d in dias]}
+        if por_mes:
+            res[clave] = {"por_mes": por_mes}
+            tramos = ", ".join(f"{k}:{len(v['dias'])}d" for k, v in sorted(por_mes.items()))
+            print(f"    ✓ {clave}: {tramos}")
+
     # ── Cartera por ejecutivo, con sus tramos.
     cart = []
     for f in (found.get("__cartera_responsable") or []):

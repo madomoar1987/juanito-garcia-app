@@ -1,0 +1,2 @@
+{ "version": "0.0.1", "configurations": [ { "name": "juanito",
+  "runtimeExecutable": "python3", "runtimeArgs": ["-m","http.server","8782"], "port": 8782 } ] }
