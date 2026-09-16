@@ -1,7 +1,7 @@
 {
   "fecha": "16/09/2026",
   "fecha_actualizacion": "2026-09-16",
-  "hora_actualizacion": "13:02",
+  "hora_actualizacion": "13:44",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "green"
@@ -3677,25 +3677,25 @@
               "label": "Stock PP (Punto de Pedido)",
               "valor": "4,266,287",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Stock Valorizado",
               "valor": "S/6.95M",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Consumo Prom 3M",
               "valor": "13,877,272",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Consumo Prom 6M",
               "valor": "13,783,281",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Materiales en quiebre",
@@ -3703,13 +3703,13 @@
               "meta": "explosión de materiales",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Ítems con necesidad de compra",
               "valor": "438",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             }
           ],
           "faltantes": [
@@ -4204,21 +4204,19 @@
             },
             {
               "label": "Orden de Venta",
-              "valor": "S/6.79M",
+              "valor": "S/129.02M",
               "fuente": "reporte",
-              "periodo": "2026-08",
-              "periodo_fuente": "fill_rate/Orden de Venta"
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Facturación",
-              "valor": "S/6.09M",
+              "valor": "S/97.29M",
               "fuente": "reporte",
-              "periodo": "2026-08",
-              "periodo_fuente": "fill_rate/Facturación"
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Venta Perdida",
-              "valor": "S/700,000",
+              "valor": "S/31.73M",
               "estado": "red",
               "fuente": "reporte",
               "meta": "orden de venta − facturación",
@@ -6408,8 +6406,16 @@
     ]
   ],
   "validacion": {
-    "cuadran": 35,
+    "cuadran": 30,
     "no_cuadran": [
+      {
+        "prueba": "Fill rate: % vs facturación / orden de venta",
+        "publicado": 88.4,
+        "esperado": 75.4069,
+        "diferencia_pct": 14.7,
+        "detalle": "97,290,000 / 129,020,000",
+        "conocido": false
+      },
       {
         "prueba": "B&D MOSTAZA BALDE 4K   ND: precio por kilo fuera de rango",
         "publicado": null,
@@ -6419,7 +6425,10 @@
         "conocido": true
       }
     ],
-    "sin_datos": []
+    "sin_datos": [
+      "Facturación: sin serie para 2026-08",
+      "Orden de Venta: sin serie para 2026-08"
+    ]
   },
   "validacion_tarjetas": {
     "iguales": 13,
