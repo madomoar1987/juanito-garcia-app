@@ -37,29 +37,34 @@
               "label": "CxC por vencer",
               "valor": "S/4.07M",
               "meta": "aging confirmado",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "CxC Total",
               "valor": "S/4.80M",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "CxC Vencido",
               "valor": "S/735,910",
               "meta": "15.3% de cartera",
               "estado": "yellow",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Clientes",
               "valor": "213",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Ventas del mes",
               "valor": "S/2.34M",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             }
           ],
           "tramos": [
@@ -168,31 +173,36 @@
             {
               "label": "CxP Total",
               "valor": "S/16.72M",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Refinanciado",
               "valor": "S/6.45M",
               "estado": "yellow",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "# Proveedores",
               "valor": "186",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "CxP Vencido",
               "valor": "S/3.32M",
               "meta": "32.4% de la deuda viva",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Deuda top 15 proveedores",
               "valor": "S/12.33M",
               "meta": "concentración",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Días CxP",
@@ -3332,7 +3342,8 @@
               "label": "Costo x TN Vendida",
               "valor": "S/143",
               "validado": true,
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Producción Neta (KG) · acumulado 2026",
@@ -3345,7 +3356,8 @@
               "label": "Costo x TN Producida",
               "valor": "S/143",
               "validado": true,
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             }
           ],
           "no_validado_dax": false
@@ -3569,34 +3581,40 @@
             {
               "label": "Stock PP (Punto de Pedido)",
               "valor": "4,489,194",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Stock Valorizado",
               "valor": "S/6.90M",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Consumo Prom 3M",
               "valor": "13,735,114",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Consumo Prom 6M",
               "valor": "13,712,835",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Materiales en quiebre",
               "valor": "26",
               "meta": "explosión de materiales",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Ítems con necesidad de compra",
               "valor": "440",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             }
           ],
           "faltantes": [
@@ -3711,36 +3729,42 @@
             {
               "label": "Inventario Total",
               "valor": "S/6.18M",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Dead Stock",
               "valor": "S/1.25M",
               "meta": "<S/500K",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "% Dead Stock",
               "valor": "20.2%",
               "meta": "<5%",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Working Stock",
               "valor": "S/3.89M",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Exceso 1 (2-5 meses)",
               "valor": "S/622,495",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Exceso 2 (5-12 meses)",
               "valor": "S/412,792",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             }
           ],
           "dead_por_categoria": [
@@ -3817,83 +3841,97 @@
               "valor": "69.32%",
               "meta": "85%",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Puntos de Control evaluados",
               "valor": "311",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Satisfactorio",
               "valor": "139",
               "estado": "green",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Con Observaciones",
               "valor": "64",
               "estado": "yellow",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Crítico",
               "valor": "108",
               "meta": "0",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "% Puntos en estado Crítico",
               "valor": "34.7%",
               "meta": "<10%",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Total Planes de Acción",
               "valor": "93",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Planes de Acción Abiertos",
               "valor": "1",
               "estado": "yellow",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Planes de Acción Cerrados",
               "valor": "62",
               "estado": "green",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Planes de Acción Atrasados",
               "valor": "29",
               "meta": "0",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "% Avance Planes de Acción",
               "valor": "66.7%",
               "estado": "yellow",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Puntos Ejecutados",
               "valor": "314",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Calificación",
               "valor": "653",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Puntos Totales",
               "valor": "942",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             }
           ],
           "por_area": [
@@ -4078,7 +4116,8 @@
               "valor": "88.4%",
               "meta": "98%",
               "estado": "yellow",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Orden de Venta",
@@ -4099,18 +4138,21 @@
               "valor": "S/700,000",
               "estado": "red",
               "fuente": "reporte",
-              "meta": "orden de venta − facturación"
+              "meta": "orden de venta − facturación",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Venta del mes (tarjeta)",
               "valor": "1,720",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             },
             {
               "label": "Pedidos no atendidos (mes)",
               "valor": "199",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 15/09/2026."
             }
           ],
           "por_grupo": [
@@ -4196,31 +4238,36 @@
             {
               "label": "Presupuesto del mes",
               "valor": "S/7.83M",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Facturado",
               "valor": "S/2.34M",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Avance vs presupuesto",
               "valor": "29.9%",
               "meta": "100%",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Cumplimiento producción (ayer)",
               "valor": "69%",
               "meta": "100% del programa del día",
               "estado": "red",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             },
             {
               "label": "Pendiente de facturar",
               "valor": "S/413,413",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 15/09/2026."
             }
           ],
           "cumplimiento_produccion": [
@@ -6017,7 +6064,16 @@
   ],
   "validacion": {
     "cuadran": 27,
-    "no_cuadran": [],
+    "no_cuadran": [
+      {
+        "prueba": "B&D MOSTAZA BALDE 4K   ND: precio por kilo x8.5 en un mes",
+        "publicado": null,
+        "esperado": null,
+        "diferencia_pct": null,
+        "detalle": "de S/4.01 a S/34.26 — un precio no se mueve así; lo más probable es que el peso esté mal registrado, y el margen derivado de ese precio tampoco vale",
+        "conocido": true
+      }
+    ],
     "sin_datos": []
   },
   "validacion_tarjetas": {
