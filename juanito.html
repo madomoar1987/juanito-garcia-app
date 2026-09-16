@@ -3794,7 +3794,23 @@ function avFichaBloque(opciones, periodo) {
 
   partes.push(o.compara || `comparado con ${nombreMesCerrado()} completo`);
   if (o.unidad) partes.push(o.unidad);
-  partes.push(o.filtro || 'sin filtros adicionales');
+  // El filtro activo manda sobre lo que declare el bloque: con "KETCHUP"
+  // escrito, decir "todos los SKU de la unidad, sin recorte" es falso, y es
+  // justo la línea que el lector usa para saber qué está mirando.
+  // Solo tres bloques aplican el filtro de la barra —los que van por
+  // producto o subcategoría—. Anunciarlo en todos era el error contrario:
+  // con "KETCHUP" escrito, la tabla de canales decía estar filtrada sin
+  // estarlo. El bloque declara si es filtrable; los demás dicen que no lo es.
+  const act = (o.filtrable && typeof filtrosActivos === 'function')
+    ? filtrosActivos() : [];
+  if (act.length) {
+    partes.push(`<b>filtrado</b>: ${act.map(x => x.txt).join(' y ')}` +
+      (o.filtro ? ` · sobre ${o.filtro}` : ''));
+  } else if (o.filtrable) {
+    partes.push(`${o.filtro || 'sin recorte'} · la barra de arriba lo filtra`);
+  } else {
+    partes.push(`${o.filtro || 'sin filtros adicionales'} · la barra de arriba no afecta a este corte`);
+  }
   partes.push(o.fuente || `Power BI · ${esc(DATA?.fecha || '')} ${esc(DATA?.hora_actualizacion || '')}`);
   return `<p class="av-an-ficha">${partes.join(' · ')}</p>`;
 }
@@ -4283,7 +4299,7 @@ function avBloqueSKU(uen) {
       `reusa los filtros del reporte sin cambiarlos.`,
     ficha: { compara: `cada SKU contra su propio ${nombreMesCerrado()} cerrado, columna a columna`,
              unidad: 'soles, % de margen y precio por kilo',
-             filtro: 'todos los SKU de la unidad, sin recorte' },
+             filtro: 'todos los SKU de la unidad', filtrable: true },
     cabecera: ['Producto', colMes('Venta'), colMes('% venta'),
                'Precio/kg ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
                colMes('Precio/kg'),
@@ -4357,7 +4373,8 @@ function avBloqueSubcategorias(uen) {
       : 'Precio y costo por kilo por subcategoría, ordenadas por venta.',
     ficha: { compara: `cada subcategoría contra su propio ${nombreMesCerrado()} cerrado y contra enero`,
              unidad: 'soles, % de margen y precio por kilo',
-             filtro: 'subcategorías del nivel más fino, sin subtotales del ROLLUP' },
+             filtro: 'subcategorías del nivel más fino, sin subtotales del ROLLUP',
+             filtrable: true },
     cabecera: ['Subcategoría', colMes('Venta'), colMes('% venta'),
                colMes('Precio/kg'), colMes('Costo/kg'),
                'Margen enero', 'Margen ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
@@ -4837,7 +4854,8 @@ function avBloquePrecioCanal() {
       `${muestra.length} mayores caídas de ${filas.length} combinaciones. Es la única ` +
       `tabla que separa una decisión de precios de una negociación con un canal.`,
     ficha: { compara: 'el precio por kilo de cada producto y canal contra el mes anterior',
-             unidad: 'soles por kilo', filtro: 'productos presentes en los dos meses' },
+             unidad: 'soles por kilo', filtro: 'productos presentes en los dos meses',
+             filtrable: true },
     cabecera: ['Producto', 'Canal', nombreMes(meses[0]) || 'mes previo',
                nombreMes(meses[1]) || 'mes actual', 'Variación'],
     cuerpo, lecturas,
@@ -5354,8 +5372,10 @@ function ejeTarjeta(m) {
     <div class="eje-row">
       <div class="eje-row-k">${esc(nombreMes(mesParcial()) || 'mes en curso')}
         <small>al día ${m.dias ? m.dias.dia + ' de ' + m.dias.dias : '—'}</small></div>
-      <div class="eje-row-v">${esc(ejeFmt(ind, m.curso))}
-        ${m.sinSerie ? '<small class="eje-na">saldo del día</small>' : ''}</div>
+      <div class="eje-row-v">${m.curso == null
+        ? `<span class="eje-na">aún sin dato de ${esc(nombreMes(mesParcial()) || 'este mes')}</span>`
+        : esc(ejeFmt(ind, m.curso))}
+        ${m.sinSerie && m.curso != null ? '<small class="eje-na">saldo del día</small>' : ''}</div>
       <div class="eje-row-m">${m.meta == null ? '<span class="eje-falta" ' +
           `onclick="event.stopPropagation();editarMeta('${ind.clave}')">poner meta</span>`
         : 'meta ' + esc(ejeFmt(ind, acum ? m.metaAlDia : m.meta)) +
