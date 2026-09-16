@@ -1796,6 +1796,11 @@ small { font-size:13px; line-height:1.4; }
   font-variant-numeric:tabular-nums;
   letter-spacing:-.015em; line-height:1.2;
   text-align:right; min-width:0; white-space:nowrap; overflow-wrap:normal; }
+/* El nowrap es para las CIFRAS, que no se pueden partir. Un texto sí, y tiene
+   que hacerlo: "aún sin dato de setiembre" en una sola línea se salía de su
+   celda y se montaba encima de la columna de la meta, que va al lado. */
+.eje-row-v .eje-na { white-space:normal; font-size:13px; font-weight:400;
+  line-height:1.35; display:inline-block; }
 .eje-row-v small { display:block; font-size:13px; font-weight:400; }
 .eje-row-m { font-size:13px; color:var(--text3); text-align:right;
   font-variant-numeric:tabular-nums; min-width:0; }
@@ -4829,6 +4834,82 @@ function lecturaDesglose(filas, cols, ind, titulo) {
   return out;
 }
 
+// Toda serie del reporte que Power BI entrega y ninguna pantalla muestra.
+//
+// La auditoría encontró 15 series con dato real —merma por unidad y por
+// planta, precio unitario por canal, planilla, venta en kilos, venta perdida,
+// amonestación— que llegaban del modelo y no se pintaban en ningún sitio. No
+// por decisión: simplemente nadie las había conectado, y no había forma de
+// notarlo.
+//
+// Este bloque se arma solo con lo que hay, así que una serie nueva aparece
+// sin tocar la app y ninguna se vuelve a quedar sin mostrar.
+function avBloqueSeriesExtra(ind) {
+  const cfg = (typeof DXP_SERIE_CFG !== 'undefined') ? DXP_SERIE_CFG[ind.reporte] : null;
+  const ds = cfg ? cfg.ds : (ind.serie ? ind.serie[0] : null);
+  const todas = (SERIES && SERIES.datasets && SERIES.datasets[ds]) || {};
+  const per = periodos();
+  const curso = mesParcial(), cerr = mesCerrado();
+
+  // Las que ya se muestran en otro bloque: la del propio indicador y las que
+  // el reporte pinta como gráfico principal.
+  const yaVistas = new Set();
+  if (ind.serie && ind.serie[0] === ds) yaVistas.add(ind.serie[1]);
+  if (cfg) { yaVistas.add(cfg.medida); if (cfg.extra) yaVistas.add(cfg.extra); }
+  // Y las que son el indicador de OTRA tarjeta: esas ya tienen su sitio, con
+  // su meta y su proyección. Repetirlas aquí llenaría el bloque de ruido y
+  // taparía justo lo que sí estaba sin mostrar.
+  (METAS?.indicadores || []).forEach(i => {
+    if (i.serie && i.serie[0] === ds) yaVistas.add(i.serie[1]);
+  });
+
+  const filas = Object.entries(todas)
+    .filter(([m, arr]) => Array.isArray(arr) && !yaVistas.has(m)
+                       && arr.some(x => x != null))
+    .map(([m, arr]) => {
+      const v = (p) => { const i = per.indexOf(p); return i >= 0 ? arr[i] : null; };
+      const a = v(cerr), b = v(curso);
+      const pct = /%/.test(m);
+      const fmt = (x) => x == null ? '—'
+        : pct ? (Math.abs(x) <= 1 ? (x * 100).toFixed(1) : x.toFixed(1)) + '%'
+        : Math.abs(x) >= 1e6 ? (x / 1e6).toFixed(2) + 'M'
+        : Math.abs(x) >= 1000 ? Math.round(x).toLocaleString('es-PE')
+        : x.toFixed(2);
+      const d = (a != null && b != null) ? b - a : null;
+      return { medida: m, cerrado: a, curso: b, fmt, d,
+               n: arr.filter(x => x != null).length, arr };
+    });
+  if (!filas.length) return null;
+  filas.sort((a, b) => a.medida.localeCompare(b.medida, 'es'));
+
+  const cuerpo = filas.map(f => `
+    <tr>
+      <td>${esc(f.medida)}</td>
+      <td class="av-an-ene">${esc(f.fmt(f.cerrado))}</td>
+      <td>${esc(f.fmt(f.curso))}</td>
+      <td style="color:${f.d == null ? 'var(--text3)' : 'var(--text2)'}">${
+        f.d == null ? '—' : (f.d >= 0 ? '+' : '−') + esc(f.fmt(Math.abs(f.d)))}</td>
+      <td>${f.n} m</td>
+      <td>${chispaSerie(f.arr, 'var(--text2)')}</td>
+    </tr>`).join('');
+
+  return {
+    periodo: undefined,
+    titulo: 'Otras medidas que publica este reporte',
+    por: `Series que el modelo de Power BI entrega para este reporte y que no ` +
+         `aparecen en ningún otro bloque. Se listan todas: si el modelo suma ` +
+         `una medida nueva, sale aquí sola.`,
+    ficha: { compara: `${nombreMesCerrado()} cerrado contra setiembre a la fecha, ` +
+                      `columna a columna`,
+             unidad: 'la de cada medida, en su propio nombre',
+             filtro: 'todas las series del dataset con al menos un mes de dato' },
+    cabecera: ['Medida', nombreMesCerrado() + ' (cerrado)',
+               'Setiembre (al día ' + ((avanceDelMes() || {}).dia || '') + ')',
+               'Diferencia', 'Meses con dato', 'Tendencia'],
+    cuerpo, lecturas: [],
+  };
+}
+
 function avBloquesPublicados(ind) {
   const rd = avReporte(ind.reporte);
   const out = [];
@@ -5149,6 +5230,8 @@ function analisisDe(ind, meta, segNombre) {
     avBloquesPublicados(ind).forEach(b => bloques.push(b));
     const ci = avBloqueCifras(ind);
     if (ci) bloques.push(ci);
+    const ex = avBloqueSeriesExtra(ind);
+    if (ex) bloques.push(ex);
   }
 
   if (!bloques.length && !tesis) return null;

@@ -981,80 +981,44 @@ def dataset_de_reporte(token, ws, report_id):
     return r.json().get("datasetId")
 
 
+# La tabla de fechas del reporte de compras. La borré yo por accidente al
+# quitar las funciones muertas del fill rate: el corte por "\ndef " se llevó
+# también las constantes que vivían entre dos funciones, y con ellas
+# _COMPRAS_FILTROS. Las dos consultas del ratio morían con NameError, el
+# try/except lo imprimía y seguía, y el KPI "Ratio consumo / compra" salió
+# vacío con el reporte lleno en Power BI.
+#
+# _COMPRAS_FILTROS ya no hace falta: las consultas pasaron a mandarse
+# verbatim desde el catálogo, que es como debieron estar desde el principio.
+COMPRAS_LOCALDATE = "LocalDateTable_42b93aac-d3d2-4a95-b7b8-66bfc130de2b"
+
+
 def _q_compras_ratio():
-    """Ratio compra/consumo mensual por categoría de insumo.
+    """Ratio por categoría de insumo — la captura de la tabla, VERBATIM.
 
-    Copiar consulta 2026-09-06 sobre la tabla "Eficiencia de Costo de compra de
-    materiales (Operación)". Del original se conservan los dos filtros y las
-    tres medidas textuales; se quita la maquinaria de subtotales
-    (ROLLUPADDISSUBTOTAL / NATURALLEFTOUTERJOIN / SUBSTITUTEWITHINDEX), que
-    pinta la fila Total del visual sin alterar las celdas.
-
-    La fila Total se recompone sumando las categorías, que es exactamente lo
-    que hace el reporte: en agosto muestra Cant Compra 6,451,354.92 y Cant
-    Consumo 5,964,494.95, cuyo cociente es el 92.45% de su columna Ratio.
-
-    No lleva filtro de año: el propio [Año] es columna de agrupación, así que
-    una sola consulta cubre 2025 y 2026.
+    Ver la nota de _q_compras_ratio_total: las dos estaban escritas a mano y
+    las dos morían con NameError.
     """
-    ld = COMPRAS_LOCALDATE
-    return (
-        "DEFINE\n"
-        + _COMPRAS_FILTROS
-        + "\nEVALUATE\n"
-        "\tSUMMARIZECOLUMNS(\n"
-        "\t\t'Maestra de Productos'[data.categoria_producto],\n"
-        "\t\t'Calendario'[Año],\n"
-        f"\t\t'{ld}'[NroMes],\n"
-        "\t\t__DS0FilterTable,\n"
-        "\t\t__DS0FilterTable2,\n"
-        "\t\t\"v_ratio\", 'KARDEX TOTAL'[%ratio],\n"
-        "\t\t\"Consumo_CANT_10_92_93\", 'KARDEX TOTAL'[Consumo CANT 10,92,93],\n"
-        "\t\t\"compra_mensual_Cant_2\", 'KARDEX TOTAL'[compra mensual Cant 2]\n"
-        "\t)\n\n"
-        f"ORDER BY\n\t'Calendario'[Año], '{ld}'[NroMes]"
-    )
+    e = cargar_catalogo().get(
+        "Eficiencia de Costo de compra  de materiales  (Operación)#a5e2b0c1992a")
+    return e.get("dax") if e else None
 
 
 def _q_compras_ratio_total():
-    """Ratio mensual total — consulta del GRÁFICO de línea "Eficiencia de
-    Costo de compra de materiales (Operación)" (Copiar consulta, 2026-09-06).
+    """Ratio mensual total — la captura del gráfico, enviada VERBATIM.
 
-    Ojo: el gráfico y la tabla del mismo reporte NO tienen el mismo alcance.
-    La tabla EXCLUYE 39 categorías (entre ellas SERVICIOS y SERVICIO DE
-    MANTENIMIENTO); el gráfico INCLUYE explícitamente seis, dos de las cuales
-    son justamente esas. Por eso el total no se deriva sumando las categorías
-    de la tabla: se pide con esta consulta, que es la que produce la línea
-    que ve el usuario.
+    Antes esta consulta estaba transcrita a mano, igual que la de categorías.
+    Las dos referenciaban _COMPRAS_FILTROS, que no está definido en ninguna
+    parte del archivo: cada llamada moría con NameError, el try/except de
+    arriba lo imprimía y seguía, y el dataset 'compras' no llegaba a crearse.
+    Por eso "Ratio consumo / compra" llevaba vacío en la app mientras el
+    reporte estaba lleno en Power BI.
+
+    Transcribir a mano fue el error; se manda la exportación tal cual.
     """
-    ld = COMPRAS_LOCALDATE
-    return (
-        "DEFINE\n"
-        "\tVAR __DS0FilterTable =\n"
-        "\t\tTREATAS(\n"
-        "\t\t\t{\"MATERIA PRIMA\",\n"
-        "\t\t\t\t\"REPUESTOS\",\n"
-        "\t\t\t\t\"SERVICIO DE MANTENIMIENTO Y/O REPARACION\",\n"
-        "\t\t\t\t\"SERVICIOS\",\n"
-        "\t\t\t\t\"SUMINISTROS\",\n"
-        "\t\t\t\t\"ENVASES Y EMBALAJES\"},\n"
-        "\t\t\t'Maestra de Productos'[data.categoria_producto]\n"
-        "\t\t)\n\n"
-        "\tVAR __DS0FilterTable2 =\n"
-        "\t\tFILTER(\n"
-        "\t\t\tKEEPFILTERS(VALUES('Calendario'[Date])),\n"
-        "\t\t\t'Calendario'[Date] >= (DATE(2025, 7, 31) + TIME(0, 0, 1))\n"
-        "\t\t)\n\n"
-        "EVALUATE\n"
-        "\tSUMMARIZECOLUMNS(\n"
-        "\t\t'Calendario'[Año],\n"
-        f"\t\t'{ld}'[NroMes],\n"
-        "\t\t__DS0FilterTable,\n"
-        "\t\t__DS0FilterTable2,\n"
-        "\t\t\"v_ratio\", 'KARDEX TOTAL'[%ratio]\n"
-        "\t)\n\n"
-        f"ORDER BY\n\t'Calendario'[Año], '{ld}'[NroMes]"
-    )
+    e = cargar_catalogo().get(
+        "Eficiencia de Costo de compra  de materiales  (Operación)#4db75af70c3b")
+    return e.get("dax") if e else None
 
 
 def serie_compras_ratio_total(token, ds_id, periodos):
@@ -1085,7 +1049,13 @@ def serie_compras_ratio(token, ds_id, periodos):
     jalando inventario); < 100% que se compró de más. Por eso se publican
     también las cantidades: el ratio solo dice la dirección, no el tamaño.
     """
-    filas = dax(token, ds_id, _q_compras_ratio(), "compras-ratio")
+    # La captura de la tabla trae DOS EVALUATE: el primero es el eje del
+    # visual y el segundo el cuerpo con los datos. dax() se queda con la
+    # primera tabla, que aquí es la equivocada y llega sin medidas.
+    q = _q_compras_ratio()
+    tablas = dax_crudo(token, ds_id, q, "compras-ratio") if q else []
+    filas = next((t for t in tablas
+                  if t and any("ratio" in k.lower() for k in t[0])), None)
     if not filas:
         # Sin esto el fallo es mudo: el dataset 'compras' no llegaba a
         # crearse, el KPI "Ratio consumo / compra" salía vacío en la app y
@@ -1594,6 +1564,11 @@ def cargar_catalogo():
         return {}
     por_visual = {}
     for f in filas:
+        # También por "Visual#hash": dos visuales del mismo reporte se llaman
+        # igual —el gráfico del ratio total y su tabla por categoría— y
+        # quedarse con el de más filas descartaba justo el total.
+        if f.get("visual") and f.get("hash") and f.get("dax"):
+            por_visual[f"{f['visual']}#{f['hash']}"] = f
         # Si el mismo visual sale en varias pestañas, se queda el de más filas:
         # suele ser el que trae el detalle completo.
         v = f.get("visual")

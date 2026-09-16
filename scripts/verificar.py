@@ -21,6 +21,7 @@ Uso:  python3 scripts/verificar.py
 import importlib.util
 import os
 import ast
+import builtins
 import json
 from collections import Counter
 import collections
@@ -391,6 +392,62 @@ def test_js_sin_nombres_repetidos(html):
 
 
 
+def test_nombres_sin_definir(src, archivo):
+    """Nombres que el módulo usa y nadie define. Son NameError esperando.
+
+    _COMPRAS_FILTROS se usaba en las dos consultas del ratio consumo/compra y
+    no estaba definido en ninguna parte del archivo. Cada llamada moría con
+    NameError, el try/except de arriba lo imprimía y seguía, y el dataset
+    'compras' no llegaba a crearse nunca. El KPI salió vacío en la app durante
+    semanas con el reporte lleno en Power BI, y ninguna prueba lo miraba.
+
+    Se comparan los nombres LEÍDOS a nivel de módulo contra los definidos —
+    asignaciones, funciones, clases, imports, parámetros y locales — más los
+    builtins. Lo que sobra no existe.
+    """
+    try:
+        arbol = ast.parse(src)
+    except SyntaxError as e:
+        revisar(False, f"{archivo}: no se puede analizar ({e})")
+        return
+
+    definidos = set(dir(builtins))
+    for n in ast.walk(arbol):
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            definidos.add(n.name)
+            for a in list(getattr(n, "args", ast.arguments(
+                    posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[])).args or []):
+                definidos.add(a.arg)
+            for extra in ("vararg", "kwarg"):
+                v = getattr(getattr(n, "args", None), extra, None)
+                if v:
+                    definidos.add(v.arg)
+            for a in getattr(getattr(n, "args", None), "kwonlyargs", []) or []:
+                definidos.add(a.arg)
+        elif isinstance(n, (ast.Import, ast.ImportFrom)):
+            for a in n.names:
+                definidos.add((a.asname or a.name).split(".")[0])
+        elif isinstance(n, ast.Name) and isinstance(n.ctx, (ast.Store, ast.Del)):
+            definidos.add(n.id)
+        elif isinstance(n, ast.arg):
+            definidos.add(n.arg)
+        elif isinstance(n, ast.ExceptHandler) and n.name:
+            definidos.add(n.name)
+        elif isinstance(n, (ast.Global, ast.Nonlocal)):
+            definidos.update(n.names)
+        elif isinstance(n, ast.comprehension):
+            for t in ast.walk(n.target):
+                if isinstance(t, ast.Name):
+                    definidos.add(t.id)
+
+    faltan = sorted({n.id for n in ast.walk(arbol)
+                     if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)
+                     and n.id not in definidos})
+    revisar(not faltan,
+            f"{archivo}: usa nombres que nadie define: {', '.join(faltan[:6])}"
+            if faltan else f"{archivo}: ningún nombre sin definir")
+
+
 def test_metadatos_que_lee_la_app(html):
     """Sub-campos de los bloques de metadatos que la app lee y no existen.
 
@@ -489,6 +546,8 @@ def main():
         revisar(False, f"metas.json ilegible: {e}")
     test_metas_no_escritas_a_mano(html, metas_json)
     test_metadatos_que_lee_la_app(html)
+    test_nombres_sin_definir(src_pbi, 'fetch_powerbi.py')
+    test_nombres_sin_definir(src_ser, 'fetch_series.py')
     salidas = test_construccion(cargar_fetch_powerbi())
     test_campos(salidas, html)
 
