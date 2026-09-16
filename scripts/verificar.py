@@ -391,6 +391,46 @@ def test_js_sin_nombres_repetidos(html):
 
 
 
+def test_metadatos_que_lee_la_app(html):
+    """Sub-campos de los bloques de metadatos que la app lee y no existen.
+
+    La franja de confianza leía `val.fallos`, y el dato escribe `no_cuadran`.
+    Resultado: decía "sin descuadres de coherencia" SIEMPRE, hubiera o no, y
+    nadie lo notó porque la frase que salía era la buena.
+
+    Se compara contra los campos que escribe cada script, no contra un
+    summaries.json concreto: así vale aunque la corrida del día no traiga el
+    bloque. La ventana es la función donde se asigna la variable, para no
+    confundirla con otra del mismo nombre en otra parte del archivo.
+    """
+    ESCRIBEN = {
+        "validacion": {"cuadran", "no_cuadran", "sin_datos"},
+        "validacion_tarjetas": {"iguales", "distintas", "sin_correspondencia"},
+        "cobertura": {"kpis_del_reporte", "kpis_totales", "pct"},
+    }
+    JS = {"length", "filter", "map", "reduce", "forEach", "slice", "join",
+          "includes", "replace", "toLowerCase", "toFixed", "sort", "find",
+          "some", "every", "push", "split", "trim", "startsWith"}
+    lineas = html.split("\n")
+    for i, l in enumerate(lineas):
+        m = re.search(r"const\s+(\w+)\s*=\s*DATA\??\.\s*(\w+)\s*\|\|", l)
+        if not m:
+            continue
+        var, blq = m.group(1), m.group(2)
+        if blq not in ESCRIBEN:
+            continue
+        j = i + 1
+        while j < len(lineas) and not re.match(r"^\}", lineas[j]):
+            j += 1
+        usa = set(re.findall(r"\b" + var + r"\.(\w+)", "\n".join(lineas[i:j]))) - JS
+        falta = sorted(usa - ESCRIBEN[blq])
+        revisar(not falta,
+                f"la app lee {blq}.{', '.join(falta)} y nadie lo escribe "
+                f"(línea {i + 1}); los campos reales son "
+                f"{', '.join(sorted(ESCRIBEN[blq]))}"
+                if falta else f"{blq}: la app lee campos que existen")
+
+
 def test_metas_no_escritas_a_mano(html, metas):
     """Metas escritas dentro del código en vez de leerse de metas.json.
 
@@ -448,6 +488,7 @@ def main():
         metas_json = {}
         revisar(False, f"metas.json ilegible: {e}")
     test_metas_no_escritas_a_mano(html, metas_json)
+    test_metadatos_que_lee_la_app(html)
     salidas = test_construccion(cargar_fetch_powerbi())
     test_campos(salidas, html)
 

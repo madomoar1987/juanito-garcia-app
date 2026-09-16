@@ -6328,6 +6328,27 @@ function notaDerivado(reporte, desglose, campo) {
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+// Cumplimiento de una tarjeta, respetando la dirección del indicador.
+//
+// Antes era siempre valor/meta acotado a 100. En los indicadores donde MENOS
+// es mejor —merma, morosidad, días de pago, costos— eso se lee al revés:
+// cuanto peor está, más se acerca al 100%. Merma 2.9% contra una meta de <2%
+// decía "100% alcanzado" con el punto en rojo al lado, en la misma tarjeta.
+//
+// La dirección sale de metas.json cuando el indicador está ahí; si no, del
+// propio texto de la meta ("<2%", "≤90" significan menor es mejor).
+function kpiCumplimiento(k) {
+  const valN  = parseFloat((k.valor || '').replace(/[^0-9.]/g, ''));
+  const metaN = parseFloat((k.meta  || '').replace(/[^0-9.]/g, ''));
+  if (isNaN(valN) || isNaN(metaN) || !metaN || !valN) return null;
+  const lab = (k.label || '').toLowerCase();
+  const ind = (METAS?.indicadores || []).find(i =>
+    lab.startsWith((i.label || '').toLowerCase()) ||
+    (i.label || '').toLowerCase().startsWith(lab));
+  const menor = ind ? ind.direccion === 'menor' : /^\s*[<≤]/.test(k.meta || '');
+  return Math.round((menor ? metaN / valN : valN / metaN) * 100);
+}
+
 function renderKpiCard(k, contexto, empresa, tipo, archivo, desc) {
   const cls = sc(k.estado);
   const { arrow, cls: tCls } = trendArrow(k.tendencia, k.label);
@@ -6337,18 +6358,16 @@ function renderKpiCard(k, contexto, empresa, tipo, archivo, desc) {
     : '';
 
   let progressHtml = '';
-  if (k.valor && k.meta) {
-    const valN  = parseFloat((k.valor || '').replace(/[^0-9.]/g, ''));
-    const metaN = parseFloat((k.meta  || '').replace(/[^0-9.]/g, ''));
-    if (!isNaN(valN) && !isNaN(metaN) && metaN > 0) {
-      const pct = Math.min(100, Math.round((valN / metaN) * 100));
-      progressHtml = `<div class="kpi-progress">
-        <div class="kpi-progress-track">
-          <div class="kpi-progress-fill ${cls}" style="width:${pct}%"></div>
-        </div>
-        <div class="kpi-progress-meta">Meta: ${esc(k.meta)} · ${pct}% alcanzado</div>
-      </div>`;
-    }
+  const pct = kpiCumplimiento(k);
+  if (pct != null) {
+    // La barra se acota; el número no. Un 130% es información, y esconderlo
+    // en un 100% borra la diferencia entre cumplir y superar.
+    progressHtml = `<div class="kpi-progress">
+      <div class="kpi-progress-track">
+        <div class="kpi-progress-fill ${cls}" style="width:${Math.min(100, pct)}%"></div>
+      </div>
+      <div class="kpi-progress-meta">Meta: ${esc(k.meta)} · ${pct}% alcanzado</div>
+    </div>`;
   }
 
   return `<div class="kpi-card ${cls}${clickable ? ' kpi-card-link' : ''}" ${onclick}>
@@ -6373,16 +6392,12 @@ function renderKpiCardDetail(k, empresa, reporteLabel, reporteDesc) {
   const pregunta = `En el reporte "${reporteLabel}" de ${empresa}, explícame el indicador "${k.label}" que está en ${k.valor}${k.meta ? ` (meta ${k.meta})` : ''}. ¿Qué significa este valor, por qué está en ese nivel y qué debería hacer?`;
 
   let progressHtml = '';
-  if (k.valor && k.meta) {
-    const valN  = parseFloat((k.valor||'').replace(/[^0-9.]/g,''));
-    const metaN = parseFloat((k.meta ||'').replace(/[^0-9.]/g,''));
-    if (!isNaN(valN) && !isNaN(metaN) && metaN > 0) {
-      const pct = Math.min(100, Math.round((valN / metaN) * 100));
-      progressHtml = `<div class="kpi-progress">
-        <div class="kpi-progress-track"><div class="kpi-progress-fill ${cls}" style="width:${pct}%"></div></div>
-        <div class="kpi-progress-meta">Meta: ${esc(k.meta)} · ${pct}% alcanzado</div>
-      </div>`;
-    }
+  const pct = kpiCumplimiento(k);
+  if (pct != null) {
+    progressHtml = `<div class="kpi-progress">
+      <div class="kpi-progress-track"><div class="kpi-progress-fill ${cls}" style="width:${Math.min(100, pct)}%"></div></div>
+      <div class="kpi-progress-meta">Meta: ${esc(k.meta)} · ${pct}% alcanzado</div>
+    </div>`;
   }
 
   // Escapar la pregunta para uso en data attribute (evita romper el HTML con " o >)
