@@ -1,7 +1,7 @@
 {
   "fecha": "15/09/2026",
   "fecha_actualizacion": "2026-09-15",
-  "hora_actualizacion": "21:43",
+  "hora_actualizacion": "22:17",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "yellow"
@@ -3314,39 +3314,38 @@
           "alerta": null,
           "kpis": [
             {
-              "label": "Costo Total",
+              "label": "Costo Total · acumulado 2026",
               "valor": "S/-1.48M",
               "validado": true,
               "nota": "Filtro exacto confirmado — sin corte de fecha (histórico total)",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "la consulta filtra solo por año, sin mes"
             },
             {
-              "label": "Venta Neta (KG)",
+              "label": "Venta Neta (KG) · acumulado 2026",
               "valor": "10,292,108 KG",
               "validado": true,
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "la consulta filtra solo por año, sin mes"
             },
             {
               "label": "Costo x TN Vendida",
-              "valor": "S/143.63",
-              "validado": true,
-              "fuente": "reporte",
-              "periodo": "2026-08",
-              "periodo_fuente": "consumo/MIP / TN Vendida"
-            },
-            {
-              "label": "Producción Neta (KG)",
-              "valor": "10,302,474 kg",
+              "valor": "S/143",
               "validado": true,
               "fuente": "reporte"
             },
             {
-              "label": "Costo x TN Producida",
-              "valor": "S/151.64",
+              "label": "Producción Neta (KG) · acumulado 2026",
+              "valor": "10,302,474 kg",
               "validado": true,
               "fuente": "reporte",
-              "periodo": "2026-08",
-              "periodo_fuente": "consumo/MIP / TN Producida"
+              "nota_periodo": "la consulta filtra solo por año, sin mes"
+            },
+            {
+              "label": "Costo x TN Producida",
+              "valor": "S/143",
+              "validado": true,
+              "fuente": "reporte"
             }
           ],
           "no_validado_dax": false
@@ -4057,9 +4056,10 @@
               "nota_periodo": "no es del mes: es la suma de 2026 hasta 2026-08. El mes fue 1,239,289."
             },
             {
-              "label": "Venta Neta (KG)",
+              "label": "Venta Neta (KG) · acumulado 2026 · solo planta ATE",
               "valor": "6,786,752 kg",
-              "fuente": "reporte"
+              "fuente": "reporte",
+              "nota_periodo": "la consulta filtra por año y por Planta = ATE"
             },
             {
               "label": "Planilla Total · acumulado 2026",
@@ -5838,33 +5838,191 @@
     "verificados": 60,
     "total": 63
   },
-  "validacion": {
-    "cuadran": 26,
-    "no_cuadran": [
-      {
-        "prueba": "Venta Neta (KG): período desconocido",
-        "publicado": 6786752.0,
-        "esperado": 1306341.682,
-        "diferencia_pct": 80.8,
-        "detalle": "mes 1,306,342 · año 9,845,191 · total 15,275,344"
-      }
+  "cobertura": {
+    "kpis_del_reporte": 60,
+    "kpis_totales": 63,
+    "pct": 95.2
+  },
+  "diagnostico": [],
+  "derivados": [
+    {
+      "reporte": "cuentas_por_cobrar",
+      "desglose": "tramos",
+      "campo": "pct",
+      "formula": "valor del tramo / cartera total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "cuentas_por_pagar",
+      "desglose": "tramos",
+      "campo": "pct",
+      "formula": "valor del tramo / suma de tramos × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "cuentas_por_pagar",
+      "desglose": "proveedores_criticos",
+      "campo": "pct",
+      "formula": "deuda del proveedor / deuda del top 15 × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. Ojo: el denominador es el top 15, no la deuda total de la empresa."
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "por_cliente",
+      "campo": "pct_venta",
+      "formula": "venta del cliente / venta total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "detalle_costos",
+      "campo": "margen",
+      "formula": "(precio_kg − costo_kg) / precio_kg",
+      "razon": "el detalle publica precio y costo por kilo pero no el margen de cada línea; se deriva de sus dos cifras"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "detalle_costos",
+      "campo": "soles_mes",
+      "formula": "(margen del mes − margen del mes previo) × venta del mes",
+      "razon": "traduce el cambio de margen a dinero, que es por lo que se prioriza"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "detalle_costos",
+      "campo": "aporte_pp",
+      "formula": "(margen − margen del mes previo) × peso en la venta de su unidad de negocio",
+      "razon": "cuántos puntos del margen de esa unidad explica la subcategoría"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "por_producto",
+      "campo": "margen",
+      "formula": "(venta − costo) / venta por producto y mes",
+      "razon": "el detalle publica venta y costo por producto pero no el margen de cada uno"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "por_producto",
+      "campo": "aporte_pp",
+      "formula": "(margen_mes − margen_previo) × peso en la venta",
+      "razon": "cuántos puntos del margen total explica ese producto; ordena por impacto y no por caída porcentual, que premiaría a los irrelevantes"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "sku_por_uen",
+      "campo": "margen_enero",
+      "formula": "(venta − costo) / venta del SKU en enero",
+      "razon": "enero del mismo año, para ver el recorrido completo y no solo el último salto"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "sku_por_uen",
+      "campo": "soles_mes",
+      "formula": "(margen del mes − margen del mes previo) × venta del mes",
+      "razon": "traduce el cambio de margen a dinero, que es por lo que se prioriza"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "sku_por_uen",
+      "campo": "aporte_pp",
+      "formula": "(margen_mes − margen_previo) × peso del SKU en la venta de su unidad de negocio",
+      "razon": "cuántos puntos del margen de esa UEN explica el SKU; ordena por impacto y no por caída porcentual, que premiaría a los irrelevantes"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "sku_por_uen",
+      "campo": "precio_kg",
+      "formula": "venta del SKU / kilos del SKU",
+      "razon": "el cruce de SKU con unidad de negocio no existe en ningún visual: se arma con los filtros del reporte y el precio por kilo se deriva de venta y peso"
+    },
+    {
+      "reporte": "margen_variable",
+      "desglose": "por_uen",
+      "campo": "margen",
+      "formula": "(precio_kg − costo_kg) / precio_kg",
+      "razon": "el reporte tiene su propia medida de margen por unidad de negocio y pondera por producto; este cálculo promedia. En agosto el reporte marcaba B&D 62.30% y esto da 65.3%. Falta capturar la consulta del visual MARGEN VARIABLE POR UNIDAD DE NEGOCIO del reporte 3."
+    },
+    {
+      "reporte": "sop_inventario",
+      "desglose": "dead_por_categoria",
+      "campo": "pct",
+      "formula": "saldo de la categoría / saldo total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "sop_inventario",
+      "desglose": "working_por_categoria",
+      "campo": "pct",
+      "formula": "saldo de la categoría / saldo total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "sop_inventario",
+      "desglose": "dead_por_categoria",
+      "campo": "pct",
+      "formula": "saldo de la categoría / saldo total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "sop_inventario",
+      "desglose": "working_por_categoria",
+      "campo": "pct",
+      "formula": "saldo de la categoría / saldo total × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "fill_rate",
+      "desglose": "por_marca",
+      "campo": "pct",
+      "formula": "pedidos de la marca / pedidos totales × 100",
+      "razon": "participación sobre el total, calculada sumando las filas del propio reporte. No puede contradecirlo: es una proporción de sus cifras."
+    },
+    {
+      "reporte": "margen_variable_pag2",
+      "desglose": "cumplimiento_produccion",
+      "campo": "pct",
+      "formula": "producido / programado × 100",
+      "razon": "el reporte muestra las dos cantidades pero no el porcentaje por categoría"
+    },
+    {
+      "reporte": "margen_variable_pag2",
+      "desglose": "por_canal",
+      "campo": "avance",
+      "formula": "facturado / ppto × 100",
+      "razon": "la medida del reporte [%Av vs PPTO AL DIA] compara contra el presupuesto proporcional al día y devuelve 0"
+    }
+  ],
+  "kpis_de_tarjeta": [
+    [
+      "consumo_materiales",
+      "Costo Total"
     ],
+    [
+      "consumo_materiales",
+      "Venta Neta (KG)"
+    ],
+    [
+      "consumo_materiales",
+      "Costo x TN Vendida"
+    ],
+    [
+      "consumo_materiales",
+      "Producción Neta (KG)"
+    ],
+    [
+      "consumo_materiales",
+      "Costo x TN Producida"
+    ]
+  ],
+  "validacion": {
+    "cuadran": 27,
+    "no_cuadran": [],
     "sin_datos": []
   },
   "validacion_tarjetas": {
-    "iguales": 12,
-    "distintas": [
-      {
-        "kpi": "Costo x TN Producida",
-        "reporte": "consumo_materiales",
-        "en_powerbi": [
-          143.28
-        ],
-        "suma_powerbi": null,
-        "en_juanito": 151.64,
-        "diferencia_pct": 5.5
-      }
-    ],
+    "iguales": 13,
+    "distintas": [],
     "sin_correspondencia": 54
   }
 }

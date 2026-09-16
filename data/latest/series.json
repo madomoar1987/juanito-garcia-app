@@ -30,6 +30,7 @@
     "mermas": "Calendario[Año] + Calendario[MES] (6 filtros del visual)",
     "cxp": "Calendario[Date]",
     "margen": "Calendario[Date]",
+    "compras": "Calendario[Date]",
     "inventario": "Calendario[Date]",
     "planificacion": "Calendario[Date]"
   },
@@ -57,6 +58,49 @@
           "meses_con_dato": 21,
           "amplitud_relativa_pct": 0.0,
           "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        }
+      ]
+    },
+    "compras": {
+      "medidas": [],
+      "tablas": [
+        "Calendario"
+      ],
+      "columnas_fecha": [
+        "Calendario[Date]"
+      ],
+      "medidas_planas": [
+        {
+          "medida": "Stock PP",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "Stock Valorizado",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "Consumo Prom 3M",
+          "valores_distintos": 2,
+          "meses_con_dato": 16,
+          "amplitud_relativa_pct": 0.1639,
+          "repeticiones_del_valor_mas_comun": 15,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "Consumo Prom 6M",
+          "valores_distintos": 2,
+          "meses_con_dato": 16,
+          "amplitud_relativa_pct": 0.2639,
+          "repeticiones_del_valor_mas_comun": 15,
           "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
         }
       ]
@@ -682,169 +726,6 @@
         0.5493705442099506
       ]
     },
-    "compras": {
-      "% Ratio Consumo/Compra": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        0.9245329115504467,
-        0.6121441401601839,
-        0.9941292113427906,
-        1.197222692480594,
-        0.6807383325540058,
-        0.6242137327862102,
-        0.8778531502260746,
-        0.8443496913134821,
-        0.948710010328228,
-        1.1950306563777924,
-        0.7768296284465848,
-        0.9183162475941734,
-        1.0714039362658776,
-        1.0636729634825566
-      ],
-      "Consumo (cant)": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        5964489.947632998,
-        6488661.137500991,
-        7040697.623393991,
-        6960750.798592994,
-        5989087.115752995,
-        6387982.881527996,
-        7344707.317931996,
-        7600055.176375002,
-        6939717.081411002,
-        7744237.850995005,
-        7918301.510865,
-        8484624.578460036,
-        7586265.948496015,
-        3699935.772640997
-      ],
-      "Compra (cant)": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        6451354.920000001,
-        10599890.96,
-        7082276.17,
-        5814081.91,
-        8797928.409999998,
-        10233646.820000002,
-        8366669.660000001,
-        9001075.33,
-        7314898.131,
-        6480367.5200000005,
-        10193099.26,
-        9239327.52,
-        7080677.69,
-        3478452.4
-      ],
-      "% Ratio ENVASES Y EMBALAJES": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        0.9196263089955153,
-        0.594525360963922,
-        0.9919996210108124,
-        1.2260351177048974,
-        0.6597969318777689,
-        0.6108108626654121,
-        0.8698952471270763,
-        0.8413052992539983,
-        0.9663581909829686,
-        1.19713077244555,
-        0.7654932347002338,
-        0.9259445291014456,
-        1.0696885980537512,
-        1.0809231109115192
-      ],
-      "% Ratio MATERIA PRIMA": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        0.9860059447640187,
-        0.8993034213465725,
-        1.0201713220742965,
-        0.9395636207880462,
-        1.0918920748281336,
-        0.8585746169371827,
-        0.9792393585380565,
-        0.8786752582304392,
-        0.7795525796487695,
-        1.1651584109762332,
-        0.9121394022279696,
-        0.8792168142453459,
-        1.0948389958600109,
-        0.9179839339774207
-      ],
-      "% Ratio REPUESTOS": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        0.9534883720930233,
-        0.573943661971831,
-        1.4326923076923077,
-        1.0,
-        1.1806167400881058,
-        0.845703125,
-        1.1603773584905661,
-        1.5272727272727273,
-        0.10319410319410319,
-        2.3382899628252787,
-        0.8723404255319149,
-        0.8486238532110092,
-        1.0104558762024258,
-        0.5808080808080808
-      ],
-      "% Ratio SUMINISTROS": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        1.1551336465251891,
-        0.8772098291210485,
-        0.9006966083000121,
-        1.0142740582462801,
-        0.9353801465423902,
-        1.2019948691079083,
-        1.0543088299077636,
-        1.0313064529036526,
-        0.39401399428328177,
-        1.458866927127986,
-        1.0149951101277692,
-        0.2940675204950606,
-        0.9516996112811182,
-        0.608747594079777
-      ]
-    },
     "cxp": {
       "Compras (cta 60)": [
         null,
@@ -1175,6 +1056,52 @@
         0.9163783579940035,
         0.8966231607241968,
         0.8469738008786782
+      ],
+      "Venta perdida (S/)": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        591444.97,
+        1413238.03,
+        1110000.94,
+        1894399.13,
+        2515498.42,
+        2845020.7,
+        4026674.2,
+        1756159.31,
+        2138103.77,
+        3222284.02,
+        1722678.91,
+        613011.24,
+        512682.7,
+        702017.44,
+        567224.73
+      ],
+      "Amonestación (S/)": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        147861.2425,
+        353309.5075,
+        277500.235,
+        473599.7825,
+        628874.605,
+        711255.175,
+        1006668.55,
+        439039.8275,
+        534525.9425,
+        805571.005,
+        430669.7275,
+        153252.81,
+        128170.675,
+        175504.36,
+        141806.1825
       ]
     }
   },
@@ -1183,16 +1110,6 @@
       "consulta": "mermas:Planta Terceros",
       "http": 200,
       "error": "la medida '% Merma total MAQUILA' devuelve porcentaje (máx 1.8556) mientras las otras plantas devuelven fracción; se normalizó dividiendo entre 100"
-    },
-    {
-      "consulta": "fillrate:% Fill Rate",
-      "http": 200,
-      "error": "la serie termina en (2025, 4) pero el eje llega a (2026, 9). El mapa de CALENDARIO devolvió 0 meses; primeros períodos mapeados: [(2024, 2), (2024, 3), (2024, 4), (2024, 5), (2024, 6), (2024, 7)]"
-    },
-    {
-      "consulta": "fillrate:Pedidos no atendidos",
-      "http": 200,
-      "error": "la serie termina en (2025, 4) pero el eje llega a (2026, 9). El mapa de CALENDARIO devolvió 0 meses; primeros períodos mapeados: [(2024, 2), (2024, 3), (2024, 4), (2024, 5), (2024, 6), (2024, 7)]"
     }
   ]
 }
