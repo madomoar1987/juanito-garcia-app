@@ -981,321 +981,6 @@ def dataset_de_reporte(token, ws, report_id):
     return r.json().get("datasetId")
 
 
-def _columna_anio_calendario(token, ds_id):
-    """Cómo se llama la columna de año en 'CALENDARIO'. None si no la hay.
-
-    No se adivina el nombre: se lee una fila de la tabla y se busca entre sus
-    columnas. Los modelos del proyecto la llaman de tres formas distintas.
-    """
-    fila = dax(token, ds_id, "EVALUATE TOPN(1, 'CALENDARIO')",
-               "fillrate-cols-anio", retries=1)
-    if not fila:
-        return None
-    for c in fila[0].keys():
-        base = c.split("[")[-1].rstrip("]").strip().lower()
-        if base in ("año", "anio", "ano", "year"):
-            return c.split("[")[-1].rstrip("]")
-    return None
-
-
-def _mapa_calendario_fillrate(token, ds_id):
-    """Mapa IN_MES -> (año, mes) para el calendario del dataset FILLRATE.
-
-    La consulta del gráfico agrupa por 'CALENDARIO'[MES] e [IN_MES] y NO trae
-    el año, pero el eje abarca 15 meses cruzando dos años: sin el año no se
-    puede ubicar cada valor en su período.
-
-    En vez de modificar la consulta capturada, se pide el calendario aparte.
-    Primero se lee una fila de 'CALENDARIO' para descubrir cómo se llaman sus
-    columnas — no se adivinan — y luego se arma el mapa.
-    """
-    fila = dax(token, ds_id, "EVALUATE TOPN(1, 'CALENDARIO')", "fillrate-cols", retries=1)
-    if not fila:
-        print("    ✗ no se pudo leer 'CALENDARIO'")
-        return {}
-    cols = list(fila[0].keys())
-    print(f"    · columnas de CALENDARIO: {cols}")
-
-    def buscar(*claves):
-        for c in cols:
-            base = c.split("[")[-1].rstrip("]").strip().lower()
-            if base in claves:
-                return c
-        return None
-
-    col_anio = buscar("año", "anio", "ano", "year", "in_anio", "in_año")
-    col_mes  = buscar("in_mes")
-    if not col_anio or not col_mes:
-        print(f"    ✗ falta columna de año o de IN_MES en CALENDARIO ({cols})")
-        return {}
-
-    nombre_anio = col_anio.split("[")[-1].rstrip("]")
-    q = ("EVALUATE SUMMARIZECOLUMNS('CALENDARIO'[IN_MES], 'CALENDARIO'[MES], "
-         f"'CALENDARIO'[{nombre_anio}])")
-    filas = dax(token, ds_id, q, "fillrate-calendario")
-    mapa = {}
-    for r in filas or []:
-        inmes = r.get("CALENDARIO[IN_MES]")
-        anio = r.get(f"CALENDARIO[{nombre_anio}]")
-        mes = r.get("CALENDARIO[MES]")
-        if inmes is None or anio is None:
-            continue
-        if isinstance(mes, str):
-            mes = MESES_CORTOS.get(mes.strip().lower()[:3])
-        if mes is None:
-            continue
-        try:
-            mapa[inmes] = (int(anio), int(mes))
-        except (TypeError, ValueError):
-            pass
-    print(f"    · calendario mapeado: {len(mapa)} meses")
-    return mapa
-
-
-def _fillrate_desde_evolutivo(token, ds_id, anio):
-    """% Fill Rate mensual desde la captura "EVOLUTIVO DE % FILL RATE".
-
-    La consulta de "FILLRATE POR MES" agrupa por 'CALENDARIO'[MES] y deja el
-    año fuera: pedido aparte, ese calendario solo llega a 2025-04 y los puntos
-    terminaban dibujados en el tramo viejo del eje.
-
-    Esta captura no tiene ese problema. Agrupa por [MES_DESPACHO_KARDEX] con
-    su columna de orden —el número de mes— y trae el año en su propio filtro,
-    así que cada punto se ubica sin traducir nada. Se envía tal cual se
-    exportó; lo único que se reescribe es el año, para que no quede clavado
-    en el año de la captura.
-    """
-    entrada = cargar_catalogo().get("EVOLUTIVO DE % FILL RATE")
-    if not entrada or not entrada.get("dax"):
-        return {}, {}
-    q, n = re.subn(r"\[Año\] IN \{\s*\d{4}\s*\}", f"[Año] IN {{{anio}}}",
-                   entrada["dax"])
-    if not n:
-        print("    · evolutivo: no se encontró el año en la captura")
-        return {}, {}
-
-    filas = dax(token, ds_id, q, "fillrate-evolutivo", retries=2)
-    if not filas:
-        return {}, {}
-
-    def val(r, *sufijos):
-        for k, v in r.items():
-            base = k.split("[")[-1].rstrip("]").strip().lower()
-            if base in sufijos:
-                return v
-        return None
-
-    serie, meta = {}, {}
-    for r in filas:
-        mes = val(r, "orden_mes_despacho_kardex")
-        if mes is None:
-            nombre = val(r, "mes_despacho_kardex")
-            mes = MESES_CORTOS.get(str(nombre).strip().lower()[:3])
-        try:
-            per = (int(anio), int(mes))
-        except (TypeError, ValueError):
-            continue
-        fr = val(r, "v__fillrate", "_fillrate", "% fillrate")
-        mt = val(r, "meta_fill_rate", "meta fill rate")
-        try:
-            if fr is not None: serie[per] = float(fr)
-        except (TypeError, ValueError): pass
-        try:
-            if mt is not None: meta[per] = float(mt)
-        except (TypeError, ValueError): pass
-    if serie:
-        print(f"    · evolutivo de fill rate: {len(serie)} meses de {anio}")
-    return serie, meta
-
-
-def serie_fillrate(token, ds_id, periodos):
-    """FILLRATE y PEDIDOS NO ATENDIDOS mensuales.
-
-    Consulta capturada del visual "FILLRATE POR MES" (Copiar consulta,
-    2026-09-06), enviada VERBATIM — es la única de todo el proyecto que no
-    lleva ningún filtro. El año se resuelve aparte, con _mapa_calendario.
-    """
-    # Se pide el AÑO en la propia consulta en vez de deducirlo de IN_MES.
-    #
-    # La versión anterior agrupaba por [MES] e [IN_MES] y traducía IN_MES a un
-    # período con un mapa aparte. El mapa ubicó los cuatro puntos en
-    # 2025-01..2025-04 de un eje que llega a 2026-09, y el gráfico quedó
-    # publicado con datos en el tramo equivocado sin que nada fallara. Pedir el
-    # año directamente elimina la traducción y el error que traía.
-    # Primero la captura del evolutivo, que sí trae el año. La consulta de
-    # "FILLRATE POR MES" queda de respaldo: su calendario no llega al mes en
-    # curso, y se prefiere un dato ubicado a uno que hay que traducir.
-    # Se queda con lo que traiga y sigue: la consulta vieja es la única que
-    # tiene "Pedidos no atendidos", así que reemplazarla del todo perdería esa
-    # serie. Lo que aporta el evolutivo es el % con su año y su meta.
-    desde_evolutivo = {}
-    anio_eje = periodos[-1][0] if periodos else None
-    if anio_eje:
-        ev, meta_ev = _fillrate_desde_evolutivo(token, ds_id, anio_eje)
-        serie = [ev.get(pp) for pp in periodos]
-        if any(x is not None for x in serie):
-            desde_evolutivo["% Fill Rate"] = serie
-        mserie = [meta_ev.get(pp) for pp in periodos]
-        if any(x is not None for x in mserie):
-            desde_evolutivo["Meta Fill Rate"] = mserie
-
-    col_anio = _columna_anio_calendario(token, ds_id)
-    filas, por_anio = None, bool(col_anio)
-    if col_anio:
-        q = ("DEFINE\n"
-             "\tVAR __DS0Core = \n"
-             "\t\tSUMMARIZECOLUMNS(\n"
-             f"\t\t\t'CALENDARIO'[{col_anio}],\n"
-             "\t\t\t'CALENDARIO'[MES],\n"
-             "\t\t\t\"FILLRATE\", '0_MEDIDAS'[FILLRATE],\n"
-             "\t\t\t\"PEDIDOS_NO_ATENDIDOS\", '0_MEDIDAS'[PEDIDOS NO ATENDIDOS]\n"
-             "\t\t)\n\n"
-             "EVALUATE\n\t__DS0Core")
-        filas = dax(token, ds_id, q, "fillrate-mensual-anio")
-        if not filas:
-            print("    · fill rate por año sin filas; se intenta con IN_MES")
-            por_anio = False
-
-    mapa = {}
-    if not por_anio:
-        mapa = _mapa_calendario_fillrate(token, ds_id)
-        if not mapa:
-            return {}
-        q = ("DEFINE\n"
-             "\tVAR __DS0Core = \n"
-             "\t\tSUMMARIZECOLUMNS(\n"
-             "\t\t\t'CALENDARIO'[MES],\n"
-             "\t\t\t'CALENDARIO'[IN_MES],\n"
-             "\t\t\t\"FILLRATE\", '0_MEDIDAS'[FILLRATE],\n"
-             "\t\t\t\"PEDIDOS_NO_ATENDIDOS\", '0_MEDIDAS'[PEDIDOS NO ATENDIDOS]\n"
-             "\t\t)\n\n"
-             "EVALUATE\n\t__DS0Core\n\n"
-             "ORDER BY\n\t'CALENDARIO'[IN_MES], 'CALENDARIO'[MES]")
-        filas = dax(token, ds_id, q, "fillrate-mensual")
-    if not filas:
-        return desde_evolutivo
-
-    pares = {"% Fill Rate": {}, "Pedidos no atendidos": {}}
-    for r in filas:
-        if por_anio:
-            a = r.get(f"CALENDARIO[{col_anio}]")
-            m = r.get("CALENDARIO[MES]")
-            if isinstance(m, str):
-                m = MESES_CORTOS.get(m.strip().lower()[:3])
-            try:
-                per = (int(a), int(m))
-            except (TypeError, ValueError):
-                continue
-        else:
-            per = mapa.get(r.get("CALENDARIO[IN_MES]"))
-        if not per:
-            continue
-        for alias, etiqueta in (("FILLRATE", "% Fill Rate"),
-                                ("PEDIDOS_NO_ATENDIDOS", "Pedidos no atendidos")):
-            v = r.get(f"[{alias}]", r.get(alias))
-            if v is None:
-                continue
-            try:
-                pares[etiqueta][per] = float(v)
-            except (TypeError, ValueError):
-                pass
-
-    out = {}
-    for etiqueta, m in pares.items():
-        serie = [m.get(pp) for pp in periodos]
-        llenos = [i for i, x in enumerate(serie) if x is not None]
-        if not llenos:
-            continue
-        print(f"    [{etiqueta}]: {len(llenos)}/{len(serie)} meses")
-        # Una serie mensual termina en el mes en curso. Si sus puntos quedaron
-        # en el tramo viejo del eje, el mapa de calendario está ubicando mal
-        # los meses y el gráfico sale con datos de otro año sin que nada falle.
-        # Se deja constancia de lo que devolvió el mapa para poder corregirlo,
-        # en vez de publicar una serie que parece buena y no lo es.
-        if llenos[-1] < len(serie) - 3:
-            muestra = sorted(m)[:6]
-            print(f"    ⚠ [{etiqueta}] termina en {periodos[llenos[-1]]} y el eje "
-                  f"llega a {periodos[-1]}")
-            DIAG_SERIES.append({
-                "consulta": f"fillrate:{etiqueta}", "http": 200,
-                "error": f"la serie termina en {periodos[llenos[-1]]} pero el eje "
-                         f"llega a {periodos[-1]}. El mapa de CALENDARIO devolvió "
-                         f"{len(mapa)} meses; primeros períodos mapeados: {muestra}"})
-            # No se publica. Una serie mensual que termina un año y medio
-            # antes del eje no es un dato viejo: es un dato mal ubicado, y
-            # dibujado en el gráfico se lee como si fuera del mes en curso.
-            # Mejor un hueco declarado que una línea que miente.
-            continue
-        out[etiqueta] = serie
-    # El evolutivo manda sobre la consulta vieja en el % : trae el año en la
-    # propia consulta y no depende del mapa de calendario.
-    out.update(desde_evolutivo)
-    return out
-
-
-COMPRAS_LOCALDATE = "LocalDateTable_42b93aac-d3d2-4a95-b7b8-66bfc130de2b"
-
-# Filtro del visual "Eficiencia de Costo de compra de materiales", tal cual lo
-# genera Power BI (Copiar consulta, 2026-09-06). Excluye 39 categorías —
-# servicios, maquinaria, repuestos por marca, productos terminados, descuentos
-# y acuerdos comerciales — de modo que solo quedan los insumos que realmente se
-# compran y se consumen: ENVASES Y EMBALAJES, MATERIA PRIMA, SUMINISTROS y
-# REPUESTOS. Va literal: quitar o agrupar cualquiera cambia el ratio.
-_COMPRAS_FILTROS = """	VAR __DS0FilterTable =
-		FILTER(
-			KEEPFILTERS(VALUES('Maestra de Productos'[data.categoria_producto])),
-			NOT(
-				'Maestra de Productos'[data.categoria_producto] IN {"Activo Fijo",
-					"ACUERDOS COMERCIALES",
-					"All",
-					"All / Deliveries",
-					"Beneficio Social no remunerativos",
-					"BONIFICACION Y REBATES",
-					"CHATARRA",
-					"DESCUENTO POR PRONTO PAGO",
-					"DESCUENTOS COMERCIALES",
-					"DIFERENCIA DE PRECIOS",
-					"HERRAMIENTAS / BATERIA",
-					"HERRAMIENTAS / CARGADOR",
-					"HERRAMIENTAS / DISPENSADOR",
-					"HERRAMIENTAS / TRASLAPE",
-					"MAQUINA",
-					"MAQUINA / MAQ. ENVOLVEDORA",
-					"MAQUINA / MAQ. ENZUNCHADORA AUTOMATICA",
-					"MAQUINA / MAQ. ENZUNCHADORA MANUAL",
-					"MAQUINA / MAQUINA",
-					"MERCADERIAS SALSAS PACKS",
-					"MERCADERIAS SALSAS PACKS / CINTA DE EMBALAJE",
-					"MERCADERIAS SALSAS PACKS / RAFIA",
-					"POLIESTER",
-					"POLIESTER / POLIESTER",
-					"POLIPROPILENO / POLIPROPILENO",
-					"PROD. EN PROCESO",
-					"PT DERIVADOS LACTEOS",
-					"PT SALSAS",
-					"PT YOGURTS",
-					"REPUESTOS / MESSERSI",
-					"REPUESTOS / NACIONAL",
-					"REPUESTOS / ROBOPAC",
-					"REPUESTOS / SIGNODE",
-					"REPUESTOS / SORSA",
-					"SERVICIO DE MANTENIMIENTO Y/O REPARACION",
-					"SERVICIOS",
-					"STRETCH FILM",
-					"STRETCH FILM / AUTOMATICO",
-					"STRETCH FILM / MANUAL",
-					BLANK()}
-			)
-		)
-
-	VAR __DS0FilterTable2 =
-		FILTER(
-			KEEPFILTERS(VALUES('Calendario'[Date])),
-			'Calendario'[Date] >= (DATE(2025, 7, 31) + TIME(0, 0, 1))
-		)
-"""
-
-
 def _q_compras_ratio():
     """Ratio compra/consumo mensual por categoría de insumo.
 
@@ -2613,9 +2298,18 @@ def main():
         if fr_id:
             WS_POR_DATASET[fr_id] = WS_FILLRATE
             print(f"    · dataset {fr_id} en workspace FILLRATE")
-            s = serie_fillrate(token, fr_id, periodos)
-            if s:
-                resultado["fill_rate"] = s
+            # La consulta de "FILLRATE POR MES" se dejó de pedir.
+            #
+            # Agrupa por 'CALENDARIO'[MES] sin el año, y ese calendario solo
+            # llega a 2025-04: sus puntos caían en el tramo viejo de un eje
+            # que llega a 2026-09. Se suprimían antes de publicar, así que su
+            # único efecto era dejar dos avisos idénticos cada día.
+            #
+            # No hace falta: la captura "FILL RATE (S/) - MENSUAL" agrupa por
+            # año y mes de su propia tabla de fechas y ya entrega el fill
+            # rate, la facturación y la orden de venta de los 15 meses, más
+            # la venta perdida y la amonestación.
+            pass
         print()
     except Exception as e:
         print(f"    ✗ {e}\n")
@@ -2710,6 +2404,15 @@ def main():
              "Orden de Venta", "fill_rate", ["fill_rate", "margen", "compras"]),
             ("FILL RATE (S/) - MENSUAL", None, "v__FillRate",
              "% Fill Rate mensual", "fill_rate",
+             ["fill_rate", "margen", "compras"]),
+            # La misma captura ya trae estas dos y no cuestan una consulta
+            # más. La venta perdida dice en soles lo que el fill rate dice en
+            # porcentaje, que es como se prioriza.
+            ("FILL RATE (S/) - MENSUAL", None, "SumVENTA_PERDIDA_SKU_PEDIDO",
+             "Venta perdida (S/)", "fill_rate",
+             ["fill_rate", "margen", "compras"]),
+            ("FILL RATE (S/) - MENSUAL", None, "SumAMONESTACION",
+             "Amonestación (S/)", "fill_rate",
              ["fill_rate", "margen", "compras"]),
         ]
         resuelto = {}

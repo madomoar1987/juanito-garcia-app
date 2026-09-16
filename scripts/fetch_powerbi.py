@@ -5491,22 +5491,32 @@ def main():
     except Exception as e:
         print(f"  ✗ marcar origen: {e}")
 
+    # OJO: todo esto va FUERA de "si hubo diagnósticos".
+    #
+    # Estaba dentro, y el efecto era el contrario del que se quería: cuanto
+    # más limpia la corrida, menos honestos los datos. La corrida del 16/09
+    # terminó con cero consultas fallidas y por eso NO etiquetó los períodos,
+    # así que "Venta Neta (KG)" salió publicado dos veces con dos cifras
+    # distintas —10,292,108 en consumo y 6,786,752 en productividad— sin decir
+    # que una es el acumulado del año y la otra el acumulado de la planta ATE.
+    # También se quedaron fuera la cobertura, los derivados y las cifras
+    # leídas de la tarjeta. Nada de esto depende de que algo haya fallado.
+    etiquetar_periodos(summary)
+    # Cobertura: cuántas cifras vienen de una consulta del reporte y
+    # cuántas del sondeo genérico. Es el número que responde "¿está todo
+    # validado?" sin depender de ninguna lista mantenida a mano.
+    summary["cobertura"] = {"kpis_del_reporte": ver, "kpis_totales": tot,
+                            "pct": round(ver / tot * 100, 1) if tot else None}
+    summary["diagnostico"] = DIAGNOSTICO
+    # La lista de cifras calculadas viaja con los datos: quien mire la app
+    # puede saber cuáles son derivadas sin leer el código.
+    summary["derivados"] = DERIVADOS
+    summary["kpis_de_tarjeta"] = LEIDOS_DE_TARJETA
+    if DERIVADOS:
+        print(f"\n  {len(DERIVADOS)} cifra(s) calculadas, no leídas de Power BI:")
+        for x in DERIVADOS:
+            print(f"    · {x['reporte']}/{x['desglose']}.{x['campo']} = {x['formula']}")
     if DIAGNOSTICO:
-        etiquetar_periodos(summary)
-        # Cobertura: cuántas cifras vienen de una consulta del reporte y
-        # cuántas del sondeo genérico. Es el número que responde "¿está todo
-        # validado?" sin depender de ninguna lista mantenida a mano.
-        summary["cobertura"] = {"kpis_del_reporte": ver, "kpis_totales": tot,
-                                "pct": round(ver / tot * 100, 1) if tot else None}
-        summary["diagnostico"] = DIAGNOSTICO
-        # La lista de cifras calculadas viaja con los datos: quien mire la app
-        # puede saber cuáles son derivadas sin leer el código.
-        summary["derivados"] = DERIVADOS
-        summary["kpis_de_tarjeta"] = LEIDOS_DE_TARJETA
-        if DERIVADOS:
-            print(f"\n  {len(DERIVADOS)} cifra(s) calculadas, no leídas de Power BI:")
-            for x in DERIVADOS:
-                print(f"    · {x['reporte']}/{x['desglose']}.{x['campo']} = {x['formula']}")
         print(f"\n⚠ {len(DIAGNOSTICO)} consultas con problema — detalle en "
               f"summaries.json → diagnostico")
 

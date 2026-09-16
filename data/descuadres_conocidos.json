@@ -32,6 +32,12 @@
    "explicacion": "La consulta del visual 'FILLRATE POR MES' agrupa por 'CALENDARIO'[MES] y el año se resuelve aparte. Pedido con el año en la propia consulta, la medida solo devuelve de 2024-02 a 2025-04: no trae el mes en curso. Los cuatro puntos quedaban dibujados en el tramo viejo de un eje que llega a 2026-09, y se leían como si fueran de este año. Se dejó de publicar la serie: el gráfico muestra el hueco en vez de una línea mal ubicada. El KPI del mes no depende de esto, se lee del reporte. RESUELTO el mismo día sin necesidad de recapturar: la captura 'EVOLUTIVO DE % FILL RATE' sí trae el año y los nueve meses de 2026, con su meta. Pasó a ser la fuente principal; la consulta vieja queda de respaldo.",
    "pendiente": null,
    "resuelto": "2026-09-15"
+  },
+  {
+   "prueba": "B&D MOSTAZA BALDE 4K ND: precio por kilo x8.5",
+   "desde": "2026-09-16",
+   "explicacion": "De S/4.01 a S/34.26 el kilo en un mes, con el margen saltando de 64.2% a 94.5% cuando sus hermanos están entre 64% y 72%. Con esa cifra encabezaba las mejoras de B&D con +S/2,491. No es un precio: es el peso registrado del producto. La app lo marca con ⚠ y lo deja fuera de todas las lecturas y rankings.",
+   "pendiente": "Corregir el peso de ese SKU en el maestro de productos. Es dato de origen; desde la app no se puede arreglar."
   }
  ]
 }

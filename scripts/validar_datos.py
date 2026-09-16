@@ -632,6 +632,24 @@ def main():
         inf.ok += 1
         print("  OK     ningún precio por kilo se multiplica o divide por más de tres")
 
+    # Los metadatos del resumen —cobertura, derivados, cifras leídas de la
+    # tarjeta— se escribían dentro de "si hubo consultas con problema". Con la
+    # corrida limpia del 16/09 no se escribió ninguno, y sin kpis_de_tarjeta
+    # la serie mensual pisó el valor de la tarjeta: se publicó Costo x TN
+    # Producida en 151.64 cuando Power BI muestra 143.28. Cuanto mejor salía
+    # la corrida, peor el dato. Que falten es señal de que volvió a pasar.
+    print("\nEl resumen trae sus metadatos")
+    faltan = [k for k in ("cobertura", "derivados", "kpis_de_tarjeta")
+              if not (d.get(k))]
+    if faltan:
+        inf.afirmar(False, "faltan metadatos en summaries.json",
+                    f"no vienen {', '.join(faltan)} — sin ellos la app no sabe "
+                    f"qué cifra es derivada ni cuál viene de la tarjeta, y la "
+                    f"serie mensual puede pisar el valor que muestra Power BI")
+    else:
+        inf.ok += 1
+        print("  OK     cobertura, derivados y cifras de tarjeta presentes")
+
     print("\nPorcentajes de la misma familia en la misma escala")
     mezcla = escalas_mezcladas(ser)
     if mezcla:
