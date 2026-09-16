@@ -1535,14 +1535,16 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
     # probable, hasta que uno traiga las columnas pedidas.
     todos = [v for v in ids.values() if v]
 
-    def _cap(dataset, visual, columnas, clave, etiqueta):
+    def _cap(dataset, visual, columnas, clave, etiqueta, mes_calendario=None):
         # El orden lo decide qué tablas usa la consulta, no el nombre del
         # reporte: el catálogo dice que la matriz de cartera usa
         # DATA_FACTURACION, así que se busca el dataset que tenga esa tabla.
         candidatos = datasets_para_captura(token, ws_id, visual,
                                            preferidos=([dataset] if dataset else []) + todos)
         try:
-            filas = desglose_desde_captura(token, ws_id, candidatos, visual, columnas)
+            filas = desglose_desde_captura(token, ws_id, candidatos, visual,
+                                           columnas,
+                                           mes_calendario=mes_calendario)
             if filas:
                 bolsa[clave] = filas
                 print(f"    ✓ {etiqueta}: {len(filas)} filas")
@@ -1592,16 +1594,33 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
           "total": "[SumTotal_fact]"},
          "__cartera_responsable", "Cartera por ejecutivo")
 
-    # Las series diarias de merma y producción se dejaron de pedir.
+    # Series diarias de merma y producción, mes en curso y mes anterior.
     #
-    # Se traían para comparar el mes en curso contra el mismo tramo del
-    # anterior. No sirven para eso: ninguna de las dos capturas agrupa por mes
-    # —el mes lo pone el filtro de página del visual— y la de merma ni
-    # siquiera trae el día como valor, lo reemplaza por un [ColumnIndex].
-    # Publicarlas era publicar 31 días sin saber de qué mes son.
+    # Se habían dejado de pedir por una lectura equivocada: como el resultado
+    # no traía columna de mes, se concluyó que la captura no lo tenía. Sí lo
+    # tiene —viaja como TREATAS({7}, 'Calendario'[MES]), en el filtro de
+    # página— solo que clavado en el mes de la exportación. Reescribiéndolo se
+    # puede pedir cualquier mes, y el día queda fechado por construcción.
     #
-    # La comparación por tramo sí existe donde más importa: el presupuesto
-    # acumulado hasta ayer, que el propio reporte calcula y que se trae abajo.
+    # Se piden dos meses porque un día suelto no dice nada: lo que se mira es
+    # si el mes en curso va mejor o peor que el anterior a la misma altura.
+    hoy_ = hoy_lima()
+    mes_actual = (hoy_.year, hoy_.month)
+    mes_previo = (hoy_.year, hoy_.month - 1) if hoy_.month > 1 \
+                 else (hoy_.year - 1, 12)
+    for etiq_mes, (a_, m_) in (("mes en curso", mes_actual),
+                               ("mes anterior", mes_previo)):
+        _cap(ids.get("mermas"), "Merma Diaria#363813631d90",
+             {"almacen": "[almacen]", "turno": "[Turno]", "dia": "[DIA]",
+              "merma": "[v__MERMAS__TABLA_MERMAS]"},
+             f"__merma_diaria_{a_}_{m_:02d}", f"Merma diaria ({etiq_mes})",
+             mes_calendario=(a_, m_))
+        _cap(ids.get("productividad_ds") or ids.get("mermas"),
+             "Produccion Dia (Ton)#ac90f6b11dc2",
+             {"categoria": "[categoria_hijo]", "marca": "[MARCA 2]",
+              "dia": "[DIA]", "kg": "[SumPeso_Producido_Kg_]"},
+             f"__produccion_diaria_{a_}_{m_:02d}",
+             f"Producción diaria ({etiq_mes})", mes_calendario=(a_, m_))
 
     # Presupuesto acumulado hasta ayer, por canal. Es la comparación contra
     # meta que sí respeta los días transcurridos: el propio reporte la calcula.
@@ -1612,7 +1631,8 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
           "ppto_hasta_ayer": "[PPTO_Acumulado_Hasta_Ayer]",
           "avance_dia": "[v_Av_vs_PPTO_AL_DIA]",
           "pendiente": "[SumMonto_Neto_Pendiente]"},
-         "__ppto_al_dia", "Presupuesto acumulado al día")
+         "__ppto_al_dia", "Presupuesto acumulado al día",
+         mes_calendario=mes_actual)
 
     return bolsa
 
@@ -1719,11 +1739,16 @@ def build_dimensiones(found):
                            if to_float(f.get("avance_dia")) is not None else None),
             "_v": abs(fac or 0),
         })
-    # Solo sirve si el presupuesto acumulado llegó con valor. En la corrida
-    # del 15 vino en cero y el facturado era el del AÑO (S/18.63M contra una
-    # cuota mensual de S/7.79M): es el visual que no filtra mes, ya conocido.
-    # Publicarlo así mostraría "facturado S/18.63M contra presupuesto S/0",
-    # que es peor que no mostrar nada.
+    # Solo sirve si el presupuesto acumulado llegó con valor.
+    #
+    # El 15 vino en cero y el facturado era el del AÑO: S/18.63M contra una
+    # cuota mensual de S/7.79M. La causa no era que el visual no filtrara
+    # mes, sino que su filtro se llama 'Calendario'[Mes Nº] —no [MES]— y
+    # viajaba clavado en julio. Ahora se reescribe al mes en curso.
+    #
+    # La comprobación se queda igual: si aun así el presupuesto llega en
+    # cero, no se publica. "Facturado S/18.63M contra presupuesto S/0" es
+    # peor que no mostrar nada.
     util = [x for x in ppto if (to_float(str(x.get("ppto_hasta_ayer") or 0)
                                          .replace("S/", "").replace(",", "")
                                          .replace("M", "e6")) or 0) > 0]
@@ -1744,8 +1769,39 @@ def build_dimensiones(found):
 
 
 
+def dax_con_mes_calendario(dax, anio, mes):
+    """Mueve el filtro de mes de 'Calendario' de una consulta capturada.
+
+    Los visuales diarios —merma y producción— agrupan solo por [DIA]: el mes
+    no sale en el resultado porque viaja en el filtro de página, como
+    TREATAS({7}, 'Calendario'[MES]). Leído desde fuera parecía que la captura
+    no tenía mes y se dejaron de pedir; sí lo tiene, solo que clavado en el
+    mes en que se exportó.
+
+    Se reescriben únicamente esos dos valores —año y mes—, igual que en
+    dax_con_periodo: el filtro de fecha es el que hay que mover, los filtros
+    de negocio no se tocan. Así la misma captura sirve para cualquier mes y
+    el día queda etiquetado con el mes que se pidió, no con uno supuesto.
+
+    Devuelve (dax, ok). ok es False si no encontró los dos filtros, para que
+    quien la use no publique días sin saber de qué mes son.
+    """
+    # El mes no siempre se llama igual: los visuales diarios usan
+    # 'Calendario'[MES] y el de presupuesto 'Calendario'[Mes Nº]. Se acepta
+    # cualquiera de los dos; basta con encontrar uno.
+    pa = re.compile(r"TREATAS\(\s*\{\s*\d{4}\s*\}\s*,\s*'Calendario'\[Año\]\s*\)")
+    pm = re.compile(r"TREATAS\(\s*\{\s*\d{1,2}\s*\}\s*,\s*'Calendario'\[(MES|Mes Nº)\]\s*\)")
+    mm = pm.search(dax or "")
+    if not mm:
+        return dax, False
+    dax = pm.sub(f"TREATAS({{{mes}}}, 'Calendario'[{mm.group(1)}])", dax)
+    if pa.search(dax):
+        dax = pa.sub(f"TREATAS({{{anio}}}, 'Calendario'[Año])", dax)
+    return dax, True
+
+
 def desglose_desde_captura(token, ws, candidatos, visual, columnas, limite=None,
-                           periodo=None):
+                           periodo=None, mes_calendario=None):
     """Ejecuta una consulta capturada y devuelve sus filas como diccionarios.
 
     Se envía el DAX exportado SIN modificarlo: transcribir consultas a mano fue
@@ -1801,6 +1857,12 @@ def desglose_desde_captura(token, ws, candidatos, visual, columnas, limite=None,
         if not ds:
             continue
         dax = entrada["dax"]
+        if mes_calendario:
+            dax, ok_mes = dax_con_mes_calendario(dax, *mes_calendario)
+            if not ok_mes:
+                print(f"    · '{visual}': sin filtro de mes de 'Calendario'; "
+                      f"no se puede fechar, se omite")
+                return []
         if periodo:
             dax, aplicado = dax_con_periodo(dax, periodo)
             if aplicado is None:
@@ -4050,7 +4112,7 @@ def dax_cumplimiento_produccion(token, ws, dataset_id, label="cumpl_produccion")
     return out
 
 
-def build_avance(found):
+def build_avance(found, venta_canal=None):
     avance_val = (found.get("Avance") or found.get("% Avance") or found.get("Avance PPTO") or
                   found.get("% Avance Presupuesto"))
     real_val   = found.get("Ventas PPTO") or found.get("Presupuesto")
@@ -4097,6 +4159,39 @@ def build_avance(found):
     # Avance por canal (ver dax_avance_por_canal). Sustituye a las medidas del
     # sondeo genérico: estas vienen de la tabla del reporte, con su filtro.
     canales = found.get("__avance_canal") or []
+
+    # Lo facturado de esta consulta suma el mismo mes de varios años: su único
+    # filtro de tiempo es 'Calendario'[Mes Nº], sin año, y por eso el avance
+    # salía en 239%. Añadir el año se intentó y rompió el vínculo con 'Exl
+    # PPTO' (ver la nota de dax_avance_por_canal).
+    #
+    # No hace falta tocar esa consulta. La facturación por canal y mes ya se
+    # trae limpia en otra —"FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO", que sí
+    # agrupa por año y mes— así que se toma de ahí el facturado del mes y se
+    # deja de esta solo la cuota, que es mensual y no se duplica.
+    if canales and venta_canal:
+        por_canal_mes = {}
+        for f in venta_canal:
+            c = re.sub(r"^CANAL\s+", "", (f.get("canal") or "").strip().upper())
+            a, m = to_float(f.get("anio")), to_float(f.get("mes"))
+            v = to_float(f.get("venta"))
+            if not c or not a or not m or v is None:
+                continue
+            por_canal_mes.setdefault(c, {})[f"{int(a)}-{int(m):02d}"] = v
+        meses = sorted({k for v in por_canal_mes.values() for k in v})
+        if meses:
+            ult = meses[-1]
+            cambiados = 0
+            for c in canales:
+                clave = re.sub(r"^CANAL\s+", "", (c.get("canal") or "").strip().upper())
+                v = (por_canal_mes.get(clave) or {}).get(ult)
+                if v is not None:
+                    c["facturado"] = v
+                    cambiados += 1
+            if cambiados:
+                print(f"    · facturado de {cambiados} canales tomado de la "
+                      f"consulta con año ({ult}), no de la que suma años")
+
     if canales:
         anotar_derivado("margen_variable_pag2", "por_canal", "avance",
                         "facturado / ppto × 100",
@@ -4135,15 +4230,16 @@ def build_avance(found):
                 {"label": "Presupuesto del mes", "valor": fmt_soles(ppto)},
                 {"label": "Facturado", "valor": fmt_soles(fact)},
                 {"label": "Avance vs presupuesto", "valor": f"{pct:.1f}%",
-                 "meta": "revisar — el visual no filtra año" if sospechoso else "100%",
+                 "meta": "revisar — avance fuera de rango" if sospechoso else "100%",
                  "estado": "yellow" if sospechoso else
                            ("green" if fact >= ppto else
                             "yellow" if fact >= ppto * 0.8 else "red")},
             ] + res["kpis"]
             if sospechoso:
-                res["alerta"] = (f"Avance {pct:.0f}% — la consulta del reporte filtra "
-                                 f"mes pero no año, así que suma el mismo mes de "
-                                 f"varios años contra un presupuesto mensual")
+                res["alerta"] = (f"Avance {pct:.0f}% — revisar. El facturado ya "
+                                 f"se toma de la consulta que separa el año, así "
+                                 f"que no es doble conteo: o la cuota del canal "
+                                 f"no corresponde al mes, o el avance es real")
         pend = sum(c["pendiente"] or 0 for c in canales)
         if pend:
             res["kpis"].append({"label": "Pendiente de facturar",
@@ -5161,7 +5257,8 @@ def main():
 
         # ── Avance vs Presupuesto (planificacion mergeado en inventario)
         if scanned.get("inventario"):
-            av, avance_pct = build_avance(scanned["inventario"])
+            vc_ = (scanned.get("dimensiones") or {}).get("__venta_canal")
+            av, avance_pct = build_avance(scanned["inventario"], vc_)
             if av["kpis"]:
                 empresa_data["reportes"]["margen_variable_pag2"] = av
                 print(f"  Avance PPTO {fmt_pct(avance_pct)} sem={av['estado']}")

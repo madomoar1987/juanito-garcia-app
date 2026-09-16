@@ -22,14 +22,16 @@
   {
    "prueba": "Presupuesto acumulado al día (FACTURACION AL 05 SETIEMBRE)",
    "desde": "2026-09-15",
-   "explicacion": "La captura devuelve el presupuesto acumulado hasta ayer en cero y el facturado del AÑO (S/18.63M contra una cuota mensual de S/7.79M): ese visual no filtra el mes. No es un fallo de la consulta, es el alcance del visual de origen.",
-   "pendiente": "Capturar ese visual con el filtro de mes aplicado para tener el avance contra presupuesto que sí respeta los días transcurridos."
+   "explicacion": "La captura devuelve el presupuesto acumulado hasta ayer en cero y el facturado del AÑO (S/18.63M contra una cuota mensual de S/7.79M): ese visual no filtra el mes. No es un fallo de la consulta, es el alcance del visual de origen. RESUELTO: no era que el visual no filtrara mes, sino que su filtro se llama 'Calendario'[Mes Nº] y viajaba clavado en julio. Ahora se reescribe al mes en curso.",
+   "pendiente": null,
+   "resuelto": "2026-09-15"
   },
   {
    "prueba": "Serie mensual de Fill Rate y Pedidos no atendidos",
    "desde": "2026-09-15",
-   "explicacion": "La consulta del visual 'FILLRATE POR MES' agrupa por 'CALENDARIO'[MES] y el año se resuelve aparte. Pedido con el año en la propia consulta, la medida solo devuelve de 2024-02 a 2025-04: no trae el mes en curso. Los cuatro puntos quedaban dibujados en el tramo viejo de un eje que llega a 2026-09, y se leían como si fueran de este año. Se dejó de publicar la serie: el gráfico muestra el hueco en vez de una línea mal ubicada. El KPI del mes no depende de esto, se lee del reporte.",
-   "pendiente": "Volver a exportar el visual 'FILLRATE POR MES' desde el Analizador de rendimiento con el año en el eje."
+   "explicacion": "La consulta del visual 'FILLRATE POR MES' agrupa por 'CALENDARIO'[MES] y el año se resuelve aparte. Pedido con el año en la propia consulta, la medida solo devuelve de 2024-02 a 2025-04: no trae el mes en curso. Los cuatro puntos quedaban dibujados en el tramo viejo de un eje que llega a 2026-09, y se leían como si fueran de este año. Se dejó de publicar la serie: el gráfico muestra el hueco en vez de una línea mal ubicada. El KPI del mes no depende de esto, se lee del reporte. RESUELTO el mismo día sin necesidad de recapturar: la captura 'EVOLUTIVO DE % FILL RATE' sí trae el año y los nueve meses de 2026, con su meta. Pasó a ser la fuente principal; la consulta vieja queda de respaldo.",
+   "pendiente": null,
+   "resuelto": "2026-09-15"
   }
  ]
 }

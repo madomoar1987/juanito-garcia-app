@@ -1052,6 +1052,62 @@ def _mapa_calendario_fillrate(token, ds_id):
     return mapa
 
 
+def _fillrate_desde_evolutivo(token, ds_id, anio):
+    """% Fill Rate mensual desde la captura "EVOLUTIVO DE % FILL RATE".
+
+    La consulta de "FILLRATE POR MES" agrupa por 'CALENDARIO'[MES] y deja el
+    año fuera: pedido aparte, ese calendario solo llega a 2025-04 y los puntos
+    terminaban dibujados en el tramo viejo del eje.
+
+    Esta captura no tiene ese problema. Agrupa por [MES_DESPACHO_KARDEX] con
+    su columna de orden —el número de mes— y trae el año en su propio filtro,
+    así que cada punto se ubica sin traducir nada. Se envía tal cual se
+    exportó; lo único que se reescribe es el año, para que no quede clavado
+    en el año de la captura.
+    """
+    entrada = cargar_catalogo().get("EVOLUTIVO DE % FILL RATE")
+    if not entrada or not entrada.get("dax"):
+        return {}, {}
+    q, n = re.subn(r"\[Año\] IN \{\s*\d{4}\s*\}", f"[Año] IN {{{anio}}}",
+                   entrada["dax"])
+    if not n:
+        print("    · evolutivo: no se encontró el año en la captura")
+        return {}, {}
+
+    filas = dax(token, ds_id, q, "fillrate-evolutivo", retries=2)
+    if not filas:
+        return {}, {}
+
+    def val(r, *sufijos):
+        for k, v in r.items():
+            base = k.split("[")[-1].rstrip("]").strip().lower()
+            if base in sufijos:
+                return v
+        return None
+
+    serie, meta = {}, {}
+    for r in filas:
+        mes = val(r, "orden_mes_despacho_kardex")
+        if mes is None:
+            nombre = val(r, "mes_despacho_kardex")
+            mes = MESES_CORTOS.get(str(nombre).strip().lower()[:3])
+        try:
+            per = (int(anio), int(mes))
+        except (TypeError, ValueError):
+            continue
+        fr = val(r, "v__fillrate", "_fillrate", "% fillrate")
+        mt = val(r, "meta_fill_rate", "meta fill rate")
+        try:
+            if fr is not None: serie[per] = float(fr)
+        except (TypeError, ValueError): pass
+        try:
+            if mt is not None: meta[per] = float(mt)
+        except (TypeError, ValueError): pass
+    if serie:
+        print(f"    · evolutivo de fill rate: {len(serie)} meses de {anio}")
+    return serie, meta
+
+
 def serie_fillrate(token, ds_id, periodos):
     """FILLRATE y PEDIDOS NO ATENDIDOS mensuales.
 
@@ -1066,6 +1122,23 @@ def serie_fillrate(token, ds_id, periodos):
     # 2025-01..2025-04 de un eje que llega a 2026-09, y el gráfico quedó
     # publicado con datos en el tramo equivocado sin que nada fallara. Pedir el
     # año directamente elimina la traducción y el error que traía.
+    # Primero la captura del evolutivo, que sí trae el año. La consulta de
+    # "FILLRATE POR MES" queda de respaldo: su calendario no llega al mes en
+    # curso, y se prefiere un dato ubicado a uno que hay que traducir.
+    # Se queda con lo que traiga y sigue: la consulta vieja es la única que
+    # tiene "Pedidos no atendidos", así que reemplazarla del todo perdería esa
+    # serie. Lo que aporta el evolutivo es el % con su año y su meta.
+    desde_evolutivo = {}
+    anio_eje = periodos[-1][0] if periodos else None
+    if anio_eje:
+        ev, meta_ev = _fillrate_desde_evolutivo(token, ds_id, anio_eje)
+        serie = [ev.get(pp) for pp in periodos]
+        if any(x is not None for x in serie):
+            desde_evolutivo["% Fill Rate"] = serie
+        mserie = [meta_ev.get(pp) for pp in periodos]
+        if any(x is not None for x in mserie):
+            desde_evolutivo["Meta Fill Rate"] = mserie
+
     col_anio = _columna_anio_calendario(token, ds_id)
     filas, por_anio = None, bool(col_anio)
     if col_anio:
@@ -1100,7 +1173,7 @@ def serie_fillrate(token, ds_id, periodos):
              "ORDER BY\n\t'CALENDARIO'[IN_MES], 'CALENDARIO'[MES]")
         filas = dax(token, ds_id, q, "fillrate-mensual")
     if not filas:
-        return {}
+        return desde_evolutivo
 
     pares = {"% Fill Rate": {}, "Pedidos no atendidos": {}}
     for r in filas:
@@ -1154,6 +1227,9 @@ def serie_fillrate(token, ds_id, periodos):
             # Mejor un hueco declarado que una línea que miente.
             continue
         out[etiqueta] = serie
+    # El evolutivo manda sobre la consulta vieja en el % : trae el año en la
+    # propia consulta y no depende del mapa de calendario.
+    out.update(desde_evolutivo)
     return out
 
 

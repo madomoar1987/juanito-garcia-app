@@ -3251,7 +3251,7 @@ function dxpCards(s) {
     compras: () => `Ratio consumo/compra · sobre 100% jala inventario`,
     sop_inventario: () => `Dead stock por categoría · seis categorías`,
     productividad: () => `Planilla por kilo · <b>falta definir la meta</b>`,
-    margen_variable_pag2: () => `Avance por canal desde la tabla del reporte 11 — el visual no filtra año`,
+    margen_variable_pag2: () => `Avance por canal: la cuota sale de la tabla del reporte 11 y el facturado de la consulta que separa año y mes`,
   };
   const cards = DXP_ORDEN.map((t,i) => {
     const rd = s.rp[t]; if (!rd || !(rd.kpis||[]).length) return '';
@@ -5000,6 +5000,23 @@ function metaDe(clave) {
 
 // La meta ya formateada, para meterla en un texto. Devuelve "sin meta" cuando
 // no hay: es la verdad, y además avisa de que falta fijarla.
+// Referencia para los indicadores sin meta. NO es una meta: es el mejor mes
+// que el propio indicador logró en los últimos doce, calculado de su serie.
+//
+// Una fila que solo dice "+ poner meta" no se puede leer: el número queda sin
+// nada contra qué medirse y la fila se salta. Con la referencia se ve si el
+// mes va mejor o peor que el mejor mes propio, que es una pregunta que sí se
+// puede responder sin inventar un objetivo. La meta la fija gerencia.
+function referenciaDe(ind) {
+  if (!ind || !ind.serie) return null;
+  const s = serieDe(ind.serie);
+  if (!Array.isArray(s)) return null;
+  const vals = s.slice(-13, -1).filter(v => v != null && isFinite(v));
+  if (vals.length < 3) return null;
+  const v = ind.direccion === 'menor' ? Math.min(...vals) : Math.max(...vals);
+  return { valor: v, n: vals.length };
+}
+
 function metaTxt(clave) {
   const ind = (METAS?.indicadores || []).find(i => i.clave === clave);
   const v = metaDe(clave);
@@ -5644,7 +5661,11 @@ function dxpAvanceView() {
         .replace(/<\/span>$/, (mala ? ' · ver análisis' : ' · analizar') + '</span>');
     }
 
+    const ref = meta == null ? referenciaDe(ind) : null;
     const metaTxt = meta == null ? '+ poner meta' : fmtMeta(ind, meta);
+    const refHtml = ref
+      ? `<small class="av-vacio" title="No es una meta: es el mejor mes propio de los ultimos ${ref.n}. La meta la fija gerencia.">mejor mes: ${esc(fmtMeta(ind, ref.valor))}</small>`
+      : '';
     const triHtml = tri ? `<span class="av-tri ${tri.cls}"><i></i>${tri.txt}</span>`
                         : '<span class="av-vacio">—</span>';
 
@@ -5656,7 +5677,7 @@ function dxpAvanceView() {
       <td data-lab="Meta del mes"><span class="av-meta ${meta == null ? 'av-meta-vacia' : ''} ${propia ? 'av-meta-mia' : ''}"
             onclick="editarMeta('${ind.clave}')"
             title="${propia ? 'Meta puesta por ti, sin publicar' : 'Clic para cambiarla'}"
-            >${esc(metaTxt)}</span></td>
+            >${esc(metaTxt)}</span>${refHtml}</td>
       <td class="av-cerrado" data-lab="${esc(nombreMesCerrado())}">${cerrado == null
         ? '<span class="av-vacio">—</span>' : esc(fmtMeta(ind, cerrado))}</td>
       <td class="av-num" data-lab="${esc(nombreMes(mesParcial()) || 'mes en curso')}">${
@@ -5711,7 +5732,9 @@ function dxpAvanceView() {
 
   <div class="av-pie">
     ${sinMeta ? `<b>${sinMeta} indicador${sinMeta > 1 ? 'es' : ''} sin meta.</b>
-      Muestran el dato pero no disparan alerta: haz clic en «+ poner meta».` : ''}
+      Muestran su mejor mes propio como referencia —no es una meta, es lo que
+      ese indicador ya logró— y por eso no disparan alerta. Para que la
+      disparen hay que fijar el objetivo: «+ poner meta».` : ''}
     ${nPropias ? `<span class="av-aviso-borr"><b>${nPropias} meta${nPropias > 1 ? 's' : ''}
       sin publicar.</b> Solo las ves tú en este equipo.
       <button class="av-btn" onclick="exportarMetas()">Ver cómo publicarlas</button></span>` : ''}
