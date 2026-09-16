@@ -1756,7 +1756,12 @@ small { font-size:13px; line-height:1.4; }
 .eje-row:last-child { border-bottom:none; }
 .eje-row-k { font-size:13px; color:var(--text2); min-width:0; }
 .eje-row-k small { display:block; font-size:13px; color:var(--text3); }
-.eje-row-v { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;
+/* La cifra del mes es el dato por el que se abre el reporte: tiene que
+   ganarle a su propia etiqueta sin recurrir a un color de alarma. El mes
+   cerrado, justo debajo, va deliberadamente más discreto — está para dar
+   escala, no para competir. */
+.eje-row-v { font-size:22px; font-weight:650; font-variant-numeric:tabular-nums;
+  letter-spacing:-.015em; line-height:1.2;
   text-align:right; min-width:0; overflow-wrap:anywhere; }
 .eje-row-v small { display:block; font-size:13px; font-weight:400; }
 .eje-row-m { font-size:13px; color:var(--text3); text-align:right;
@@ -1764,7 +1769,7 @@ small { font-size:13px; line-height:1.4; }
 .eje-row-m small { display:block; font-size:13px; }
 .eje-row-c { font-size:14px; font-weight:700; text-align:right;
   font-variant-numeric:tabular-nums; }
-.eje-row-prev .eje-row-v { font-size:14px; font-weight:600; color:var(--text2); }
+.eje-row-prev .eje-row-v { font-size:16px; font-weight:600; color:var(--text2); }
 .eje-row-proy { background:rgba(127,127,127,.05); }
 .eje-calc { color:var(--yellow); cursor:help; }
 .eje-falta { color:var(--yellow); border:1px dashed var(--yellow); border-radius:4px;
@@ -1817,8 +1822,13 @@ small { font-size:13px; line-height:1.4; }
 .rep-sec .eje-card { cursor:default; }
 /* Con un solo indicador, auto-fit estiraba la tarjeta a todo el ancho y sus
    columnas internas quedaban separadas por medio metro de vacío. */
-.rep-sec .eje-cards { grid-template-columns:repeat(auto-fit, minmax(330px, 460px));
-  justify-content:start; }
+/* Las tarjetas reparten la fila en vez de quedarse en 460 px pegadas a la
+   izquierda. Un reporte con un solo indicador dejaba 916 px en blanco a su
+   derecha; ahora la tarjeta ocupa la fila y sus filas internas —mes, valor,
+   meta, cumplimiento— se leen como un renglón de tabla, que es justo lo que
+   son. Con cuatro indicadores salen cuatro columnas y nadie se estira. */
+.rep-sec .eje-cards { grid-template-columns:repeat(auto-fit, minmax(330px, 1fr));
+  justify-content:stretch; }
 .rep-sec .eje-go { display:none; }
 
 .flt { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:flex-end;
