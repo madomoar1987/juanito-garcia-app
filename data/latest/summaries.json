@@ -6411,12 +6411,12 @@
     "cuadran": 35,
     "no_cuadran": [
       {
-        "prueba": "B&D MOSTAZA BALDE 4K   ND: precio por kilo x7.9 en un mes",
+        "prueba": "B&D MOSTAZA BALDE 4K   ND: precio por kilo fuera de rango",
         "publicado": null,
         "esperado": null,
         "diferencia_pct": null,
         "detalle": "de S/4.01 a S/31.54 — un precio no se mueve así; lo más probable es que el peso esté mal registrado, y el margen derivado de ese precio tampoco vale",
-        "conocido": false
+        "conocido": true
       }
     ],
     "sin_datos": []

@@ -1054,8 +1054,17 @@ def _q_compras_ratio_total():
 
 def serie_compras_ratio_total(token, ds_id, periodos):
     """Serie del ratio total, tal como la dibuja el gráfico del reporte."""
-    filas = dax(token, ds_id, _q_compras_ratio_total(), "compras-ratio-total")
+    q = _q_compras_ratio_total()
+    tabs = tablas_de_captura(
+        lambda consulta, etq: dax(token, ds_id, consulta, etq), q,
+        "compras-ratio-total") if q else []
+    filas = next((t for t in (tabs or [])
+                  if t and any("ratio" in k.lower() for k in t[0])), None)
     if not filas:
+        DIAG_SERIES.append({
+            "consulta": "compras:ratio-total", "http": 200,
+            "error": f"{len(tabs or [])} tabla(s), filas {[len(t or []) for t in (tabs or [])]}; "
+                     f"ninguna trae la medida del ratio"})
         return None
     ld = COMPRAS_LOCALDATE
     mapa = {}
@@ -1090,7 +1099,13 @@ def serie_compras_ratio(token, ds_id, periodos):
             "error": "la captura 'Eficiencia de Costo de compra  de materiales  "
                      "(Operación)#a5e2b0c1992a' no está en el catálogo"})
         return {}
-    tablas = dax_crudo(token, ds_id, q, "compras-ratio") or []
+    # tablas_de_captura, NO dax_crudo: la API de Power BI devuelve UNA tabla
+    # por petición aunque el DAX traiga dos EVALUATE. dax_crudo lee
+    # results[0].tables y por eso solo llegaba el eje —tres columnas de fecha,
+    # sin ninguna medida—, que es justo lo que dijo el diagnóstico de la
+    # corrida #123: "1 tabla, 14 filas, claves Año/Mes/NroMes".
+    tablas = tablas_de_captura(
+        lambda consulta, etq: dax(token, ds_id, consulta, etq), q, "compras-ratio") or []
     filas = next((t for t in tablas
                   if t and any("ratio" in k.lower() for k in t[0])), None)
     if not filas:

@@ -4998,7 +4998,18 @@ def main():
                             scanned["margen"]["__facturado_cliente"] = fc
                             print(f"    ✓ Facturación por cliente: {len(fc)} filas")
                         else:
+                            # Sin diagnóstico, una consulta que corre y no trae
+                            # nada es indistinguible de una que no se pidió: la
+                            # columna sale vacía y la corrida dice que todo bien.
                             print("    · Facturación por cliente: sin filas")
+                            DIAGNOSTICO.append({
+                                "tipo": "aviso", "consulta": "facturacion_cliente",
+                                "http": 200,
+                                "error": "la consulta derivada de 'FACTURACIÓN - CANAL "
+                                         "POR UNIDAD DE NEGOCIO' agrupada por [RAZON "
+                                         "SOCIAL] corrió sin error y devolvió cero "
+                                         "filas; la tabla de clientes se queda sin la "
+                                         "columna de facturado"})
                     else:
                         DIAGNOSTICO.append({
                             "tipo": "aviso", "consulta": "facturacion_cliente", "http": 200,

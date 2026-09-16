@@ -649,7 +649,11 @@ def main():
     _precios(rp)
     if saltos:
         for quien, a, b, x in saltos[:5]:
-            inf.afirmar(False, f"{quien}: precio por kilo x{x:.1f} en un mes",
+            # El título NO lleva el múltiplo: cambia cada mes —x8.5, x7.9— y
+            # con él cambiaba la clave, así que un caso ya investigado volvía
+            # a contarse como nuevo y abortaba la corrida. La magnitud va en
+            # el detalle, que es donde se lee; la clave identifica el CASO.
+            inf.afirmar(False, f"{quien}: precio por kilo fuera de rango",
                         f"de S/{a:.2f} a S/{b:.2f} — un precio no se mueve así; "
                         f"lo más probable es que el peso esté mal registrado, y "
                         f"el margen derivado de ese precio tampoco vale")

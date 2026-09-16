@@ -34,9 +34,9 @@
    "resuelto": "2026-09-15"
   },
   {
-   "prueba": "B&D MOSTAZA BALDE 4K ND: precio por kilo x8.5",
+   "prueba": "B&D MOSTAZA BALDE 4K   ND: precio por kilo fuera de rango",
    "desde": "2026-09-16",
-   "explicacion": "De S/4.01 a S/34.26 el kilo en un mes, con el margen saltando de 64.2% a 94.5% cuando sus hermanos están entre 64% y 72%. Con esa cifra encabezaba las mejoras de B&D con +S/2,491. No es un precio: es el peso registrado del producto. La app lo marca con ⚠ y lo deja fuera de todas las lecturas y rankings.",
+   "explicacion": "El precio por kilo salta de S/4.01 a S/31-34 según el mes, con el margen pasando de 64% a más de 90% cuando sus hermanos están entre 64% y 72%. No es un precio: es el peso registrado del producto. La app lo marca con ⚠ y lo deja fuera de todas las lecturas y rankings. El múltiplo cambia cada mes, así que la clave de esta entrada NO lo lleva.",
    "pendiente": "Corregir el peso de ese SKU en el maestro de productos. Es dato de origen; desde la app no se puede arreglar."
   }
  ]
