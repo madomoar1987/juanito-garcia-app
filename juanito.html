@@ -4101,7 +4101,8 @@ function avBloqueClientes() {
   const cuerpo = filas.map(f => `
     <tr${f.impacto < -0.2 ? ' class="av-an-foco"' : ''}>
       <td>${esc(avNombreCorto(f.nombre))}</td>
-      <td class="av-an-ene">${esc(f.facCerr || f.ventaCerr || '—')}</td>
+      <td class="av-an-ene">${esc(f.facCerr || '—')}${
+        f.facCerr == null && f.ventaCerr ? `<small style="display:block;color:var(--text3)">órdenes ${esc(f.ventaCerr)}</small>` : ''}</td>
       <td>${esc(f.venta || '—')}</td>
       <td style="font-weight:600">${esc(f.fac || '—')}</td>
       <td style="color:${f.conv == null ? 'var(--text3)'

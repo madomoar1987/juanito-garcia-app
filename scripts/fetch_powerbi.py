@@ -3043,7 +3043,7 @@ def build_margen(found):
             # Cuánto de lo pedido ya se facturó. Es la columna del avance:
             # 100% es que todo lo colocado salió; 40% es que el mes va lleno
             # de pedidos y vacío de despachos.
-            "avance_pct": (round(fact[n][per_curso] / v * 100, 1)
+            "conversion": (round(fact[n][per_curso] / v * 100, 1)
                            if fact.get(n, {}).get(per_curso) is not None and v else None),
             # Lo que de verdad se le facturó: en el mes cerrado es la venta
             # final, y en el mes en curso es cuánto de lo pedido ya se cobró.
