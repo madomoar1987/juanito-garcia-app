@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-15",
+  "generado": "2026-09-16",
   "parcial": "2026-09",
   "fuente": "Power BI REST API executeQueries",
   "periodos": [
@@ -28,10 +28,11 @@
   "tablas_fecha": {
     "cxc": "LocalDateTable_9de71e0e-3dad-40db-b49a-7124064ba537[Año] + 'Calendario (FACT)'[Mes Numero]",
     "mermas": "Calendario[Año] + Calendario[MES] (6 filtros del visual)",
-    "cxp": "Calendario[Date]",
+    "cxp": "Calendario[Fecha]",
     "margen": "Calendario[Date]",
     "compras": "Calendario[Date]",
     "inventario": "Calendario[Date]",
+    "fill_rate": "Calendario[Date]",
     "planificacion": "Calendario[Date]"
   },
   "sin_serie": {
@@ -41,7 +42,7 @@
         "Calendario"
       ],
       "columnas_fecha": [
-        "Calendario[Date]"
+        "Calendario[Fecha]"
       ],
       "medidas_planas": [
         {
@@ -91,7 +92,7 @@
           "medida": "Consumo Prom 3M",
           "valores_distintos": 2,
           "meses_con_dato": 16,
-          "amplitud_relativa_pct": 0.1639,
+          "amplitud_relativa_pct": 0.1625,
           "repeticiones_del_valor_mas_comun": 15,
           "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
         },
@@ -99,7 +100,7 @@
           "medida": "Consumo Prom 6M",
           "valores_distintos": 2,
           "meses_con_dato": 16,
-          "amplitud_relativa_pct": 0.2639,
+          "amplitud_relativa_pct": 0.2628,
           "repeticiones_del_valor_mas_comun": 15,
           "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
         }
@@ -147,6 +148,81 @@
       "columnas_fecha": [],
       "esquema_rest_error": "HTTP 404"
     },
+    "fill_rate": {
+      "medidas": [],
+      "tablas": [
+        "Calendario"
+      ],
+      "columnas_fecha": [
+        "Calendario[Date]"
+      ],
+      "medidas_planas": [
+        {
+          "medida": "% FILLRATE",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "ORDEN DE VENTA",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "FACTURACION",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "VENTA PERDIDA",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "% FillRate",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "Orden de Venta",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "Facturacion",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        },
+        {
+          "medida": "Venta Perdida",
+          "valores_distintos": 1,
+          "meses_con_dato": 21,
+          "amplitud_relativa_pct": 0.0,
+          "repeticiones_del_valor_mas_comun": 21,
+          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
+        }
+      ]
+    },
     "planificacion": {
       "medidas": [],
       "tablas": [
@@ -160,7 +236,7 @@
           "medida": "% Avance",
           "valores_distintos": 3,
           "meses_con_dato": 21,
-          "amplitud_relativa_pct": 120.2716,
+          "amplitud_relativa_pct": 113.2082,
           "repeticiones_del_valor_mas_comun": 15,
           "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
         }
@@ -190,7 +266,7 @@
         0.1975324437945531,
         0.2635442419449222,
         0.2191223470777326,
-        0.15325399292393058
+        0.15374505643532752
       ]
     },
     "mermas": {
@@ -215,7 +291,7 @@
         0.025759143596316852,
         0.02345541438010197,
         0.029300295467541322,
-        0.025645839300682486
+        0.02616986957843608
       ],
       "Desviación Bases": [
         null,
@@ -238,7 +314,7 @@
         -33758.6266288083,
         -31062.438174167222,
         -30998.908997632996,
-        -16534.900230333307
+        -17894.172743183277
       ],
       "Consumo Interno": [
         null,
@@ -307,7 +383,7 @@
         0.014146336300726724,
         0.01835874285701501,
         0.014243038494502718,
-        0.009964955910881031
+        0.011301189777530219
       ],
       "% Merma MAQUILA": [
         null,
@@ -330,7 +406,7 @@
         0.028646260209106805,
         0.024353015444905163,
         0.034852101652594975,
-        0.030224423344694933
+        0.03045849831421576
       ],
       "% Merma TIGO": [
         null,
@@ -353,7 +429,7 @@
         0.04876804025938801,
         0.03411604271470903,
         0.038062619177753235,
-        0.05009181902506819
+        0.04876396206588506
       ],
       "% Merma Planta ATE": [
         null,
@@ -376,7 +452,7 @@
         0.02925668422573003,
         0.024425239604228082,
         0.03461326999763048,
-        0.030535797772865247
+        0.030673409060872417
       ],
       "% Merma Planta Pachacamac": [
         null,
@@ -399,7 +475,7 @@
         0.018001571943887545,
         0.020962385775117724,
         0.017284314114067414,
-        0.014593692938129095
+        0.015762402818070582
       ],
       "% Merma Planta Terceros": [
         null,
@@ -446,8 +522,8 @@
         0.4703588336021041,
         0.46922155570710494,
         0.48370336709261635,
-        0.46453868311186364,
-        0.4729133381716939
+        0.46453865679146067,
+        0.45625645674978227
       ],
       "Precio x Kilo": [
         null,
@@ -470,7 +546,7 @@
         5.720867533308341,
         5.67479005301018,
         5.930133285991716,
-        6.268879784946129
+        6.269931127823746
       ],
       "Costo x Kilo": [
         null,
@@ -491,9 +567,9 @@
         2.9447074029784472,
         3.0739505201865893,
         3.014831207916304,
-        2.891119428797323,
-        3.1586438858502954,
-        3.29987886561106
+        2.8911194287973236,
+        3.158644041933793,
+        3.4048713470670986
       ],
       "Ventas (S/.)": [
         null,
@@ -516,7 +592,7 @@
         7397630.06,
         7320997.01,
         7689608.92,
-        2361934.03
+        2362781.7
       ],
       "Costo unitario B&D": [
         null,
@@ -538,8 +614,8 @@
         13.339915385585472,
         16.776488994524406,
         13.903253101640278,
-        15.53633893250023,
-        13.648959633657565
+        15.536338932496697,
+        13.672123216412363
       ],
       "Costo unitario MAQUILA": [
         null,
@@ -562,7 +638,7 @@
         3.794210206344196,
         4.054361407254469,
         4.058167394239976,
-        4.184975768122329
+        4.222323422312344
       ],
       "Costo unitario TIGO": [
         null,
@@ -584,146 +660,8 @@
         3.777198644539178,
         3.0680758056408965,
         3.0901268768389607,
-        3.188270203186697,
-        2.8039085611993344
-      ],
-      "Precio unitario HORECA": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        9.592297163471745,
-        8.754473328948734,
-        8.203895353258803,
-        8.829950851779316,
-        8.655399618254377,
-        10.396444719379147,
-        9.5534459765944,
-        10.092852275177913,
-        9.545061156769693,
-        12.399412716388937,
-        11.50612237093691,
-        10.437810936691397,
-        11.518512500000002,
-        10.818382510319527,
-        8.664235014433691
-      ],
-      "Precio unitario MODERNO": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        4.023781299961457,
-        4.073007391026423,
-        4.606932656299098,
-        4.129014185734745,
-        3.942103777792502,
-        4.315346898049208,
-        4.5946858574133405,
-        4.325552962149543,
-        4.158004551643083,
-        4.32414404930161,
-        4.361354422101097,
-        4.092277577007329,
-        4.190184944630163,
-        4.179385598027225,
-        3.6604384892246604
-      ],
-      "Precio unitario TRADICIONAL": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        44.919611951368104,
-        32.46248207258415,
-        40.428340048586854,
-        44.111344316765894,
-        40.06943391748089,
-        45.63717264052606,
-        46.97872803817009,
-        34.14304865208982,
-        46.339732941086595,
-        45.33123368516625,
-        32.885807915521234,
-        44.17959748698837,
-        43.20399252578909,
-        38.67553250190029,
-        42.318903867403336
-      ],
-      "% Margen B&D": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        0.651040392507775,
-        0.648749026738391,
-        0.6466020419144897,
-        0.6343386668377773,
-        0.6338822642800611,
-        0.6257615533884526,
-        0.643859399481596,
-        0.6230111674073644,
-        0.6105829446834211
-      ],
-      "% Margen MAQUILA": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        0.45376071560432185,
-        0.4411522772018463,
-        0.4430023226484438,
-        0.3754792734205772,
-        0.3700305454567478,
-        0.3769514801838882,
-        0.37662860428154726,
-        0.3741193755634254,
-        0.45796771972138517
-      ],
-      "% Margen TIGO": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        0.5312761515036691,
-        0.5358363761250298,
-        0.5265968065319693,
-        0.48216054546016973,
-        0.482570680062205,
-        0.5084398383286841,
-        0.5231118387895233,
-        0.4996143875974501,
-        0.5493705442099506
+        3.188270591082942,
+        2.8438617845794605
       ]
     },
     "cxp": {
@@ -736,19 +674,19 @@
         null,
         null,
         null,
-        38722608.0094,
-        39956231.386599995,
-        40132961.4144,
-        40353886.2182,
-        41038060.138,
-        42385139.6192,
-        43721850.822,
-        45672597.963599995,
-        47326827.955199994,
-        50991538.6058,
-        51493684.0304,
-        51730636.5854,
-        53225962.722600006
+        43546307.2236,
+        44779930.60079999,
+        44956660.62859999,
+        45177585.43239999,
+        45861759.35219999,
+        47208838.83339999,
+        48545550.03619999,
+        50496297.177799985,
+        52150527.169399984,
+        55815237.819999985,
+        56317383.24459998,
+        56554335.79959998,
+        53225962.72259999
       ],
       "Días CxP": [
         null,
@@ -759,19 +697,19 @@
         null,
         null,
         null,
-        78.0753197012477,
-        91.16175058545606,
-        87.66250174445537,
-        91.33527462685113,
-        89.22448935663677,
-        97.85172060920254,
-        92.24351769597648,
-        100.01644407529871,
-        114.72221728317722,
-        124.9425503562925,
-        120.06815430703945,
-        116.9838555922191,
-        109.03459651234861
+        69.42678249331617,
+        81.34179645054937,
+        78.25660871621461,
+        81.58322860160438,
+        79.83993662084299,
+        87.85343894257565,
+        83.07779635811285,
+        90.46229318391022,
+        104.11090615371182,
+        114.14468752325386,
+        109.7840709882918,
+        107.00593039310002,
+        109.23401092360727
       ]
     },
     "consumo": {
@@ -795,8 +733,8 @@
         139.74423177427678,
         132.70197376955488,
         135.49374070155352,
-        143.63037414492376,
-        210.94852892323564
+        143.6303741449238,
+        210.4573560439825
       ],
       "MIP / TN Producida": [
         null,
@@ -819,7 +757,7 @@
         128.36455035931527,
         133.85017516899822,
         151.63972408568137,
-        116.92644388622655
+        114.9070699933733
       ]
     },
     "productividad": {
@@ -939,169 +877,29 @@
         null
       ]
     },
-    "inventario": {
-      "Días de rotación": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        43.0,
-        34.0,
-        45.0,
-        44.0,
-        46.0,
-        45.0,
-        49.0,
-        54.0,
-        53.0,
-        67.0,
-        67.0,
-        79.0,
-        74.0,
-        63.0,
-        54.0
-      ],
-      "Consumo acumulado": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        3489205.4820200056,
-        3094657.0127830207,
-        4209191.277482003,
-        4517204.790233016,
-        4752317.684838027,
-        4709935.836435109,
-        5147009.088143051,
-        5654341.7304851115,
-        5726586.536824286,
-        7203643.6463621855,
-        7405257.1593263745,
-        8862521.331503332,
-        8422304.42832625,
-        7269527.38117522,
-        6345110.276219189
-      ]
-    },
     "fill_rate": {
-      "Facturación": [
+      "% Fill Rate": [
         null,
         null,
         null,
         null,
         null,
         null,
-        3933502.32,
-        4634559.8,
-        4583436.34,
-        5765324.9,
-        5370574.13,
-        4847281.21,
-        5057193.67,
-        5356714.82,
-        6055931.38,
-        4658018.06,
-        5489526.47,
-        5636224.25,
-        5618298.32,
-        6087673.86,
-        3103438.07
-      ],
-      "Orden de Venta": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        4524947.29,
-        6047797.83,
-        5693437.28,
-        7659724.03,
-        7886072.55,
-        7692301.91,
-        9083867.87,
-        7112874.13,
-        8193969.51,
-        7880302.08,
-        7212205.38,
-        6248919.59,
-        6130981.02,
-        6789556.78,
-        3664148.84
-      ],
-      "% Fill Rate mensual": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        0.8692924067188416,
-        0.7663218795129598,
-        0.8050385232310839,
-        0.7526804983338283,
-        0.681020127059318,
-        0.6301470309815231,
-        0.5567225043752205,
-        0.7531013092734147,
-        0.7390717493651011,
-        0.5910963834523459,
-        0.7611439470682405,
-        0.9019517964384625,
-        0.9163783579940035,
-        0.8966231607241968,
-        0.8469738008786782
-      ],
-      "Venta perdida (S/)": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        591444.97,
-        1413238.03,
-        1110000.94,
-        1894399.13,
-        2515498.42,
-        2845020.7,
-        4026674.2,
-        1756159.31,
-        2138103.77,
-        3222284.02,
-        1722678.91,
-        613011.24,
-        512682.7,
-        702017.44,
-        567224.73
-      ],
-      "Amonestación (S/)": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        147861.2425,
-        353309.5075,
-        277500.235,
-        473599.7825,
-        628874.605,
-        711255.175,
-        1006668.55,
-        439039.8275,
-        534525.9425,
-        805571.005,
-        430669.7275,
-        153252.81,
-        128170.675,
-        175504.36,
-        141806.1825
+        0.9071913775125008,
+        0.8647581189382418,
+        0.8587793556447606,
+        0.8596148471491721,
+        0.7161381717585181,
+        0.764854126670638,
+        0.7837711332842261,
+        0.7736376749830337,
+        0.7789456333909168,
+        0.8092002244775067,
+        0.8479145525761872,
+        0.8870282505288788,
+        0.8169486535399267,
+        0.8351125169010982,
+        0.8234326330676471
       ]
     }
   },
@@ -1110,6 +908,131 @@
       "consulta": "mermas:Planta Terceros",
       "http": 200,
       "error": "la medida '% Merma total MAQUILA' devuelve porcentaje (máx 1.8556) mientras las otras plantas devuelven fracción; se normalizó dividiendo entre 100"
+    },
+    {
+      "consulta": "compras:ratio",
+      "http": 200,
+      "error": "la consulta del visual 'Eficiencia de Costo de compra' no devolvió filas; el dataset 'compras' se queda sin serie y el KPI Ratio consumo/compra sin dato"
+    },
+    {
+      "consulta": "captura:PRECIO UNITARIO#2",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "captura:PRECIO UNITARIO",
+      "http": 200,
+      "error": "falta [Precio_unitario] o [Canal]. Claves devueltas: ['LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75[Año]', 'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75[Mes]', 'LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75[NroMes]']"
+    },
+    {
+      "consulta": "sonda:38076daa",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:06408938",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:0e27d784",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:30074d92",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:06408938",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:0e27d784",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:30074d92",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:7f4ebe22",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:38076daa",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:06408938",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 59 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:7f4ebe22",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:38076daa",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:06408938",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:7f4ebe22",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:38076daa",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:06408938",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:7f4ebe22",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:38076daa",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:06408938",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:7f4ebe22",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:38076daa",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
+    },
+    {
+      "consulta": "sonda:06408938",
+      "http": 429,
+      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
     }
   ]
 }
