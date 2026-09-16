@@ -1776,7 +1776,9 @@ small { font-size:13px; line-height:1.4; }
 /* Las cuatro columnas de cada fila se alinean entre tarjetas porque comparten
    la misma plantilla, no porque se les haya puesto un ancho fijo. */
 .eje-grid { display:flex; flex-direction:column; }
-.eje-row { display:grid; grid-template-columns:minmax(88px,1.1fr) minmax(70px,1fr) minmax(76px,1.1fr) 46px;
+/* La columna del valor pide el sitio que necesita en vez de un mínimo fijo:
+   con cuatro tarjetas por fila, 70 px no alcanzaban para "S/210.949". */
+.eje-row { display:grid; grid-template-columns:minmax(72px,1fr) minmax(88px,auto) minmax(76px,1fr) 46px;
   gap:8px; align-items:baseline; padding:6px 0; border-bottom:1px solid var(--border2, var(--border)); }
 .eje-row:last-child { border-bottom:none; }
 .eje-row-k { font-size:13px; color:var(--text2); min-width:0; }
@@ -1785,9 +1787,15 @@ small { font-size:13px; line-height:1.4; }
    ganarle a su propia etiqueta sin recurrir a un color de alarma. El mes
    cerrado, justo debajo, va deliberadamente más discreto — está para dar
    escala, no para competir. */
-.eje-row-v { font-size:22px; font-weight:650; font-variant-numeric:tabular-nums;
+/* Una cifra NUNCA se parte.
+   overflow-wrap:anywhere venía de cuando el valor iba a 15 px y cabía en su
+   columna; con 22 px "S/2.36M" se partía en "S/2.36" y "M", y
+   "S/210.949" en "S/210.9" y "49" — que se lee como otro número. Antes de
+   partir un número se encoge, que engaña a nadie. */
+.eje-row-v { font-size:clamp(17px, 2.1vw, 22px); font-weight:650;
+  font-variant-numeric:tabular-nums;
   letter-spacing:-.015em; line-height:1.2;
-  text-align:right; min-width:0; overflow-wrap:anywhere; }
+  text-align:right; min-width:0; white-space:nowrap; overflow-wrap:normal; }
 .eje-row-v small { display:block; font-size:13px; font-weight:400; }
 .eje-row-m { font-size:13px; color:var(--text3); text-align:right;
   font-variant-numeric:tabular-nums; min-width:0; }
@@ -3559,6 +3567,12 @@ function fmtMeta(ind, v) {
   if (ind.unidad === 'kg')    return (v / 1e6).toFixed(2) + 'M kg';
   if (Math.abs(v) >= 1e6)     return 'S/' + (v / 1e6).toFixed(2) + 'M';
   if (Math.abs(v) >= 1000)    return 'S/' + Math.round(v).toLocaleString('es-PE');
+  // Dos decimales, que son los céntimos. Con tres, "S/210.949" se lee como
+  // doscientos diez mil y pico —el punto en español separa millares— y
+  // además la milésima de un sol no decide nada. Bajo 1, los céntimos no
+  // bastan: la planilla por kilo es S/0.526 y redondearla a S/0.53 borra la
+  // diferencia entre meses.
+  if (Math.abs(v) >= 1)       return 'S/' + v.toFixed(2);
   return 'S/' + v.toFixed(3);
 }
 
@@ -4070,6 +4084,7 @@ function avBloqueClientes() {
     const m = avNum(c.margen), w = avNum(c.pct_venta);
     return { nombre: c.cliente, venta: c.venta, pct: w, margen: m,
              ventaCerr: c.venta_cerrado, margenCerr: avNum(c.margen_cerrado),
+             facCerr: c.facturado_cerrado, fac: c.facturado, conv: c.conversion,
              deltaPp: c.delta_pp,
              impacto: (m != null && w != null) ? (m - mgEmpresa) * w / 100 : null };
   }).filter(f => f.impacto != null);
@@ -4086,8 +4101,12 @@ function avBloqueClientes() {
   const cuerpo = filas.map(f => `
     <tr${f.impacto < -0.2 ? ' class="av-an-foco"' : ''}>
       <td>${esc(avNombreCorto(f.nombre))}</td>
-      <td class="av-an-ene">${esc(f.ventaCerr || '—')}</td>
+      <td class="av-an-ene">${esc(f.facCerr || f.ventaCerr || '—')}</td>
       <td>${esc(f.venta || '—')}</td>
+      <td style="font-weight:600">${esc(f.fac || '—')}</td>
+      <td style="color:${f.conv == null ? 'var(--text3)'
+        : f.conv >= 60 ? 'var(--green)' : f.conv >= 30 ? 'var(--yellow)' : 'var(--red)'}">
+        ${f.conv == null ? '—' : f.conv.toFixed(0) + '%'}</td>
       <td>${f.pct == null ? '—' : f.pct.toFixed(1) + '%'}</td>
       <td class="av-an-ene">${f.margenCerr == null ? '—' : f.margenCerr.toFixed(1) + '%'}</td>
       <td style="color:${f.margen < mgEmpresa ? 'var(--red)' : 'var(--green)'}">
@@ -4114,7 +4133,7 @@ function avBloqueClientes() {
   const par = avParComparable(filas);
   if (par) {
     lecturas.push(`<p class="av-an-lee">${esc(avNombreCorto(par.a.nombre))} y ` +
-      `${esc(avNombreCorto(par.b.nombre))} tienen órdenes casi iguales ` +
+      `${esc(avNombreCorto(par.b.nombre))} colocaron órdenes casi iguales ` +
       `(${esc(par.a.venta)} vs ${esc(par.b.venta)}) pero a ${par.a.margen.toFixed(1)}% ` +
       `contra ${par.b.margen.toFixed(1)}%. Misma escala de cliente, ` +
       `${Math.abs(par.a.margen - par.b.margen).toFixed(0)} puntos de diferencia: ahí hay ` +
@@ -4128,19 +4147,23 @@ function avBloqueClientes() {
     __filas: filas,
     periodo: avReporte('margen_variable').por_cliente_periodo || null,
     titulo: 'Por cliente — quién arrastra el margen',
-    por: `<b>Ojo con la magnitud: esto son ÓRDENES DE VENTA en el sistema, no ` +
-         `facturación.</b> Salen del visual «Órdenes de venta en el sistema por ` +
-         `cliente», que incluye lo pedido y aún no facturado. Por eso los ` +
-         `${filas.length} clientes suman más que la venta facturada del mes que ` +
-         `muestra la tarjeta: son dos cosas distintas y no se restan entre sí.<br>` +
+    por: `<b>Tres magnitudes distintas, una al lado de la otra.</b> ` +
+         `<b>Venta cerrada de ${nombreMesCerrado()}</b> es lo facturado del mes ` +
+         `completo, la vara. <b>Órdenes colocadas de setiembre</b> es lo que el ` +
+         `cliente pidió en lo que va del mes, del visual «Órdenes de venta en el ` +
+         `sistema». <b>Venta facturada de setiembre</b> es cuánto de eso ya se ` +
+         `cobró, de la Maestra de Facturas. El «% convertido» es la división de ` +
+         `las dos: dice si el pedido se está volviendo venta o se está quedando ` +
+         `en el sistema.<br>` +
          `Estos ${filas.length} concentran el ${cubre.toFixed(1)}% de las órdenes. ` +
          `La última columna es lo que cada uno le suma o le quita al margen: su ` +
          `diferencia contra el ${mgEmpresa.toFixed(1)}% que promedian entre ellos, ` +
          `pesada por cuánto pesa. La vara sale de esta misma tabla y no del KPI del ` +
          `tablero, que es del mes cerrado y de facturación.`,
     cabecera: ['Cliente',
-               'Órdenes ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
-               colMes('Órdenes'), colMes('% órdenes'),
+               'Venta cerrada ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
+               colMes('Órdenes colocadas'), colMes('Venta facturada'),
+               colMes('% convertido'), colMes('% órdenes'),
                'Margen ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
                colMes('Margen'), 'Δ pp vs ' + (nombreMesCerrado() || '').slice(0, 3) + '.',
                colMes('Impacto')],
@@ -4148,7 +4171,7 @@ function avBloqueClientes() {
     ficha: { compara: hayCerr
                ? `cada cliente contra su propio ${nombreMesCerrado()} cerrado, misma consulta con el mes cambiado`
                : `sin columna de ${nombreMesCerrado()}: aún no se ha traído ese corte`,
-             unidad: 'ÓRDENES DE VENTA en soles y % de margen — no es facturación',
+             unidad: 'soles · órdenes y facturación son magnitudes distintas, no se restan',
              filtro: 'los 12 clientes con más órdenes' },
     cuerpo, lecturas,
   };

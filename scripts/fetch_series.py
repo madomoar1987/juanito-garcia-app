@@ -1087,6 +1087,16 @@ def serie_compras_ratio(token, ds_id, periodos):
     """
     filas = dax(token, ds_id, _q_compras_ratio(), "compras-ratio")
     if not filas:
+        # Sin esto el fallo es mudo: el dataset 'compras' no llegaba a
+        # crearse, el KPI "Ratio consumo / compra" salía vacío en la app y
+        # nada en la corrida decía por qué. Un indicador sin dato tiene que
+        # dejar rastro, siempre.
+        DIAG_SERIES.append({
+            "consulta": "compras:ratio", "http": 200,
+            "error": "la consulta del visual 'Eficiencia de Costo de compra' no "
+                     "devolvió filas; el dataset 'compras' se queda sin serie y "
+                     "el KPI Ratio consumo/compra sin dato"})
+        print("    ✗ compras-ratio: sin filas")
         return {}
 
     ld = COMPRAS_LOCALDATE
@@ -1482,7 +1492,7 @@ PRODUCTIVIDAD_MEDIDAS_VENDIDO = [
 ]
 
 
-def _q_productividad(medidas=None):
+def _q_productividad(medidas=None, sin_mes_actual=True):
     """Serie mensual de productividad: planilla, producción y su ratio.
 
     Copiar consulta 2026-09-06. Solo se quita el TOPN(1001), que limita filas
@@ -1490,7 +1500,16 @@ def _q_productividad(medidas=None):
     agrupación — así que una sola consulta cubre todo el histórico.
     """
     ld = PRODUCTIVIDAD_LOCALDATE
-    usados = "".join(f"\t\t__DS0FilterTable{'' if i == 1 else i},\n" for i in range(1, 9))
+    # __DS0FilterTable es el 'Calendario'[MesActual] = "Otros", que excluye el
+    # mes en curso porque el reporte no grafica el mes incompleto. Aquí sí lo
+    # queremos: sin él, Producción y Planilla por kilo se quedaban sin dato de
+    # setiembre y la app mostraba dos indicadores vacíos con Power BI lleno.
+    #
+    # El mes en curso va incompleto y eso ya lo dice cada tarjeta con su fecha
+    # de corte; ocultarlo no lo hace más completo, solo lo esconde.
+    primero = 2 if sin_mes_actual else 1
+    usados = "".join(f"\t\t__DS0FilterTable{'' if i == 1 else i},\n"
+                     for i in range(primero, 9))
     lista = medidas or PRODUCTIVIDAD_MEDIDAS
     medidas = "".join(f'\t\t"{alias}", {expr},\n'
                       for alias, _etq, expr in lista).rstrip(",\n") + "\n"
@@ -1518,7 +1537,8 @@ def serie_productividad(token, ds_id, periodos):
 
 
 def _serie_productividad_una(token, ds_id, periodos, lista, etiqueta):
-    filas = dax(token, ds_id, _q_productividad(lista), f"productividad-{etiqueta}")
+    filas = dax(token, ds_id, _q_productividad(lista, sin_mes_actual=False),
+                f"productividad-{etiqueta}")
     if not filas:
         return {}
     ld = PRODUCTIVIDAD_LOCALDATE

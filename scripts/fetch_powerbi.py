@@ -1318,6 +1318,63 @@ def _tablas_dax(token, ws, dataset_id, query, label, silencioso=False):
     return None if silencioso else []
 
 
+def clave_por_sufijo(fila, sufijo):
+    """Valor de la primera clave que termina en `sufijo`.
+
+    Power BI devuelve las claves como "Tabla[Columna]" o "[Alias]" según cómo
+    se pidió cada una, así que buscarlas por nombre exacto falla la mitad de
+    las veces.
+    """
+    suf = sufijo.strip("[]").lower()
+    for k, v in (fila or {}).items():
+        if k.split("[")[-1].rstrip("]").lower() == suf or suf in k.lower():
+            return v
+    return None
+
+
+def columna_cliente(token, ws, ds_id):
+    """Cómo se llama la columna de cliente en 'Exl Cliente x Vendedor'.
+
+    No se adivina: se lee una fila y se busca entre sus columnas, igual que se
+    hace con el año del calendario. Adivinar "[cliente]" o "[RAZON SOCIAL]"
+    fallaba en silencio y dejaba la columna vacía sin que nada lo dijera.
+    """
+    filas = _tablas_dax(token, ws, ds_id,
+                        "EVALUATE TOPN(1, 'Exl Cliente x Vendedor')",
+                        "cols-cliente")
+    if not filas or not filas[0]:
+        return None
+    for c in filas[0][0].keys():
+        base = c.split("[")[-1].rstrip("]").strip().lower()
+        if base in ("razon social", "razon_social", "cliente", "nombre cliente"):
+            return c.split("[")[-1].rstrip("]")
+    return None
+
+
+def dax_facturacion_por_cliente(col_cliente):
+    """Facturación por cliente y mes — lo VENDIDO, no lo pedido.
+
+    La tabla de clientes salía del visual de ÓRDENES DE VENTA, que es lo
+    colocado en el sistema. Sirve para ver qué pidió cada cliente, pero no
+    para ver cuánto de eso ya se facturó, que es lo que dice si el mes avanza.
+
+    Ningún visual publica facturación por cliente. Sí existe por canal
+    —"FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO"—, y sale de la misma tabla
+    'Exl Cliente x Vendedor' que tiene el cliente. Se copian sus filtros
+    literalmente y se cambia solo la columna de agrupación, que es la misma
+    mecánica de dax_precio_producto_canal.
+    """
+    if not col_cliente:
+        return None
+    entrada = catalogo_capturas().get("FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO#d37f17982d3b")
+    if not entrada or not entrada.get("dax"):
+        return None
+    return entrada["dax"].replace(
+        "ROLLUPADDISSUBTOTAL('Exl Cliente x Vendedor'[Canal], \"IsGrandTotalRowTotal\")",
+        f"'Exl Cliente x Vendedor'[{col_cliente}]"
+    )
+
+
 def dax_precio_producto_canal():
     """Precio por kilo de cada producto en cada canal, mes a mes.
 
@@ -2922,12 +2979,46 @@ def build_margen(found):
         res["por_cliente_periodo"] = found.get("__por_cliente_periodo")
         res["por_cliente_cerrado_periodo"] = found.get("__por_cliente_cerrado_periodo")
 
+        # Venta FACTURADA por cliente, separada por mes. La Matriz agrupa
+        # también por documento, así que se suma por cliente.
+        fact = {}
+        for f in (found.get("__factura_cliente") or []):
+            nom = (f.get("cliente") or "").strip()
+            a, m = to_float(f.get("anio")), to_float(f.get("mes"))
+            v_ = to_float(f.get("facturado"))
+            if not nom or not a or not m or v_ is None:
+                continue
+            fact.setdefault(nom, {})
+            k = f"{int(a)}-{int(m):02d}"
+            fact[nom][k] = fact[nom].get(k, 0.0) + v_
+        per_act = periodo_en_curso()
+        per_cer = mes_cerrado_txt()
+
+        per_curso = found.get("__por_cliente_periodo") or periodo_en_curso()
+        per_cerr = found.get("__por_cliente_cerrado_periodo") or mes_cerrado_txt()
+
         # El mismo cliente en el mes cerrado, para poder decir si empeoró.
         prev = {}
         for c in (found.get("__por_cliente_cerrado") or []):
             nom = (c.get("cliente") or "").strip()
             if nom:
                 prev[nom] = (to_float(c.get("venta")), to_float(c.get("margen")))
+
+        # Facturado por cliente, separado por mes. La consulta trae Año y
+        # NroMes, así que el mismo corte da agosto cerrado y setiembre al día.
+        fact = {}
+        for f in (found.get("__facturado_cliente") or []):
+            nom = None
+            for k, val in f.items():
+                if "Exl Cliente x Vendedor" in k:
+                    nom = (str(val) or "").strip()
+                    break
+            a = to_float(clave_por_sufijo(f, "Año"))
+            m = to_float(clave_por_sufijo(f, "NroMes"))
+            v_ = to_float(clave_por_sufijo(f, "Monto_Neto_Factura"))
+            if not nom or not a or not m or v_ is None:
+                continue
+            fact.setdefault(nom, {})[f"{int(a)}-{int(m):02d}"] = v_
 
         def _pct(x):
             return None if x is None else (x * 100 if abs(x) <= 1 else x)
@@ -2941,6 +3032,28 @@ def build_margen(found):
                                if n in prev and prev[n][1] is not None else None),
             "venta_cerrado": (fmt_soles(prev[n][0])
                               if n in prev and prev[n][0] is not None else None),
+            # Las dos magnitudes que faltaban: lo FACTURADO de agosto cerrado
+            # y lo facturado de setiembre a la fecha. Con las órdenes al lado,
+            # la fila responde qué pidió, cuánto se le ha facturado ya y con
+            # qué venía del mes pasado.
+            "facturado_cerrado": (fmt_soles(fact.get(n, {}).get(per_cerr))
+                                  if fact.get(n, {}).get(per_cerr) is not None else None),
+            "facturado": (fmt_soles(fact.get(n, {}).get(per_curso))
+                          if fact.get(n, {}).get(per_curso) is not None else None),
+            # Cuánto de lo pedido ya se facturó. Es la columna del avance:
+            # 100% es que todo lo colocado salió; 40% es que el mes va lleno
+            # de pedidos y vacío de despachos.
+            "avance_pct": (round(fact[n][per_curso] / v * 100, 1)
+                           if fact.get(n, {}).get(per_curso) is not None and v else None),
+            # Lo que de verdad se le facturó: en el mes cerrado es la venta
+            # final, y en el mes en curso es cuánto de lo pedido ya se cobró.
+            "facturado_cerrado": (fmt_soles(fact[n][per_cer])
+                                  if n in fact and per_cer in fact[n] else None),
+            "facturado": (fmt_soles(fact[n][per_act])
+                          if n in fact and per_act in fact[n] else None),
+            # Conversión: de cada sol pedido en el mes, cuánto ya se facturó.
+            "conversion": (round(fact[n][per_act] / v * 100, 1)
+                           if n in fact and per_act in fact[n] and v else None),
             # Puntos de margen ganados o perdidos contra el mes cerrado. Es la
             # columna que dice si hay que llamar a ese cliente: un 48% puede
             # ser su nivel de siempre o una caída de quince puntos.
@@ -2949,6 +3062,11 @@ def build_margen(found):
                          and prev[n][1] is not None else None),
             "caida": (f"{_pct(ca):.1f}%" if ca is not None else None),
         } for n, v, mg, ca in limpios[:12]]
+        if fact:
+            anotar_derivado("margen_variable", "por_cliente", "conversion",
+                            "venta facturada del mes / órdenes colocadas del mes × 100",
+                            "cuánto de lo que el cliente pidió ya se le facturó; "
+                            "el reporte publica las dos cifras pero no su cociente")
         if prev:
             anotar_derivado("margen_variable", "por_cliente", "delta_pp",
                             "margen del mes en curso − margen del mes cerrado",
@@ -4794,6 +4912,27 @@ def main():
                     scanned.setdefault("margen", {})["__por_cliente"] = cli
                     scanned["margen"]["__por_cliente_periodo"] = periodo_en_curso()
 
+                # Venta FACTURADA por cliente y mes, del visual "Matriz",
+                # que agrupa por RAZON SOCIAL sobre la Maestra de Facturas de
+                # Venta. Es otra magnitud que las órdenes: la orden es lo que
+                # el cliente pidió y la factura lo que se le cobró. Tener las
+                # dos al lado es lo que permite leer el avance — cuánto de lo
+                # pedido en setiembre ya se convirtió en venta.
+                try:
+                    fac = desglose_desde_captura(
+                        token, ws_id, [ids.get("margen")],
+                        "Matriz#7ea810d041c1",
+                        {"cliente": "[RAZON SOCIAL]",
+                         "anio": "[Año]", "mes": "[NroMes]",
+                         "facturado": "[SumMonto_Neto_Factura_TG_0]"})
+                    if fac:
+                        scanned.setdefault("margen", {})["__factura_cliente"] = fac
+                        print(f"    ✓ Venta facturada por cliente: {len(fac)} filas")
+                except Exception as e:
+                    print(f"    ✗ factura por cliente: {e}")
+                    DIAGNOSTICO.append({"consulta": "factura_cliente", "http": 0,
+                                        "error": repr(e)[:300]})
+
                 # El mismo corte del MES CERRADO. Sin él la tabla enseña el
                 # mes en curso a secas y no hay forma de saber si un cliente
                 # empeoró o si siempre estuvo ahí: "48.4% de margen" no dice
@@ -4813,6 +4952,32 @@ def main():
                         scanned["margen"]["__por_cliente_cerrado"] = cli0
                         scanned["margen"]["__por_cliente_cerrado_periodo"] = cerrado
                         print(f"    ✓ Margen por cliente ({cerrado}): {len(cli0)} filas")
+
+                # Facturación por cliente y mes. Es la tercera magnitud: lo
+                # pedido (órdenes), lo facturado y el cierre del mes anterior
+                # son tres cosas distintas, y sin las tres no se puede decir si
+                # el mes avanza o solo se está llenando de pedidos.
+                try:
+                    col_cli = columna_cliente(token, ws_id, ids.get("margen"))
+                    q_fc = dax_facturacion_por_cliente(col_cli)
+                    if q_fc:
+                        fc = (_tablas_dax(token, ws_id, ids.get("margen"), q_fc,
+                                          "facturacion_cliente") or [[]])[0]
+                        if fc:
+                            scanned["margen"]["__facturado_cliente"] = fc
+                            print(f"    ✓ Facturación por cliente: {len(fc)} filas")
+                        else:
+                            print("    · Facturación por cliente: sin filas")
+                    else:
+                        DIAGNOSTICO.append({
+                            "tipo": "aviso", "consulta": "facturacion_cliente", "http": 200,
+                            "error": "no se encontró la columna de cliente en "
+                                     "'Exl Cliente x Vendedor'; la tabla de clientes "
+                                     "se queda sin la columna de facturado"})
+                except Exception as e:
+                    print(f"    ✗ facturación por cliente: {e}")
+                    DIAGNOSTICO.append({"consulta": "facturacion_cliente", "http": 0,
+                                        "error": repr(e)[:300]})
             except Exception as e:
                 print(f"    ✗ margen por cliente: {e}")
                 DIAGNOSTICO.append({"consulta": "margen_cliente", "http": 0,
