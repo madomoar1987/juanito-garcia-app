@@ -1,7 +1,7 @@
 {
   "fecha": "16/09/2026",
   "fecha_actualizacion": "2026-09-16",
-  "hora_actualizacion": "13:44",
+  "hora_actualizacion": "14:02",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "green"
@@ -4204,19 +4204,21 @@
             },
             {
               "label": "Orden de Venta",
-              "valor": "S/129.02M",
+              "valor": "S/6.79M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "periodo": "2026-08",
+              "periodo_fuente": "fill_rate/Orden de Venta"
             },
             {
               "label": "Facturación",
-              "valor": "S/97.29M",
+              "valor": "S/6.09M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "periodo": "2026-08",
+              "periodo_fuente": "fill_rate/Facturación"
             },
             {
               "label": "Venta Perdida",
-              "valor": "S/31.73M",
+              "valor": "S/700,000",
               "estado": "red",
               "fuente": "reporte",
               "meta": "orden de venta − facturación",
@@ -6406,16 +6408,8 @@
     ]
   ],
   "validacion": {
-    "cuadran": 30,
+    "cuadran": 35,
     "no_cuadran": [
-      {
-        "prueba": "Fill rate: % vs facturación / orden de venta",
-        "publicado": 88.4,
-        "esperado": 75.4069,
-        "diferencia_pct": 14.7,
-        "detalle": "97,290,000 / 129,020,000",
-        "conocido": false
-      },
       {
         "prueba": "B&D MOSTAZA BALDE 4K   ND: precio por kilo fuera de rango",
         "publicado": null,
@@ -6425,10 +6419,7 @@
         "conocido": true
       }
     ],
-    "sin_datos": [
-      "Facturación: sin serie para 2026-08",
-      "Orden de Venta: sin serie para 2026-08"
-    ]
+    "sin_datos": []
   },
   "validacion_tarjetas": {
     "iguales": 13,

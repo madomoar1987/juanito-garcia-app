@@ -31,7 +31,6 @@
     "cxp": "Calendario[Date]",
     "margen": "Calendario[Date]",
     "inventario": "Calendario[Date]",
-    "fill_rate": "Calendario[Date]",
     "planificacion": "Calendario[Date]"
   },
   "sin_serie": {
@@ -103,81 +102,6 @@
       "tablas": [],
       "columnas_fecha": [],
       "esquema_rest_error": "HTTP 404"
-    },
-    "fill_rate": {
-      "medidas": [],
-      "tablas": [
-        "Calendario"
-      ],
-      "columnas_fecha": [
-        "Calendario[Date]"
-      ],
-      "medidas_planas": [
-        {
-          "medida": "% FILLRATE",
-          "valores_distintos": 1,
-          "meses_con_dato": 21,
-          "amplitud_relativa_pct": 0.0,
-          "repeticiones_del_valor_mas_comun": 21,
-          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
-        },
-        {
-          "medida": "ORDEN DE VENTA",
-          "valores_distintos": 1,
-          "meses_con_dato": 21,
-          "amplitud_relativa_pct": 0.0,
-          "repeticiones_del_valor_mas_comun": 21,
-          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
-        },
-        {
-          "medida": "FACTURACION",
-          "valores_distintos": 1,
-          "meses_con_dato": 21,
-          "amplitud_relativa_pct": 0.0,
-          "repeticiones_del_valor_mas_comun": 21,
-          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
-        },
-        {
-          "medida": "VENTA PERDIDA",
-          "valores_distintos": 1,
-          "meses_con_dato": 21,
-          "amplitud_relativa_pct": 0.0,
-          "repeticiones_del_valor_mas_comun": 21,
-          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
-        },
-        {
-          "medida": "% FillRate",
-          "valores_distintos": 1,
-          "meses_con_dato": 21,
-          "amplitud_relativa_pct": 0.0,
-          "repeticiones_del_valor_mas_comun": 21,
-          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
-        },
-        {
-          "medida": "Orden de Venta",
-          "valores_distintos": 1,
-          "meses_con_dato": 21,
-          "amplitud_relativa_pct": 0.0,
-          "repeticiones_del_valor_mas_comun": 21,
-          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
-        },
-        {
-          "medida": "Facturacion",
-          "valores_distintos": 1,
-          "meses_con_dato": 21,
-          "amplitud_relativa_pct": 0.0,
-          "repeticiones_del_valor_mas_comun": 21,
-          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
-        },
-        {
-          "medida": "Venta Perdida",
-          "valores_distintos": 1,
-          "meses_con_dato": 21,
-          "amplitud_relativa_pct": 0.0,
-          "repeticiones_del_valor_mas_comun": 21,
-          "motivo": "La medida no varía por mes con el filtro CALCULATE+FILTER(ALL(Calendario)) — posible relación inactiva o la medida ignora el filtro de fecha (confirmado con Copiar consulta solo en Control Interno; para las demás falta validar en vivo)."
-        }
-      ]
     },
     "planificacion": {
       "medidas": [],
@@ -1045,28 +969,120 @@
       ]
     },
     "fill_rate": {
-      "% Fill Rate": [
+      "Facturación": [
         null,
         null,
         null,
         null,
         null,
         null,
-        0.9071913775125008,
-        0.8647581189382418,
-        0.8587793556447606,
-        0.8596148471491724,
-        0.7161381717585181,
-        0.764854126670638,
-        0.7837711332842261,
-        0.7736376749830337,
-        0.7789456333909168,
-        0.8092002244775067,
-        0.8479145525761872,
-        0.8870282505288788,
-        0.8169486535399267,
-        0.8351125169010982,
-        0.8327783703831276
+        3933502.32,
+        4634559.8,
+        4583436.34,
+        5765324.9,
+        5370574.13,
+        4847281.21,
+        5057193.67,
+        5356714.82,
+        6055931.38,
+        4658018.06,
+        5489526.47,
+        5636224.25,
+        5618298.32,
+        6087673.86,
+        3210520.13
+      ],
+      "Orden de Venta": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        4524947.29,
+        6047797.83,
+        5693437.28,
+        7659724.03,
+        7886072.55,
+        7692301.91,
+        9083867.87,
+        7112874.13,
+        8193969.51,
+        7880302.08,
+        7212205.38,
+        6248919.59,
+        6130981.02,
+        6789556.78,
+        3817166.38
+      ],
+      "% Fill Rate mensual": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.8692924067188416,
+        0.7663218795129598,
+        0.8050385232310839,
+        0.7526804983338283,
+        0.681020127059318,
+        0.6301470309815231,
+        0.5567225043752205,
+        0.7531013092734147,
+        0.7390717493651011,
+        0.5910963834523459,
+        0.7611439470682405,
+        0.9019517964384625,
+        0.9163783579940035,
+        0.8966231607241968,
+        0.841074192317496
+      ],
+      "Venta perdida (S/)": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        591444.97,
+        1413238.03,
+        1110000.94,
+        1894399.13,
+        2515498.42,
+        2845020.7,
+        4026674.2,
+        1756159.31,
+        2138103.77,
+        3222284.02,
+        1722678.91,
+        613011.24,
+        512682.7,
+        702017.44,
+        613160.21
+      ],
+      "Amonestación (S/)": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        147861.2425,
+        353309.5075,
+        277500.235,
+        473599.7825,
+        628874.605,
+        711255.175,
+        1006668.55,
+        439039.8275,
+        534525.9425,
+        805571.005,
+        430669.7275,
+        153252.81,
+        128170.675,
+        175504.36,
+        153290.0525
       ]
     }
   },
@@ -1085,31 +1101,6 @@
       "consulta": "sonda:38076daa",
       "http": 400,
       "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (9, 26) Column '<oii>ESTADO_PEDIDO</oii>' in table '<oii>OrdenxFactura</oii>' cannot be found or may not be used in this expression.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803780\"}}]}}}"
-    },
-    {
-      "consulta": "captura:FILL RATE (S/) - MENSUAL",
-      "http": 429,
-      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
-    },
-    {
-      "consulta": "captura:FILL RATE (S/) - MENSUAL",
-      "http": 429,
-      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
-    },
-    {
-      "consulta": "captura:FILL RATE (S/) - MENSUAL",
-      "http": 429,
-      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
-    },
-    {
-      "consulta": "captura:FILL RATE (S/) - MENSUAL",
-      "http": 429,
-      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
-    },
-    {
-      "consulta": "captura:FILL RATE (S/) - MENSUAL",
-      "http": 429,
-      "error": "{\"message\":\"You have exceeded the amount of requests allowed in the current time frame and further requests will fail. Retry in 60 seconds.\"}"
     }
   ]
 }
