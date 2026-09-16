@@ -202,6 +202,9 @@ def series_desalineadas(ser):
 DESALINEADAS = set()
 
 
+HOY_TXT = ""
+
+
 def sellar_periodos(rp, ser, parcial=None, cerrado=None):
     """Marca cada KPI con el mes al que pertenece, deducido de su propio valor.
 
@@ -232,6 +235,15 @@ def sellar_periodos(rp, ser, parcial=None, cerrado=None):
         ds_k = DATASET_DE_REPORTE.get(rep_k)
         series_rep = datasets.get(ds_k) if ds_k else None
         if not series_rep:
+            # Sin serie mensual del propio reporte no hay contra qué sellar.
+            # Tampoco ahí se deja el hueco: se dice que no hay corte mensual
+            # y a qué fecha está el dato, en vez de que la app muestre "sin
+            # confirmar" y el lector lo lea como si fuera del mes en curso.
+            for k in rep.get("kpis", []) or []:
+                if not k.get("periodo") and not k.get("nota_periodo"):
+                    k["nota_periodo"] = (
+                        "este reporte no publica serie mensual, así que no hay "
+                        f"con qué confirmar el mes. Dato al {HOY_TXT}.")
             sin_sellar += len(rep.get("kpis", []) or [])
             continue
         for k in rep.get("kpis", []) or []:
@@ -280,6 +292,19 @@ def sellar_periodos(rp, ser, parcial=None, cerrado=None):
                     k["periodo_fuente"] = fuentes.pop()
                 sellados += 1
             else:
+                # No coincide con ningún mes del eje de su propio reporte.
+                # Eso no es "no se sabe": es que la cifra no es mensual — un
+                # saldo vivo, un acumulado del año, un conteo. Dejarlo en
+                # blanco obligaba a la app a decir "sin confirmar" y al lector
+                # a suponer que era del mes en curso, que es justo lo que no
+                # se quiere. Se dice lo que sí se sabe.
+                if not k.get("nota_periodo"):
+                    k["nota_periodo"] = (
+                        "no corresponde a ningún mes del eje: es un saldo al "
+                        f"corte o un acumulado. Dato al {HOY_TXT}."
+                        if len(meses) == 0 else
+                        "el valor aparece en más de un mes del eje, así que no "
+                        f"se puede sellar sin suponer. Dato al {HOY_TXT}.")
                 sin_sellar += 1
     return sellados, sin_sellar
 
@@ -676,6 +701,7 @@ def main():
     if anotar:
         corregir_etiquetas(rp, ser, cerrado, inf)
         marcar_saldos(rp, ser, cerrado)
+        globals()["HOY_TXT"] = str(d.get("fecha") or "")
         a, b = sellar_periodos(rp, ser, parcial, cerrado)
         print(f"\nPeríodo de cada tarjeta: {a} selladas con su mes, "
               f"{b} sin confirmar")

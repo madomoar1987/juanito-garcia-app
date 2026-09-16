@@ -3343,7 +3343,7 @@ function dxpCausal(s) {
   if (!ch.length) return '';
   const box = b => `<div class="flow-box ${b.c}"><div class="fb-l">${b.l}</div><div class="fb-v">${b.v}</div><div class="fb-sub">${b.s}</div></div>`;
   return `
-    <div class="section-label"><span class="num">◆</span><h2>De dónde viene el problema — mapa de causalidad</h2><span class="rule"></span></div>
+    <div class="section-label"><span class="num">◆</span><h2>De dónde viene el problema — mapa de causalidad · setiembre al día ${(avanceDelMes()||{}).dia||''}</h2><span class="rule"></span></div>
     <div class="causal-wrap">${ch.map(c => `<div class="flow-chain">${c.map((b,i)=>box(b)+(i<c.length-1?'<div class="flow-arrow">→</div>':'')).join('')}</div>`).join('')}</div>`;
 }
 
@@ -3362,7 +3362,7 @@ function dxpHeatmap(s) {
     </div>`;
   }).join('');
   return `
-    <div class="section-label"><span class="num">◆</span><h2>Vista de calor — ${DXP_ORDEN.length} reportes</h2><span class="rule"></span></div>
+    <div class="section-label"><span class="num">◆</span><h2>Vista de calor — ${DXP_ORDEN.length} reportes · estado a setiembre, día ${(avanceDelMes()||{}).dia||''} de ${(avanceDelMes()||{}).dias||''}</h2><span class="rule"></span></div>
     <div class="heatmap">${cells}</div>`;
 }
 
@@ -3430,7 +3430,7 @@ function dxpCards(s) {
     </div>`;
   }).join('');
   return `
-    <div class="section-label"><span class="num">◆</span><h2>Reportes — clic para abrir dashboard completo</h2><span class="rule"></span></div>
+    <div class="section-label"><span class="num">◆</span><h2>Reportes — clic para abrir dashboard completo · cifras de setiembre, agosto como referencia</h2><span class="rule"></span></div>
     <div class="grid">${cards}</div>`;
 }
 
@@ -3444,7 +3444,7 @@ function dxpRoadmapCTA() {
   const r = dxpRoadmapData(); if (!r) return '';
   const n = r.ahora.length + r.luego.length;
   return `
-    <div class="section-label"><span class="num">◆</span><h2>Próximos pasos</h2><span class="rule"></span></div>
+    <div class="section-label"><span class="num">◆</span><h2>Próximos pasos · a partir del cierre de setiembre proyectado</h2><span class="rule"></span></div>
     <div class="roadmap-cta" onclick="dxpTab('roadmap')">
       <div class="txt"><b>Plan de Acción — palancas priorizadas</b><span>${n} acciones consolidadas de los ${DXP_ORDEN.length} reportes, con área responsable e impacto cuantificado</span></div>
       <div class="go">Ver plan completo →</div>
@@ -3463,7 +3463,14 @@ function dxpRoadmapView() {
     </div>`;
   return `
     <div class="detail-head" style="--stripe:var(--accent)">
-      <div><div class="detail-title">Plan de Acción</div><div class="detail-sub">Palancas consolidadas de los ${DXP_ORDEN.length} reportes, priorizadas por severidad</div></div>
+      <div><div class="detail-title">Plan de Acción · setiembre ${
+        (avanceDelMes() || {}).dia ? 'al día ' + avanceDelMes().dia + ' de ' + avanceDelMes().dias : ''}</div>
+        <div class="detail-sub">Palancas consolidadas de los ${DXP_ORDEN.length} reportes,
+        priorizadas por severidad. Cada acción nombra dentro de su texto el período
+        del que sale la cifra; cuando dice "cae desde enero" o "3 meses" es el
+        recorrido del año, no el mes en curso.
+        <br>Datos de Power BI al ${esc(DATA?.fecha || '')} ${esc(DATA?.hora_actualizacion || '')}
+        · agosto cerrado como referencia.</div></div>
       <span class="pill ok">${r.ahora.length + r.luego.length} acciones</span>
     </div>
     <div class="roadmap">
@@ -3783,7 +3790,9 @@ function avFichaBloque(opciones, periodo) {
 
   // Qué mes es y hasta qué día. Si el bloque declara un período distinto del
   // mes en curso se dice, en vez de titularlo "setiembre" por costumbre.
-  if (periodo && periodo !== mesParcial()) {
+  if (o.periodoTexto) {
+    partes.push(`<b>${esc(o.periodoTexto)}</b>`);
+  } else if (periodo && periodo !== mesParcial()) {
     partes.push(`<b>${esc(nombreMes(periodo) || periodo)}</b>` +
       (esParcial(periodo) ? '' : ' (mes cerrado)'));
   } else if (m) {
@@ -4758,6 +4767,30 @@ function lecturaDesglose(filas, cols, ind, titulo) {
 function avBloquesPublicados(ind) {
   const rd = avReporte(ind.reporte);
   const out = [];
+  // El período de estos desgloses es el de la tarjeta de su propio reporte,
+  // que no siempre es setiembre: hay cortes acumulados del año y saldos del
+  // día. Se lee del KPI del indicador en vez de suponerlo, porque poner
+  // "setiembre al día 15" encima de un acumulado anual es exactamente el
+  // error que hay que evitar.
+  const kpiRef = (rd.kpis || []).find(k => k && (k.label === ind.kpi ||
+    (ind.serie && k.periodo_fuente === ind.serie.join('/'))));
+  // Si el KPI del indicador no declara período, se toma el que más se repite
+  // entre las cifras del mismo reporte: un desglose no puede ser de un mes
+  // distinto al de la tarjeta de la que cuelga. Es inferencia, pero sobre el
+  // propio dato y no sobre una suposición.
+  const cuenta = {};
+  (rd.kpis || []).forEach(k => { if (k && k.periodo) cuenta[k.periodo] = (cuenta[k.periodo] || 0) + 1; });
+  const mayoria = Object.keys(cuenta).sort((a, b) => cuenta[b] - cuenta[a])[0] || null;
+  const perRep = (kpiRef && kpiRef.periodo) || mayoria;
+  // Si tampoco hay mes, el dato trae la nota que explica por qué: un saldo,
+  // un acumulado, o un reporte sin serie mensual. Se usa esa en vez de un
+  // "sin confirmar" que no explica nada.
+  const notaMayoria = (() => {
+    const c = {};
+    (rd.kpis || []).forEach(k => { if (k && k.nota_periodo) c[k.nota_periodo] = (c[k.nota_periodo] || 0) + 1; });
+    return Object.keys(c).sort((a, b) => c[b] - c[a])[0] || null;
+  })();
+  const notaRep = (kpiRef && kpiRef.nota_periodo) || (perRep ? null : notaMayoria);
   DESGLOSES_PUBLICADOS.forEach(([clave, titulo]) => {
     const filas = rd[clave];
     if (!Array.isArray(filas) || filas.length < 2) return;
@@ -4779,6 +4812,10 @@ function avBloquesPublicados(ind) {
       // tabla no hace.
       ficha: { compara: 'foto del período de la tarjeta: este desglose no trae el mes anterior',
                unidad: 'la del propio reporte',
+               periodoTexto: notaRep ? `Período: ${notaRep}`
+                 : perRep ? `Período: ${nombreMes(perRep)}${esParcial(perRep)
+                     ? ' al día ' + ((avanceDelMes() || {}).dia || '') : ' (cerrado)'}`
+                 : 'Período: el de la tarjeta del reporte, sin confirmar',
                filtro: `las ${Math.min(filas.length, 20)} filas que publica el reporte` },
       por: `Desglose publicado por el reporte, ${filas.length} filas.`,
       cabecera: cols.map(c => COL_NOMBRE[c] ||
