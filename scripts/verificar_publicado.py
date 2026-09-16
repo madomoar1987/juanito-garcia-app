@@ -126,6 +126,17 @@ def revisar(datos, hoy):
     if fecha != hoy:
         return (f"el dato quedó con fecha {fecha}, no {hoy}: la corrida terminó "
                 "sin actualizar nada"), lineas
+    # Si Power BI limitó peticiones, el fallo ES eso. Los descuadres que
+    # salen después son su consecuencia —una serie que no llegó deja su KPI
+    # con el valor del sondeo— y abortar nombrándolos manda a arreglar lo que
+    # no está roto. La corrida #124 murió por "Fill rate 88.4 vs 75.4" cuando
+    # lo que pasaba es que su serie se quedó sin traer.
+    if throttled:
+        return (f"Power BI limitó {len(throttled)} consultas (429). Los "
+                f"descuadres de esta corrida no son concluyentes: hay series "
+                f"que no llegaron. Hay que bajar el número de consultas o "
+                f"espaciarlas, no perseguir las cifras"), lineas
+
     if vacios:
         return f"desgloses vacíos: {', '.join(vacios)}", lineas
     if distintas:

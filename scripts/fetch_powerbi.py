@@ -1356,49 +1356,6 @@ def clave_por_sufijo(fila, sufijo):
     return None
 
 
-def dax_facturacion_por_cliente():
-    """Facturación por cliente y mes — lo VENDIDO, no lo pedido.
-
-    Ningún visual publica facturación por cliente. Sí existe por canal
-    —"FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO"— y el cliente, [RAZON
-    SOCIAL], vive en la MISMA tabla que el importe: 'Exl A Maestra de Facturas
-    de Venta'. El cruce no necesita ninguna relación nueva.
-
-    Se copia el bloque DEFINE de la captura LITERAL —son sus once filtros, que
-    son los que definen qué cuenta como facturación— y se escribe una
-    agrupación limpia. El primer intento reemplazó solo el
-    ROLLUPADDISSUBTOTAL y dejó atrás las otras tres referencias a
-    [IsGrandTotalRowTotal] que la matriz usa para su fila Total: Power BI
-    respondió que esa columna no existe. La maquinaria de subtotales pinta el
-    visual y aquí no hace falta.
-    """
-    entrada = catalogo_capturas().get("FACTURACIÓN - CANAL POR UNIDAD DE NEGOCIO#d37f17982d3b")
-    if not entrada or not entrada.get("dax"):
-        return None
-    dax = entrada["dax"]
-    i = dax.find("VAR __DS0Core")
-    if i < 0:
-        return None
-    define = dax[:i].rstrip()
-    n = len(re.findall(r"VAR __DS0FilterTable\d*\s*=", define))
-    if not n:
-        return None
-    usados = "".join(f"\t\t__DS0FilterTable{'' if k == 1 else k},\n"
-                     for k in range(1, n + 1))
-    ld = "LocalDateTable_17f9bf1b-53ab-4dc5-bca5-92ec1d35bc75"
-    return (
-        define + "\n\nEVALUATE\n"
-        "\tSUMMARIZECOLUMNS(\n"
-        "\t\t'Exl A Maestra de Facturas de Venta'[RAZON SOCIAL],\n"
-        f"\t\t'{ld}'[Año],\n"
-        f"\t\t'{ld}'[NroMes],\n"
-        + usados +
-        "\t\t\"Monto_Neto_Factura\", CALCULATE(SUM("
-        "'Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura]))\n"
-        "\t)"
-    )
-
-
 def dax_precio_producto_canal():
     """Precio por kilo de cada producto en cada canal, mes a mes.
 
@@ -3012,9 +2969,12 @@ def build_margen(found):
             v_ = to_float(f.get("facturado"))
             if not nom or not a or not m or v_ is None:
                 continue
-            fact.setdefault(nom, {})
+            # Canónico: en órdenes el cliente es [cliente] y aquí
+            # [RAZON SOCIAL]; un punto o un "S.A." de más rompía el cruce.
+            can = nombre_canonico(nom)
+            fact.setdefault(can, {})
             k = f"{int(a)}-{int(m):02d}"
-            fact[nom][k] = fact[nom].get(k, 0.0) + v_
+            fact[can][k] = fact[can].get(k, 0.0) + v_
         per_act = periodo_en_curso()
         per_cer = mes_cerrado_txt()
 
@@ -3028,29 +2988,14 @@ def build_margen(found):
             if nom:
                 prev[nom] = (to_float(c.get("venta")), to_float(c.get("margen")))
 
-        # Facturado por cliente, separado por mes. La consulta trae Año y
-        # NroMes, así que el mismo corte da agosto cerrado y setiembre al día.
-        fact = {}
-        for f in (found.get("__facturado_cliente") or []):
-            nom = None
-            for k, val in f.items():
-                if "RAZON SOCIAL" in k.upper():
-                    nom = (str(val) or "").strip()
-                    break
-            a = to_float(clave_por_sufijo(f, "Año"))
-            m = to_float(clave_por_sufijo(f, "NroMes"))
-            v_ = to_float(clave_por_sufijo(f, "Monto_Neto_Factura"))
-            if not nom or not a or not m or v_ is None:
-                continue
-            fact.setdefault(nombre_canonico(nom), {})[f"{int(a)}-{int(m):02d}"] = v_
 
-        if (found.get("__facturado_cliente") and not fact):
+        if found.get("__factura_cliente") and not fact:
             DIAGNOSTICO.append({
-                "tipo": "aviso", "consulta": "facturacion_cliente", "http": 200,
-                "error": f"llegaron {len(found['__facturado_cliente'])} filas de "
+                "tipo": "aviso", "consulta": "factura_cliente", "http": 200,
+                "error": f"llegaron {len(found['__factura_cliente'])} filas de "
                          f"facturación pero ninguna trae cliente, año, mes e "
                          f"importe a la vez. Claves: "
-                         f"{list((found['__facturado_cliente'][0] or {}).keys())}"})
+                         f"{list((found['__factura_cliente'][0] or {}).keys())}"})
 
         def _pct(x):
             return None if x is None else (x * 100 if abs(x) <= 1 else x)
@@ -4984,42 +4929,6 @@ def main():
                         scanned["margen"]["__por_cliente_cerrado"] = cli0
                         scanned["margen"]["__por_cliente_cerrado_periodo"] = cerrado
                         print(f"    ✓ Margen por cliente ({cerrado}): {len(cli0)} filas")
-
-                # Facturación por cliente y mes. Es la tercera magnitud: lo
-                # pedido (órdenes), lo facturado y el cierre del mes anterior
-                # son tres cosas distintas, y sin las tres no se puede decir si
-                # el mes avanza o solo se está llenando de pedidos.
-                try:
-                    q_fc = dax_facturacion_por_cliente()
-                    if q_fc:
-                        fc = (_tablas_dax(token, ws_id, ids.get("margen"), q_fc,
-                                          "facturacion_cliente") or [[]])[0]
-                        if fc:
-                            scanned["margen"]["__facturado_cliente"] = fc
-                            print(f"    ✓ Facturación por cliente: {len(fc)} filas")
-                        else:
-                            # Sin diagnóstico, una consulta que corre y no trae
-                            # nada es indistinguible de una que no se pidió: la
-                            # columna sale vacía y la corrida dice que todo bien.
-                            print("    · Facturación por cliente: sin filas")
-                            DIAGNOSTICO.append({
-                                "tipo": "aviso", "consulta": "facturacion_cliente",
-                                "http": 200,
-                                "error": "la consulta derivada de 'FACTURACIÓN - CANAL "
-                                         "POR UNIDAD DE NEGOCIO' agrupada por [RAZON "
-                                         "SOCIAL] corrió sin error y devolvió cero "
-                                         "filas; la tabla de clientes se queda sin la "
-                                         "columna de facturado"})
-                    else:
-                        DIAGNOSTICO.append({
-                            "tipo": "aviso", "consulta": "facturacion_cliente", "http": 200,
-                            "error": "falta la captura 'FACTURACIÓN - CANAL POR UNIDAD "
-                                     "DE NEGOCIO' en el catálogo; sin ella no hay "
-                                     "facturado por cliente"})
-                except Exception as e:
-                    print(f"    ✗ facturación por cliente: {e}")
-                    DIAGNOSTICO.append({"consulta": "facturacion_cliente", "http": 0,
-                                        "error": repr(e)[:300]})
             except Exception as e:
                 print(f"    ✗ margen por cliente: {e}")
                 DIAGNOSTICO.append({"consulta": "margen_cliente", "http": 0,

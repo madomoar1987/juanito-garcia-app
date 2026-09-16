@@ -1746,6 +1746,10 @@ def dataset_de_captura(token, entrada, candidatos):
     return None, None
 
 
+# Resultado de cada captura ya ejecutada, por (visual, dataset).
+_CACHE_CAPTURAS = {}
+
+
 def serie_desde_captura(token, ds_id, periodos, visual, col_dim, col_medida,
                         prefijo, catalogo=None):
     """Series mensuales a partir de una consulta EXPORTADA del Analizador.
@@ -1766,9 +1770,20 @@ def serie_desde_captura(token, ds_id, periodos, visual, col_dim, col_medida,
         return {}
 
     # Una consulta por EVALUATE: la API devuelve una sola tabla por llamada.
-    tablas = tablas_de_captura(
-        lambda q, lb: (dax_crudo(token, ds_id, q, lb) or [[]])[0],
-        entrada["dax"], f"captura:{visual}")
+    #
+    # Y el resultado se guarda: la MISMA captura se pide una vez por medida, y
+    # "FILL RATE (S/) - MENSUAL" tiene cinco. Eran cinco peticiones idénticas
+    # para leer cinco columnas de la misma tabla, y fueron justo las cinco que
+    # Power BI limitó con 429 en la corrida #124. Una captura se ejecuta UNA
+    # vez por dataset y de ahí salen todas sus medidas.
+    memo = _CACHE_CAPTURAS.get((visual, ds_id))
+    if memo is not None:
+        tablas = memo
+    else:
+        tablas = tablas_de_captura(
+            lambda q, lb: (dax_crudo(token, ds_id, q, lb) or [[]])[0],
+            entrada["dax"], f"captura:{visual}")
+        _CACHE_CAPTURAS[(visual, ds_id)] = tablas
     if not tablas:
         return {}
 
