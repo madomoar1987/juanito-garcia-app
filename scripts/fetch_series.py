@@ -107,17 +107,47 @@ def get_token():
     return r.json()["access_token"]
 
 
+def espera_429(r):
+    """Segundos a esperar cuando Power BI responde 429, según lo que él pide.
+
+    Copiada de fetch_powerbi, donde ya estaba resuelta. Aquí se leía solo la
+    cabecera Retry-After y, cuando no venía, se esperaban 12 segundos fijos:
+    Power BI suele decirlo únicamente en el texto ("Retry in 32 seconds"), así
+    que se reintentaba demasiado pronto, se gastaban los tres intentos y la
+    serie se perdía entera.
+    """
+    cab = r.headers.get("Retry-After")
+    if cab and str(cab).strip().isdigit():
+        return min(int(cab), 90)
+    m = re.search(r"[Rr]etry in (\d+) second", r.text or "")
+    return min(int(m.group(1)) + 2, 90) if m else 15
+
+
 def dax(token, dataset_id, query, label="q", retries=3):
     ws = WS_POR_DATASET.get(dataset_id, WS_ID)
     url = f"{PBI_BASE}/groups/{ws}/datasets/{dataset_id}/executeQueries"
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
     body = {"queries": [{"query": query}], "serializerSettings": {"includeNulls": True}}
-    for attempt in range(retries):
+    # Un 429 NO gasta intento: es "espera y vuelve", no un fallo. Contándolo
+    # como intento, tres throttles seguidos —que es lo normal cuando la
+    # corrida crece— mataban la consulta aunque el dato estuviera ahí.
+    esperas = 0
+    attempt = 0
+    while attempt < retries:
         try:
             r = requests.post(url, json=body, headers=headers, timeout=60)
             if r.status_code == 429:
-                wait = int(r.headers.get("Retry-After", 12))
-                print(f"      [{label}] throttled — espera {wait}s")
+                if esperas >= 6:
+                    print(f"      [{label}] throttled 6 veces — se abandona")
+                    DIAG_SERIES.append({
+                        "consulta": f"429:{label}", "http": 429,
+                        "error": "Power BI limitó las peticiones seis veces "
+                                 "seguidas; la corrida pide más consultas de "
+                                 "las que el espacio de trabajo admite"})
+                    return None
+                esperas += 1
+                wait = espera_429(r)
+                print(f"      [{label}] throttled — espera {wait}s ({esperas}/6)")
                 time.sleep(wait)
                 continue
             if r.status_code != 200:
@@ -127,7 +157,8 @@ def dax(token, dataset_id, query, label="q", retries=3):
             tables = r.json().get("results", [{}])[0].get("tables", [])
             return tables[0].get("rows", []) if tables else []
         except Exception as e:
-            if attempt == retries - 1:
+            attempt += 1
+            if attempt >= retries:
                 print(f"      [{label}] error: {e}")
             else:
                 time.sleep(3)
@@ -1648,6 +1679,10 @@ def dax_crudo(token, dataset_id, query, label):
         return []
 
 
+# Datasets que ya contestaron, del más reciente al más antiguo.
+_DATASETS_QUE_RESPONDEN = []
+
+
 def dataset_de_captura(token, entrada, candidatos):
     """Averigua contra qué dataset corre una consulta capturada, probándola.
 
@@ -1656,11 +1691,27 @@ def dataset_de_captura(token, entrada, candidatos):
     el primero que devuelve filas: si la tabla no existe, Power BI responde
     error y se pasa al siguiente.
     """
-    for ds in candidatos:
+    # Se empieza por los datasets que YA respondieron en esta corrida.
+    #
+    # Cada intento fallido cuesta una petición completa —la consulta entera
+    # contra un modelo que no la tiene— y con veinte capturas y seis
+    # candidatos eso es más de cien peticiones desperdiciadas. La corrida
+    # #119 cruzó el límite del espacio de trabajo por esto: 23 consultas
+    # devolvieron 429 y varias series llegaron vacías.
+    #
+    # Casi todas las capturas del mismo reporte viven en el mismo modelo, así
+    # que probar primero los conocidos acierta a la primera la mayoría de las
+    # veces y el resto del orden se respeta igual.
+    vistos = [d for d in _DATASETS_QUE_RESPONDEN if d in candidatos]
+    resto = [d for d in candidatos if d and d not in vistos]
+    for ds in vistos + resto:
         if not ds:
             continue
         tablas = dax_crudo(token, ds, entrada["dax"], f"sonda:{ds[:8]}")
         if tablas and tablas[-1]:
+            if ds in _DATASETS_QUE_RESPONDEN:
+                _DATASETS_QUE_RESPONDEN.remove(ds)
+            _DATASETS_QUE_RESPONDEN.insert(0, ds)
             return ds, tablas
     return None, None
 

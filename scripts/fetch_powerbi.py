@@ -1343,11 +1343,29 @@ def columna_cliente(token, ws, ds_id):
                         "EVALUATE TOPN(1, 'Exl Cliente x Vendedor')",
                         "cols-cliente")
     if not filas or not filas[0]:
+        DIAGNOSTICO.append({
+            "tipo": "aviso", "consulta": "columna_cliente", "http": 200,
+            "error": "no se pudo leer 'Exl Cliente x Vendedor' (sin filas o "
+                     "limitado por peticiones); sin ella no hay facturado por cliente"})
         return None
-    for c in filas[0][0].keys():
+    claves = list(filas[0][0].keys())
+    for c in claves:
         base = c.split("[")[-1].rstrip("]").strip().lower()
-        if base in ("razon social", "razon_social", "cliente", "nombre cliente"):
+        if base in ("razon social", "razon_social", "cliente", "nombre cliente",
+                    "razón social", "razon  social", "nombre", "razonsocial",
+                    "desc_cliente", "descripcion cliente"):
             return c.split("[")[-1].rstrip("]")
+    # Segunda pasada, más laxa: cualquier columna que mencione cliente o razón.
+    for c in claves:
+        base = c.split("[")[-1].rstrip("]").strip().lower()
+        if "client" in base or "razon" in base or "razón" in base:
+            return c.split("[")[-1].rstrip("]")
+    # Si no aparece, se dicen las columnas que SÍ tiene. Un diagnóstico que
+    # solo dice "no la encontré" obliga a otra corrida para saber qué buscar.
+    DIAGNOSTICO.append({
+        "tipo": "aviso", "consulta": "columna_cliente", "http": 200,
+        "error": "ninguna columna de cliente en 'Exl Cliente x Vendedor'. "
+                 f"Las que tiene: {', '.join(claves)[:400]}"})
     return None
 
 

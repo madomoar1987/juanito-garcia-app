@@ -69,6 +69,22 @@ def revisar(datos, hoy):
         except Exception as e:
             lineas.append(f"  (no se pudo leer descuadres_conocidos.json: {e})")
 
+    # Un 429 no es un descuadre: es que la corrida pidió más consultas de las
+    # que el espacio de trabajo admite y varias series llegaron vacías. Los
+    # descuadres que salen después son consecuencia, no causa, y perseguirlos
+    # lleva al sitio equivocado. Se dice primero y con todas las letras.
+    todos_diag = (datos.get("diagnostico") or [])
+    try:
+        ser = json.loads(pathlib.Path("data/latest/series.json").read_text(encoding="utf-8"))
+        todos_diag = todos_diag + (ser.get("diagnostico") or [])
+    except Exception:
+        pass
+    throttled = [d for d in todos_diag if str(d.get("http")) == "429"]
+    if throttled:
+        lineas.append(f"⚠ PETICIONES LIMITADAS: {len(throttled)} consultas "
+                      f"devolvieron 429. Las series que falten y los descuadres "
+                      f"de abajo son consecuencia de eso, no de los datos.")
+
     val = datos.get("validacion") or {}
     todos = val.get("no_cuadran") or []
     # El veredicto lo pone validar_datos al publicar, que normaliza los
