@@ -2935,11 +2935,29 @@ def build_margen(found):
     # El peso de cada línea dentro de su unidad de negocio: sin él, una
     # subcategoría chica que cae mucho parece más grave que una grande que
     # cae poco.
-    total_neg = {}
+    # La consulta usa ROLLUPADDISSUBTOTAL: devuelve las líneas Y sus
+    # subtotales, con las dimensiones en blanco. Aplanadas en una sola lista,
+    # el mismo dinero salía tres veces —MAQUILA 62.8%, MAQUILA YOGURT 50.0% y
+    # BEBIBLE 29.6% son la misma venta contada en tres niveles— y los pesos
+    # sumaban 300%. Se etiqueta el nivel de cada fila y cada peso se calcula
+    # contra SU padre, no contra una mezcla: así cada nivel suma 100 por su
+    # cuenta y no se puede rankear a través de niveles sin darse cuenta.
+    def _nivel(sub, neg):
+        if sub: return "subcategoria"
+        if neg: return "negocio"
+        return "uen"
+
+    # Denominador de cada nivel: la unidad se compara con toda la empresa, el
+    # negocio con su unidad, la subcategoría con su negocio.
+    totales = {}
     for (cat, sub, neg), v in linea.items():
         t = v.get(ultimo)
-        if t and t[0]:
-            total_neg[neg] = total_neg.get(neg, 0) + abs(t[0])
+        if not (t and t[0]):
+            continue
+        niv = _nivel(sub, neg)
+        padre = ("empresa" if niv == "uen" else
+                 cat if niv == "negocio" else neg)
+        totales[(niv, padre)] = totales.get((niv, padre), 0) + abs(t[0])
 
     det = []
     for (cat, sub, neg), v in linea.items():
@@ -2948,11 +2966,17 @@ def build_margen(found):
             continue
         venta, precio, costo = act
         mg, mg0, mg_ene = _mg(act), _mg(v.get(previo)), _mg(v.get(enero))
-        peso = (abs(venta or 0) / total_neg[neg]) if total_neg.get(neg) else 0
+        niv = _nivel(sub, neg)
+        padre = ("empresa" if niv == "uen" else
+                 cat if niv == "negocio" else neg)
+        base = totales.get((niv, padre))
+        peso = (abs(venta or 0) / base) if base else 0
         det.append({
             "categoria": cat,
             "subcategoria": sub,
             "negocio": neg,
+            "nivel": niv,
+            "peso_de": padre,
             "venta": fmt_soles(venta) if venta is not None else None,
             "peso": round(peso * 100, 1),
             "precio_kg": f"S/{precio:.2f}",
@@ -2987,7 +3011,10 @@ def build_margen(found):
                         "de su unidad de negocio",
                         "cuántos puntos del margen de esa unidad explica la "
                         "subcategoría")
-        det.sort(key=lambda x: -x["_v"])
+        # Se ordena DENTRO de cada nivel. Ordenar la lista mezclada ponía
+        # siempre un subtotal arriba, porque un total es mayor que sus partes.
+        orden = {"uen": 0, "negocio": 1, "subcategoria": 2}
+        det.sort(key=lambda x: (orden.get(x["nivel"], 9), -x["_v"]))
         for x in det:
             x.pop("_v", None)
         res["detalle_costos"] = det
@@ -3020,16 +3047,23 @@ def build_margen(found):
                     continue
                 mg0, mg1 = (v0 - c0) / v0, (v - c) / v
                 peso = v / venta_total if venta_total else 0
+                # NOTA DE CREDITO y DESCUENTOS COM restan por definición: son
+                # ajustes, no ventas. Su importe negativo es correcto y se
+                # publica; su margen no, porque un porcentaje calculado sobre
+                # un importe negativo se lee al revés. La nota de crédito
+                # aparecía con "53.5% de margen" sobre -S/158,758.
+                ajuste = v <= 0
                 filas.append({
                     "producto": nombre,
+                    "ajuste": ajuste or None,
                     "venta": fmt_soles(v),
                     "peso": round(peso * 100, 1),
-                    "margen_previo": f"{mg0 * 100:.1f}%",
-                    "margen": f"{mg1 * 100:.1f}%",
-                    "delta_pp": round((mg1 - mg0) * 100, 2),
+                    "margen_previo": None if ajuste else f"{mg0 * 100:.1f}%",
+                    "margen": None if ajuste else f"{mg1 * 100:.1f}%",
+                    "delta_pp": None if ajuste else round((mg1 - mg0) * 100, 2),
                     # Cuánto del margen total explica este producto: su caída
                     # ponderada por lo que pesa en la venta del mes.
-                    "aporte_pp": round((mg1 - mg0) * peso * 100, 3),
+                    "aporte_pp": 0 if ajuste else round((mg1 - mg0) * peso * 100, 3),
                 })
             if filas:
                 anotar_derivado("margen_variable", "por_producto", "margen",
@@ -3108,27 +3142,55 @@ def build_margen(found):
                 # la unidad. Se publica la fila —esconderla es peor— pero
                 # marcada, para que no encabece ninguna lectura.
                 sospechoso = not (-1 <= mg1 <= 1) or not (-1 <= mg0 <= 1)
+                motivo = "margen fuera de rango" if sospechoso else None
+
+                # Un precio por kilo que se multiplica por ocho de un mes a
+                # otro no es un cambio de precio: es el peso mal registrado.
+                # B&D MOSTAZA BALDE 4K pasó de S/4.01 a S/34.26 el kilo y su
+                # margen de 64.2% a 94.5% —sus hermanos están entre 64% y
+                # 72%—, y con eso encabezaba las mejoras de la unidad con
+                # +S/2,491. Una cifra así no puede liderar ninguna lectura.
+                pk1 = (v / pe) if pe else None
+                pk0 = (v0 / pe0) if pe0 else None
+                if pk1 and pk0 and pk0 > 0:
+                    salto = max(pk1 / pk0, pk0 / pk1)
+                    if salto > 3:
+                        sospechoso = True
+                        motivo = (f"precio por kilo x{salto:.1f} en un mes: "
+                                  f"revisar el peso registrado")
+
+                # Venta neta negativa: en el mes se devolvió más de lo que se
+                # vendió de ese producto. La cifra es correcta y se publica,
+                # pero el margen NO: un porcentaje sobre una venta negativa
+                # cambia de signo y se lee al revés — la fila decía "59.1% de
+                # margen" sobre una venta de -S/4,942, que no significa nada.
+                # Se publica la devolución como lo que es y sin margen.
+                devolucion = v <= 0
                 filas.append({
                     "producto": nombre,
                     "subcategoria": sub or None,
                     "sospechoso": sospechoso or None,
+                    "motivo_sospecha": motivo,
+                    "devolucion": devolucion or None,
                     "venta": fmt_soles(v),
                     "peso": round(peso * 100, 1),
                     "margen_enero": (f"{mg_ene * 100:.1f}%"
-                                     if mg_ene is not None else None),
-                    "margen_previo": f"{mg0 * 100:.1f}%",
-                    "margen": f"{mg1 * 100:.1f}%",
+                                     if mg_ene is not None and not devolucion
+                                     else None),
+                    "margen_previo": None if devolucion else f"{mg0 * 100:.1f}%",
+                    "margen": None if devolucion else f"{mg1 * 100:.1f}%",
                     "precio_kg": f"S/{v / pe:.2f}" if pe else None,
                     "precio_kg_previo": f"S/{v0 / pe0:.2f}" if pe0 else None,
-                    "delta_pp": round((mg1 - mg0) * 100, 2),
-                    "aporte_pp": round((mg1 - mg0) * peso * 100, 3),
+                    "delta_pp": None if devolucion else round((mg1 - mg0) * 100, 2),
+                    "aporte_pp": 0 if devolucion else round((mg1 - mg0) * peso * 100, 3),
                     # Lo que ese cambio de margen vale en dinero sobre la venta
                     # del mes. Es la cifra por la que se prioriza: los puntos
                     # ordenan mal — 20 puntos sobre S/2,000 no valen la reunión
                     # que sí vale 3 puntos sobre S/500,000.
-                    "soles_mes": round((mg1 - mg0) * v),
+                    "soles_mes": None if devolucion else round((mg1 - mg0) * v),
                     "soles_enero": (round((mg1 - mg_ene) * v)
-                                    if mg_ene is not None else None),
+                                    if mg_ene is not None and not devolucion
+                                    else None),
                 })
             if filas:
                 filas.sort(key=lambda x: x["aporte_pp"])
@@ -4918,9 +4980,22 @@ def main():
                 partes = [to_float(x["merma"].rstrip("%"))
                           for x in (uen_merma + planta_merma)]
                 partes = [v for v in partes if v is not None]
-                if partes:
-                    tope = max(partes)
-                    for kpi in rep_m.get("kpis", []):
+                # La regla "un total no puede superar a sus partes" solo vale
+                # si el total y las partes miden el MISMO período. Los
+                # segmentos vienen acumulados del año y la tarjeta es de un
+                # mes: un mal mes puede superar sin problema a cualquier
+                # promedio anual, y la comprobación saltaba todos los días
+                # por una comparación que nunca fue válida.
+                #
+                # Que la tarjeta del mes cuadre ya lo vigila otra prueba: la
+                # que la compara contra su propia serie mensual.
+                per_seg = rep_m.get("por_uen_periodo") or ""
+                for kpi in rep_m.get("kpis", []) if partes else []:
+                        per_kpi = kpi.get("periodo") or ""
+                        mismo = bool(per_kpi) and per_kpi == per_seg
+                        if not mismo:
+                            continue
+                        tope = max(partes)
                         val = to_float(str(kpi.get("valor", "")).rstrip("%"))
                         if val is not None and val > tope * 1.05:
                             print(f"    ✗ {kpi['label']} = {kpi['valor']} supera a "

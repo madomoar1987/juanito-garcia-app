@@ -538,7 +538,20 @@ def main():
         vals = [num(f.get(campo)) for f in filas]
         vals = [v for v in vals if v is not None]
         tot = kpi(rp.get(tipo, {}), etiqueta)
-        if vals and tot is not None:
+        # Solo tiene sentido si ambos miden el mismo período. Los segmentos de
+        # merma vienen acumulados del año y la tarjeta es de un mes: un mal
+        # mes puede superar a cualquier promedio anual sin que nada esté mal.
+        # La prueba pasaba por casualidad, no por estar bien planteada.
+        per_seg = (rp.get(tipo, {}) or {}).get("por_uen_periodo") or ""
+        per_kpi = ""
+        for k in (rp.get(tipo, {}) or {}).get("kpis", []):
+            if k.get("label") == etiqueta:
+                per_kpi = k.get("periodo") or ""
+        if vals and tot is not None and per_seg and per_kpi != per_seg:
+            print(f"  ·      {etiqueta} no se compara con {clave}: "
+                  f"la tarjeta es de {per_kpi or 'período sin declarar'} y los "
+                  f"segmentos son {per_seg}")
+        elif vals and tot is not None:
             lo, hi = min(vals), max(vals)
             dentro = lo * 0.95 <= tot <= hi * 1.05
             if dentro:
@@ -550,6 +563,74 @@ def main():
                                    tot, hi, 0, ""))
                 print(f"  FALLA  {etiqueta} = {tot:.2f}% fuera del rango de "
                       f"{clave} ({lo:.2f}% a {hi:.2f}%)")
+
+    # Un porcentaje solo significa algo si su base es positiva. Una venta
+    # neta negativa —más devoluciones que ventas— es un dato correcto; el
+    # margen calculado sobre ella no lo es: cambia de signo y se lee al revés.
+    # La nota de crédito llegó a publicarse con "53.5% de margen" sobre
+    # -S/158,758, y tres SKU de B&D y MAQUILA con margen positivo sobre venta
+    # negativa. Ninguna prueba lo miraba porque cada cifra, por separado,
+    # parecía razonable.
+    print("\nNingún porcentaje calculado sobre una base negativa")
+    def _plata(x):
+        if isinstance(x, (int, float)): return float(x)
+        if isinstance(x, str):
+            try: return float(x.replace("S/", "").replace(",", "").strip())
+            except ValueError: return None
+        return None
+
+    malos = []
+    def _mirar(o, ruta=""):
+        if isinstance(o, dict):
+            v = _plata(o.get("venta")) if "venta" in o else None
+            if v is not None and v <= 0:
+                for campo in ("margen", "margen_previo", "margen_enero"):
+                    if o.get(campo):
+                        malos.append((ruta, o.get("producto") or o.get("cliente")
+                                      or "?", campo, o.get("venta"), o[campo]))
+            for k, val in o.items():
+                _mirar(val, f"{ruta}/{k}")
+        elif isinstance(o, list):
+            for i, val in enumerate(o):
+                _mirar(val, f"{ruta}[{i}]")
+    _mirar(rp)
+    if malos:
+        for ruta, quien, campo, venta, val in malos[:6]:
+            inf.afirmar(False, f"{quien}: {campo} sobre una venta negativa",
+                        f"venta {venta} y {campo} {val} — un porcentaje sobre "
+                        f"una base negativa se lee al revés; publicar la "
+                        f"devolución sin margen es lo correcto")
+        if len(malos) > 6:
+            print(f"         …y {len(malos) - 6} más")
+    else:
+        inf.ok += 1
+        print("  OK     ninguna fila publica margen sobre venta menor o igual a cero")
+
+    # Un precio por kilo no se multiplica por ocho en un mes. Cuando pasa, es
+    # el peso mal registrado, y como el margen se deriva del precio, la fila
+    # se va arriba del ranking de mejoras con una cifra que no existe.
+    print("\nNingún precio por kilo con un salto imposible")
+    saltos = []
+    def _precios(o):
+        if isinstance(o, dict):
+            a, b = num(o.get("precio_kg_previo")), num(o.get("precio_kg"))
+            if a and b and a > 0 and b > 0:
+                x = max(b / a, a / b)
+                if x > 3:
+                    saltos.append((o.get("producto") or "?", a, b, x))
+            for v in o.values(): _precios(v)
+        elif isinstance(o, list):
+            for v in o: _precios(v)
+    _precios(rp)
+    if saltos:
+        for quien, a, b, x in saltos[:5]:
+            inf.afirmar(False, f"{quien}: precio por kilo x{x:.1f} en un mes",
+                        f"de S/{a:.2f} a S/{b:.2f} — un precio no se mueve así; "
+                        f"lo más probable es que el peso esté mal registrado, y "
+                        f"el margen derivado de ese precio tampoco vale")
+    else:
+        inf.ok += 1
+        print("  OK     ningún precio por kilo se multiplica o divide por más de tres")
 
     print("\nPorcentajes de la misma familia en la misma escala")
     mezcla = escalas_mezcladas(ser)

@@ -3959,8 +3959,26 @@ function avBloqueSKU(uen) {
   //
   // La marca se decide acá y no solo en la extracción: así vale también para
   // los datos ya publicados, sin esperar otra corrida contra Power BI.
+  const esDevolucion = p => p.devolucion || p.ajuste ||
+    (avNum(p.venta) != null && avNum(p.venta) <= 0);
+  // Un precio por kilo que se multiplica o divide por más de tres en un mes
+  // no es un precio: es el peso mal registrado. Se detecta acá además de en
+  // la extracción, para que valga sobre los datos ya publicados.
+  const saltoPrecio = p => {
+    const a = avNum(p.precio_kg_previo), b = avNum(p.precio_kg);
+    if (!a || !b || a <= 0 || b <= 0) return null;
+    const x = Math.max(b / a, a / b);
+    return x > 3 ? x : null;
+  };
   const raro = p => {
     if (p.sospechoso) return true;
+    if (saltoPrecio(p)) return true;
+    // Devolución neta: en el mes se devolvió más de lo que se vendió. La
+    // venta negativa es correcta, pero no hay margen que leer, así que la
+    // fila no puede encabezar ninguna conclusión.
+    // Incluye las devoluciones netas: su venta negativa es correcta, pero no
+    // hay margen que leer, así que no pueden encabezar ninguna conclusión.
+    if (esDevolucion(p)) return true;
     const a = avNum(p.margen), b = avNum(p.margen_previo);
     return (a != null && Math.abs(a) > 100) || (b != null && Math.abs(b) > 100);
   };
@@ -3969,8 +3987,14 @@ function avBloqueSKU(uen) {
 
   const cuerpo = filas.map(p => `
     <tr${(p.aporte_pp || 0) < -0.05 ? ' class="av-an-foco"' : ''}>
-      <td>${raro(p) ? '<span title="Margen imposible: revisar el asiento" '
-        + 'style="color:var(--yellow);font-weight:600">⚠ </span>' : ''}${esc(p.producto)}${p.subcategoria
+      <td>${esDevolucion(p)
+        ? '<span title="Venta neta negativa: se devolvió más de lo que se vendió. '
+          + 'No se calcula margen sobre una venta negativa." '
+          + 'style="color:var(--text3);font-weight:600">↩ </span>'
+        : raro(p) ? `<span title="${esc(p.motivo_sospecha || (saltoPrecio(p)
+            ? 'Precio por kilo x' + saltoPrecio(p).toFixed(1) + ' en un mes: revisar el peso registrado'
+            : 'Margen imposible: revisar el asiento'))}" `
+        + `style="color:var(--yellow);font-weight:600">⚠ </span>` : ''}${esc(p.producto)}${p.subcategoria
         ? `<small style="display:block;color:var(--text3)">${esc(p.subcategoria)}</small>` : ''}</td>
       <td>${esc(p.venta || '—')}</td>
       <td>${p.peso == null ? '—' : p.peso.toFixed(1) + '%'}</td>
@@ -4012,12 +4036,34 @@ function avBloqueSKU(uen) {
     }
   }
 
-  if (raras.length) {
-    lecturas.push(`<p class="av-an-lee"><b>${raras.length} fila` +
-      `${raras.length > 1 ? 's' : ''} marcada${raras.length > 1 ? 's' : ''} con ⚠:</b> ` +
-      `su margen cae fuera de lo posible (${raras.map(p => esc(p.margen)).join(', ')}), ` +
-      `así que no es margen sino costo cargado sin su venta, una devolución o un ` +
-      `ajuste. Queda fuera de la lectura de arriba y conviene revisar el asiento.</p>`);
+  // Dos cosas distintas que antes se contaban juntas: una devolución neta no
+  // tiene margen que leer —y decir que 59.1% "cae fuera de lo posible" era
+  // falso—, mientras que un margen de -283% sí es un asiento a revisar.
+  const devs = raras.filter(p => esDevolucion(p));
+  const imposibles = raras.filter(p => !esDevolucion(p));
+  const saltos = imposibles.filter(p => saltoPrecio(p));
+  if (saltos.length) {
+    lecturas.push(`<p class="av-an-lee"><b>Precio imposible:</b> ` +
+      saltos.map(p => `${esc(p.producto)} pasa de ${esc(p.precio_kg_previo)} a ` +
+        `${esc(p.precio_kg)} el kilo (x${saltoPrecio(p).toFixed(1)})`).join('; ') +
+      `. Un precio no se multiplica así en un mes: lo más probable es que el ` +
+      `peso esté mal registrado. Queda fuera de la lectura, porque con esa ` +
+      `cifra ${saltos.length > 1 ? 'encabezaban' : 'encabezaba'} las mejoras de la unidad.</p>`);
+  }
+  const imposiblesMargen = imposibles.filter(p => !saltoPrecio(p));
+  if (imposiblesMargen.length) {
+    lecturas.push(`<p class="av-an-lee"><b>${imposiblesMargen.length} fila` +
+      `${imposiblesMargen.length > 1 ? 's' : ''} marcada${imposiblesMargen.length > 1 ? 's' : ''} con ⚠:</b> ` +
+      `su margen cae fuera de lo posible (${imposiblesMargen.map(p => esc(p.margen)).join(', ')}), ` +
+      `así que no es margen sino costo cargado sin su venta o un ajuste ` +
+      `contable. Queda fuera de la lectura de arriba y conviene revisar el asiento.</p>`);
+  }
+  if (devs.length) {
+    lecturas.push(`<p class="av-an-lee"><b>${devs.length} fila` +
+      `${devs.length > 1 ? 's' : ''} marcada${devs.length > 1 ? 's' : ''} con ↩:</b> ` +
+      `venta neta negativa (${devs.map(p => esc(p.venta)).join(', ')}) — en el mes ` +
+      `se devolvió más de lo que se vendió. La venta es correcta; el margen no ` +
+      `se calcula, porque un porcentaje sobre una base negativa se lee al revés.</p>`);
   }
 
   return {
@@ -4051,7 +4097,7 @@ function avBloqueSubcategorias(uen) {
   // la venta.
   const suyas = (uen
     ? det.filter(d => (d.negocio || '').toUpperCase().indexOf(uen.toUpperCase()) >= 0)
-    : det).filter(d => d.subcategoria);
+    : det).filter(d => (d.nivel ? d.nivel === 'subcategoria' : !!d.subcategoria));
   const suyasTodas = suyas;
   if (suyas.length < 2) return null;
   const mv2 = avReporte('margen_variable');
