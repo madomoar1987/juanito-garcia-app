@@ -1,29 +1,35 @@
 {
-  "_leeme": [
-    "Diferencias ya investigadas que NO deben encender la alarma.",
-    "",
-    "Sin esta lista, la corrida terminaba en rojo todos los días por las mismas",
-    "dos diferencias de siempre. Una alarma que suena siempre deja de mirarse, y",
-    "entonces el día que aparece algo nuevo tampoco se ve.",
-    "",
-    "Para entrar aquí, una diferencia tiene que estar explicada: no basta con",
-    "que moleste. Si no se sabe por qué difiere, se queda fuera y sigue sonando.",
-    "",
-    "Quitar una entrada vuelve a encender la alarma para esa diferencia."
-  ],
-  "conocidos": [
-    {
-      "prueba": "Ventas del mes: Margen vs Fill Rate",
-      "desde": "2026-09-13",
-      "resuelto": "2026-09-14",
-      "explicacion": "No era un descuadre. Confirmado por gerencia el 14/09/2026: la venta del mes es la del reporte de Margen (agosto S/7.69M) y la facturación de Fill Rate mide el cumplimiento del pedido, no la venta. La comparación se quitó de validar_datos.py y la fila del tablero pasó a leer la serie de Margen.",
-      "pendiente": null
-    },
-    {
-      "prueba": "Presupuesto acumulado al día (FACTURACION AL 05 SETIEMBRE)",
-      "desde": "2026-09-15",
-      "explicacion": "La captura devuelve el presupuesto acumulado hasta ayer en cero y el facturado del AÑO (S/18.63M contra una cuota mensual de S/7.79M): ese visual no filtra el mes. No es un fallo de la consulta, es el alcance del visual de origen.",
-      "pendiente": "Capturar ese visual con el filtro de mes aplicado para tener el avance contra presupuesto que sí respeta los días transcurridos."
-    }
-  ]
+ "_leeme": [
+  "Diferencias ya investigadas que NO deben encender la alarma.",
+  "",
+  "Sin esta lista, la corrida terminaba en rojo todos los días por las mismas",
+  "dos diferencias de siempre. Una alarma que suena siempre deja de mirarse, y",
+  "entonces el día que aparece algo nuevo tampoco se ve.",
+  "",
+  "Para entrar aquí, una diferencia tiene que estar explicada: no basta con",
+  "que moleste. Si no se sabe por qué difiere, se queda fuera y sigue sonando.",
+  "",
+  "Quitar una entrada vuelve a encender la alarma para esa diferencia."
+ ],
+ "conocidos": [
+  {
+   "prueba": "Ventas del mes: Margen vs Fill Rate",
+   "desde": "2026-09-13",
+   "resuelto": "2026-09-14",
+   "explicacion": "No era un descuadre. Confirmado por gerencia el 14/09/2026: la venta del mes es la del reporte de Margen (agosto S/7.69M) y la facturación de Fill Rate mide el cumplimiento del pedido, no la venta. La comparación se quitó de validar_datos.py y la fila del tablero pasó a leer la serie de Margen.",
+   "pendiente": null
+  },
+  {
+   "prueba": "Presupuesto acumulado al día (FACTURACION AL 05 SETIEMBRE)",
+   "desde": "2026-09-15",
+   "explicacion": "La captura devuelve el presupuesto acumulado hasta ayer en cero y el facturado del AÑO (S/18.63M contra una cuota mensual de S/7.79M): ese visual no filtra el mes. No es un fallo de la consulta, es el alcance del visual de origen.",
+   "pendiente": "Capturar ese visual con el filtro de mes aplicado para tener el avance contra presupuesto que sí respeta los días transcurridos."
+  },
+  {
+   "prueba": "Serie mensual de Fill Rate y Pedidos no atendidos",
+   "desde": "2026-09-15",
+   "explicacion": "La consulta del visual 'FILLRATE POR MES' agrupa por 'CALENDARIO'[MES] y el año se resuelve aparte. Pedido con el año en la propia consulta, la medida solo devuelve de 2024-02 a 2025-04: no trae el mes en curso. Los cuatro puntos quedaban dibujados en el tramo viejo de un eje que llega a 2026-09, y se leían como si fueran de este año. Se dejó de publicar la serie: el gráfico muestra el hueco en vez de una línea mal ubicada. El KPI del mes no depende de esto, se lee del reporte.",
+   "pendiente": "Volver a exportar el visual 'FILLRATE POR MES' desde el Analizador de rendimiento con el año en el eje."
+  }
+ ]
 }

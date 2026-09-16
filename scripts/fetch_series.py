@@ -1133,7 +1133,6 @@ def serie_fillrate(token, ds_id, periodos):
         llenos = [i for i, x in enumerate(serie) if x is not None]
         if not llenos:
             continue
-        out[etiqueta] = serie
         print(f"    [{etiqueta}]: {len(llenos)}/{len(serie)} meses")
         # Una serie mensual termina en el mes en curso. Si sus puntos quedaron
         # en el tramo viejo del eje, el mapa de calendario está ubicando mal
@@ -1149,6 +1148,12 @@ def serie_fillrate(token, ds_id, periodos):
                 "error": f"la serie termina en {periodos[llenos[-1]]} pero el eje "
                          f"llega a {periodos[-1]}. El mapa de CALENDARIO devolvió "
                          f"{len(mapa)} meses; primeros períodos mapeados: {muestra}"})
+            # No se publica. Una serie mensual que termina un año y medio
+            # antes del eje no es un dato viejo: es un dato mal ubicado, y
+            # dibujado en el gráfico se lee como si fuera del mes en curso.
+            # Mejor un hueco declarado que una línea que miente.
+            continue
+        out[etiqueta] = serie
     return out
 
 
