@@ -1,7 +1,7 @@
 {
   "fecha": "16/09/2026",
   "fecha_actualizacion": "2026-09-16",
-  "hora_actualizacion": "08:36",
+  "hora_actualizacion": "09:07",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "yellow"
@@ -4316,8 +4316,8 @@
           ]
         },
         "margen_variable_pag2": {
-          "estado": "yellow",
-          "alerta": "Avance 63.0% vs presupuesto",
+          "estado": "red",
+          "alerta": "Avance 3.3% vs presupuesto",
           "kpis": [
             {
               "label": "Presupuesto del mes",
@@ -6196,16 +6196,9 @@
   },
   "diagnostico": [
     {
-      "tipo": "aviso",
-      "consulta": "columna_cliente",
-      "http": 200,
-      "error": "ninguna columna de cliente en 'Exl Cliente x Vendedor'. Las que tiene: Exl Cliente x Vendedor[Vendedor], Exl Cliente x Vendedor[Region], Exl Cliente x Vendedor[Jefe], Exl Cliente x Vendedor[Vendedor.1], Exl Cliente x Vendedor[GRUPO], Exl Cliente x Vendedor[Canal], Exl Cliente x Vendedor[Canal2]"
-    },
-    {
-      "tipo": "aviso",
       "consulta": "facturacion_cliente",
-      "http": 200,
-      "error": "no se encontró la columna de cliente en 'Exl Cliente x Vendedor'; la tabla de clientes se queda sin la columna de facturado"
+      "http": 400,
+      "error": "{\"error\":{\"code\":\"DatasetExecuteQueriesError\",\"pbi.error\":{\"code\":\"DatasetExecuteQueriesError\",\"parameters\":{},\"details\":[{\"code\":\"DetailsMessage\",\"detail\":{\"type\":1,\"value\":\"Query (109, 4) The column '<oii>IsGrandTotalRowTotal</oii>' specified in the 'SUMMARIZE' function was not found in the input table.\"}},{\"code\":\"AnalysisServicesErrorCode\",\"detail\":{\"type\":1,\"value\":\"3241803863\"}}]}}}"
     }
   ],
   "derivados": [
