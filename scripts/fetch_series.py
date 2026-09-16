@@ -1084,9 +1084,24 @@ def serie_compras_ratio(token, ds_id, periodos):
     # visual y el segundo el cuerpo con los datos. dax() se queda con la
     # primera tabla, que aquí es la equivocada y llega sin medidas.
     q = _q_compras_ratio()
-    tablas = dax_crudo(token, ds_id, q, "compras-ratio") if q else []
+    if not q:
+        DIAG_SERIES.append({
+            "consulta": "compras:captura", "http": 0,
+            "error": "la captura 'Eficiencia de Costo de compra  de materiales  "
+                     "(Operación)#a5e2b0c1992a' no está en el catálogo"})
+        return {}
+    tablas = dax_crudo(token, ds_id, q, "compras-ratio") or []
     filas = next((t for t in tablas
                   if t and any("ratio" in k.lower() for k in t[0])), None)
+    if not filas:
+        # Qué se probó y qué llegó. "No devolvió filas" obliga a otra corrida
+        # para saber si el dataset era el equivocado, si la consulta falló o
+        # si de verdad no hay datos.
+        DIAG_SERIES.append({
+            "consulta": "compras:ratio-detalle", "http": 200,
+            "error": f"dataset {str(ds_id)[:8]} · {len(tablas)} tabla(s) · "
+                     f"filas por tabla {[len(t or []) for t in tablas]} · "
+                     f"claves de la 1a {list((tablas[0][0] if tablas and tablas[0] else {}).keys())[:8]}"})
     if not filas:
         # Sin esto el fallo es mudo: el dataset 'compras' no llegaba a
         # crearse, el KPI "Ratio consumo / compra" salía vacío en la app y

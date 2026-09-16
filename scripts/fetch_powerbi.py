@@ -4,7 +4,7 @@ JUANITO — Power BI Data Fetcher v3
 Estrategia: scan de medidas reales → query con nombres confirmados.
 """
 
-import os, json, re, requests, datetime, sys
+import os, json, re, requests, datetime, sys, unicodedata
 from pathlib import Path
 
 try:
@@ -1316,6 +1316,30 @@ def _tablas_dax(token, ws, dataset_id, query, label, silencioso=False):
                 DIAGNOSTICO.append({"consulta": label, "http": 0, "error": repr(e)[:300]})
             return None if silencioso else []
     return None if silencioso else []
+
+
+def nombre_canonico(x):
+    """Nombre de empresa comparable entre dos tablas distintas.
+
+    El cliente sale de dos sitios —[cliente] en órdenes de venta y
+    [RAZON SOCIAL] en la maestra de facturas— y basta una coma, un punto o un
+    sufijo societario para que no crucen.
+
+    Ojo con quitar las formas societarias por substring: "PERU" dentro de
+    "SUPERMERCADOS PERUANOS" dejaba "SUPERMERCADOSANOS". Se quitan solo como
+    PALABRA y solo al FINAL, que es donde van.
+    """
+    t = unicodedata.normalize("NFKD", str(x or "")).encode("ascii", "ignore").decode().upper()
+    # Los puntos se quitan SIN dejar espacio: si no, "S.A." se parte en dos
+    # letras sueltas y deja de reconocerse como forma societaria.
+    t = re.sub(r"[.'`]", "", t)
+    t = re.sub(r"[^A-Z0-9 ]+", " ", t)
+    palabras = [p for p in t.split() if p]
+    FORMAS = {"SA", "SAC", "SAA", "SRL", "EIRL", "SOCIEDAD", "ANONIMA",
+              "CERRADA", "LTDA", "SPSA", "O"}
+    while palabras and palabras[-1] in FORMAS:
+        palabras.pop()
+    return "".join(palabras)
 
 
 def clave_por_sufijo(fila, sufijo):
@@ -3018,7 +3042,15 @@ def build_margen(found):
             v_ = to_float(clave_por_sufijo(f, "Monto_Neto_Factura"))
             if not nom or not a or not m or v_ is None:
                 continue
-            fact.setdefault(nom, {})[f"{int(a)}-{int(m):02d}"] = v_
+            fact.setdefault(nombre_canonico(nom), {})[f"{int(a)}-{int(m):02d}"] = v_
+
+        if (found.get("__facturado_cliente") and not fact):
+            DIAGNOSTICO.append({
+                "tipo": "aviso", "consulta": "facturacion_cliente", "http": 200,
+                "error": f"llegaron {len(found['__facturado_cliente'])} filas de "
+                         f"facturación pero ninguna trae cliente, año, mes e "
+                         f"importe a la vez. Claves: "
+                         f"{list((found['__facturado_cliente'][0] or {}).keys())}"})
 
         def _pct(x):
             return None if x is None else (x * 100 if abs(x) <= 1 else x)
@@ -3036,15 +3068,15 @@ def build_margen(found):
             # y lo facturado de setiembre a la fecha. Con las órdenes al lado,
             # la fila responde qué pidió, cuánto se le ha facturado ya y con
             # qué venía del mes pasado.
-            "facturado_cerrado": (fmt_soles(fact.get(n, {}).get(per_cerr))
-                                  if fact.get(n, {}).get(per_cerr) is not None else None),
-            "facturado": (fmt_soles(fact.get(n, {}).get(per_curso))
-                          if fact.get(n, {}).get(per_curso) is not None else None),
+            "facturado_cerrado": (fmt_soles(fact.get(nombre_canonico(n), {}).get(per_cerr))
+                                  if fact.get(nombre_canonico(n), {}).get(per_cerr) is not None else None),
+            "facturado": (fmt_soles(fact.get(nombre_canonico(n), {}).get(per_curso))
+                          if fact.get(nombre_canonico(n), {}).get(per_curso) is not None else None),
             # Cuánto de lo pedido ya se facturó. Es la columna del avance:
             # 100% es que todo lo colocado salió; 40% es que el mes va lleno
             # de pedidos y vacío de despachos.
-            "conversion": (round(fact[n][per_curso] / v * 100, 1)
-                           if fact.get(n, {}).get(per_curso) is not None and v else None),
+            "conversion": (round(fact[nombre_canonico(n)][per_curso] / v * 100, 1)
+                           if fact.get(nombre_canonico(n), {}).get(per_curso) is not None and v else None),
             # Lo que de verdad se le facturó: en el mes cerrado es la venta
             # final, y en el mes en curso es cuánto de lo pedido ya se cobró.
             "facturado_cerrado": (fmt_soles(fact[n][per_cer])
