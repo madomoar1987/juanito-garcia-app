@@ -1,15 +1,85 @@
 {
-  "_leeme": [
-    "Planes de directorio: compromisos con fecha y responsable que se siguen en cada sesión.",
-    "",
-    "Este archivo existe vacío a propósito. La app lo pedía y no estaba, así que",
-    "cada carga dejaba cuatro errores 404 en la consola del navegador — ruido que",
-    "tapa los errores de verdad y que además reintenta en cada visita.",
-    "",
-    "'configurado': false significa que el módulo está apagado y la app lo trata",
-    "igual que si el archivo no existiera. Para encenderlo, poner los datos y",
-    "cambiarlo a true."
-  ],
-  "configurado": false,
-  "datos": []
+  "fecha": "16/09/2026",
+  "generado_por": "Asesor IA del Directorio — Holding Juanito Garcia",
+  "empresas": {
+    "PAUNO": {
+      "objetivo": "Cerrar el mes recuperando la venta perdida por quiebre de servicio (Fill Rate 88.4%), frenar el drenaje de caja por mermas y dead stock, y sacar Control Interno de zona crítica antes de que escale a riesgo operativo.",
+      "alerta_principal": "Focos rojos simultáneos: Control Interno 69.3% (meta 85%, 34.7% de puntos en estado crítico), Dead Stock 20.2% del inventario (meta <5%, S/1.25M inmovilizados), Merma 2.9% (meta <2%) y S/700K de venta perdida por Fill Rate de 88.4%.",
+      "ingresos": [
+        "Recuperar los S/700K de venta perdida: priorizar los 199 pedidos no atendidos y destrabar los 26 materiales en quiebre de stock esta semana.",
+        "Cerrar la brecha de avance vs presupuesto (29.9% del mes, cumplimiento de producción de ayer solo 69%): reforzar turno y mantenimiento preventivo para llevar el programa diario a 100%.",
+        "Acelerar cobranza de los S/735,910 de CxC vencida (15.3% de la cartera): plan de choque con los 5 responsables que concentran S/652K de vencido (Ascencio, Miranda, Astoray, Collazos, O'Brien)."
+      ],
+      "costos": [
+        "Bajar la merma de 2.9% a <2% con auditoría de causa raíz en la línea de mayor pérdida esta semana.",
+        "Elevar el margen variable de 46.5% a 52%: foco en MAQUILA (63% de la venta y margen más bajo, 41.7%) y renegociación de costo/kg de materia prima.",
+        "Reducir Planilla S/./KG producido (S/0.53) mejorando la eficiencia de planta, hoy al 69% del programa diario."
+      ],
+      "capital_trabajo": [
+        "Plan de liquidación en 30 días para el Dead Stock de S/1.25M (20.2% del inventario, meta <5%).",
+        "Negociar con el proveedor crítico E&M S.R.L. (42.6% de la deuda, leche descremada) para bajar el CxP vencido de S/3.32M (32.4% de la deuda viva) y los Días CxP de 117 a <90.",
+        "Cerrar los 29 Planes de Acción atrasados de Control Interno (34.7% de puntos en estado crítico) para evitar riesgo regulatorio y operativo."
+      ],
+      "kpis_seguimiento": [
+        { "label": "Control Interno % Cumplimiento", "actual": "69.3%", "meta": "85%", "estado": "red" },
+        { "label": "Dead Stock", "actual": "20.2%", "meta": "<5%", "estado": "red" },
+        { "label": "Merma Total", "actual": "2.9%", "meta": "<2%", "estado": "red" },
+        { "label": "Fill Rate", "actual": "88.4%", "meta": "98%", "estado": "yellow" },
+        { "label": "Margen Variable", "actual": "46.5%", "meta": "≥52%", "estado": "yellow" },
+        { "label": "Morosidad CxC", "actual": "15.3%", "meta": "15%", "estado": "yellow" }
+      ]
+    },
+    "AMAUTA": {
+      "objetivo": "Frenar el alargamiento de Días CxP (141d, máximo de la serie) sin deteriorar la relación con proveedores, y sostener la mejora reciente de morosidad de CxC (16%, bajando desde 27% hace cuatro meses).",
+      "alerta_principal": "Días CxP saltó de 128 (agosto) a 141 (setiembre) — el valor más alto de toda la serie histórica — mientras la CxC vencida a más de 30 días suma S/558,523 (8% de la cartera).",
+      "ingresos": [
+        "Sostener la mejora de Días de CxC (44d, bajando desde 73d) reforzando el seguimiento a la cartera vencida >30 días (S/558,523, 8% del total).",
+        "Revisar condiciones de crédito de las líneas FLEXOGRAFIA (20% de mora sobre su cartera) y OFFSET, las de mayor morosidad relativa.",
+        "Priorizar facturación y cobro antes de fin de mes para consolidar la caída de morosidad de 27% a 16% lograda en los últimos cuatro meses."
+      ],
+      "costos": [
+        "Investigar el salto de Días CxP de 128 a 141: confirmar si es acumulación normal de facturas o atraso real de tesorería.",
+        "Revisar concentración de deuda con KOBAX LLC (S/1.17M) y RITRAMA PERÚ (S/1.05M), los dos mayores acreedores, para asegurar condiciones sin penalidades.",
+        "Alinear el plan de compras al consumo real para contener el tramo de CxP a 16-30 días (S/928,653)."
+      ],
+      "capital_trabajo": [
+        "Definir un plan de pago escalonado para bajar Días CxP de 141 a <120 sin afectar el abastecimiento de materia prima crítica.",
+        "Vigilar que el inventario en exceso (250 + 58, entre 5 y 12 meses) no migre a Dead Stock, hoy contenido en 5% (S/543K).",
+        "Acelerar el cobro del tramo de CxC a 16-30 días (S/159,736) antes de que pase a vencido >30 días."
+      ],
+      "kpis_seguimiento": [
+        { "label": "Días CxP", "actual": "141d", "meta": "<120d", "estado": "red" },
+        { "label": "CxC vencida >30 días", "actual": "S/558,523 (8%)", "meta": "<5% de cartera", "estado": "red" },
+        { "label": "Morosidad CxC", "actual": "16%", "meta": "<15%", "estado": "yellow" },
+        { "label": "Dead Stock", "actual": "5% (S/543K)", "meta": "<5%", "estado": "yellow" },
+        { "label": "Cobertura de Inventario", "actual": "3.1 meses", "meta": "<3 meses", "estado": "yellow" }
+      ]
+    },
+    "NEOPACK": {
+      "objetivo": "Cerrar la brecha de facturación vs presupuesto (59% acumulado en el año, 40% de avance del mes) sin comprometer el pago a proveedores, consolidando la mejora de morosidad de CxC (14.9%, bajando desde 26% en agosto).",
+      "alerta_principal": "Días CxP saltó de 28 (agosto) a 61 (setiembre) — más del doble en un mes — mientras el cumplimiento de ventas acumulado del año es de solo 59% del presupuesto (S/6.30M vs S/10.74M).",
+      "ingresos": [
+        "Atacar las categorías más rezagadas vs presupuesto: POLIPROPILENO (30% de cumplimiento) y POLIESTER (32%), que juntas explican cerca de S/2.8M de brecha acumulada.",
+        "Reforzar STRETCH FILM (60% de cumplimiento, la mayor línea con S/9.16M de presupuesto anual) que concentra el mayor déficit en soles del año.",
+        "Rebalancear la cartera comercial: Juan Sotacora concentra S/5.19M facturados vs S/1.1M de Jankarlo Arevalo — evaluar redistribución o refuerzo del equipo comercial."
+      ],
+      "costos": [
+        "Investigar el salto de Días CxP de 28 a 61: confirmar si es caída de compras o atraso real de pagos a proveedores.",
+        "Revisar la concentración con Sistemas de Embalaje Sorsa S.A. (S/2.12M, 64% del total de CxP) para asegurar condiciones y evitar fricción con el proveedor crítico.",
+        "Ajustar el plan de compras al ritmo real de ventas (59% de cumplimiento) para no seguir acumulando el tramo de CxP a 30-90 días (S/729,497, 22%)."
+      ],
+      "capital_trabajo": [
+        "Definir un plan de pago para normalizar Días CxP al rango histórico (<30d), priorizando proveedores extranjeros (Taizhou Shantai, Signode, Linyi Fanghua) por el riesgo de afectar el abastecimiento.",
+        "Consolidar la baja de morosidad de CxC (14.9%, desde 26% en agosto) cobrando el tramo vencido >30 días (S/90,401, 6.3% del total).",
+        "Cerrar la brecha de presupuesto de ventas (41% de déficit acumulado en el año) para aliviar la presión sobre el capital de trabajo."
+      ],
+      "kpis_seguimiento": [
+        { "label": "Cumplimiento de ventas acumulado", "actual": "59%", "meta": "100%", "estado": "red" },
+        { "label": "Días CxP", "actual": "61d", "meta": "<30d", "estado": "red" },
+        { "label": "Avance de ventas del mes", "actual": "40%", "meta": "100% al día", "estado": "red" },
+        { "label": "Morosidad CxC", "actual": "14.9%", "meta": "<15%", "estado": "yellow" },
+        { "label": "CxC vencida >30 días", "actual": "S/90,401 (6.3%)", "meta": "<5% de cartera", "estado": "yellow" }
+      ]
+    }
+  }
 }
