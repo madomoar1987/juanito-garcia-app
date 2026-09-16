@@ -1,7 +1,7 @@
 {
   "fecha": "16/09/2026",
   "fecha_actualizacion": "2026-09-16",
-  "hora_actualizacion": "07:40",
+  "hora_actualizacion": "08:36",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "yellow"
@@ -3825,7 +3825,8 @@
               "label": "Inventario Total",
               "valor": "S/6.66M",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "periodo": "2026-09",
+              "periodo_fuente": "inventario/Consumo acumulado"
             },
             {
               "label": "Dead Stock",
@@ -3833,7 +3834,7 @@
               "meta": "<S/500K",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "% Dead Stock",
@@ -3841,25 +3842,25 @@
               "meta": "<5%",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Working Stock",
               "valor": "S/4.38M",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Exceso 1 (2-5 meses)",
               "valor": "S/617,597",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             },
             {
               "label": "Exceso 2 (5-12 meses)",
               "valor": "S/413,907",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
             }
           ],
           "dead_por_categoria": [
@@ -4204,19 +4205,21 @@
             },
             {
               "label": "Orden de Venta",
-              "valor": "S/128.92M",
+              "valor": "S/6.79M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "periodo": "2026-08",
+              "periodo_fuente": "fill_rate/Orden de Venta"
             },
             {
               "label": "Facturación",
-              "valor": "S/97.12M",
+              "valor": "S/6.09M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "periodo": "2026-08",
+              "periodo_fuente": "fill_rate/Facturación"
             },
             {
               "label": "Venta Perdida",
-              "valor": "S/31.80M",
+              "valor": "S/700,000",
               "estado": "red",
               "fuente": "reporte",
               "meta": "orden de venta − facturación",
@@ -6194,6 +6197,12 @@
   "diagnostico": [
     {
       "tipo": "aviso",
+      "consulta": "columna_cliente",
+      "http": 200,
+      "error": "ninguna columna de cliente en 'Exl Cliente x Vendedor'. Las que tiene: Exl Cliente x Vendedor[Vendedor], Exl Cliente x Vendedor[Region], Exl Cliente x Vendedor[Jefe], Exl Cliente x Vendedor[Vendedor.1], Exl Cliente x Vendedor[GRUPO], Exl Cliente x Vendedor[Canal], Exl Cliente x Vendedor[Canal2]"
+    },
+    {
+      "tipo": "aviso",
       "consulta": "facturacion_cliente",
       "http": 200,
       "error": "no se encontró la columna de cliente en 'Exl Cliente x Vendedor'; la tabla de clientes se queda sin la columna de facturado"
@@ -6378,16 +6387,8 @@
     ]
   ],
   "validacion": {
-    "cuadran": 30,
+    "cuadran": 35,
     "no_cuadran": [
-      {
-        "prueba": "Fill rate: % vs facturación / orden de venta",
-        "publicado": 88.4,
-        "esperado": 75.3335,
-        "diferencia_pct": 14.8,
-        "detalle": "97,120,000 / 128,920,000",
-        "conocido": false
-      },
       {
         "prueba": "B&D MOSTAZA BALDE 4K   ND: precio por kilo x8.5 en un mes",
         "publicado": null,
@@ -6397,10 +6398,7 @@
         "conocido": true
       }
     ],
-    "sin_datos": [
-      "Facturación: sin serie para 2026-08",
-      "Orden de Venta: sin serie para 2026-08"
-    ]
+    "sin_datos": []
   },
   "validacion_tarjetas": {
     "iguales": 13,
