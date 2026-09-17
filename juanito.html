@@ -3536,8 +3536,14 @@ function avanceDelMes() {
   const hoy = new Date();
   // Si el mes parcial no es el corriente (dato de ayer, fin de semana), el
   // día que vale es el último del que hay dato, no el de hoy.
+  //
+  // Y si sí es el corriente, el día que vale es AYER, no hoy: las facturas
+  // de hoy se siguen registrando mientras corre la Action, así que hoy
+  // siempre está incompleto. Comparar contra un día a medio llenar exagera
+  // cualquier caída — es la misma razón por la que "Presupuesto acumulado
+  // hasta ayer" no usa el día de hoy tampoco.
   const dia = (hoy.getFullYear() === a && hoy.getMonth() + 1 === m)
-    ? hoy.getDate() : dias;
+    ? Math.max(hoy.getDate() - 1, 1) : dias;
   return { periodo: per, anio: a, mes: m, dias, dia, fraccion: dia / dias };
 }
 
@@ -3554,7 +3560,13 @@ function valorDesdeDiario(ind) {
   const pm = ejeSerieDiaria(ind.clave);
   const mes = pm && pm[mesParcial()];
   if (!mes || !Array.isArray(mes.valor)) return null;
-  const v = mes.valor.filter(x => x != null);
+  // Hasta el DÍA DE CORTE, no hasta el último día cargado. El corte es ayer
+  // porque las facturas de hoy se siguen registrando; si el valor incluyera
+  // hoy, la tarjeta diría "al día 15" sobre una suma de 16 y la comparación
+  // contra los mismos 15 días del mes anterior saldría a favor sin motivo.
+  const corte = (avanceDelMes() || {}).dia;
+  const v = mes.valor.filter((x, i) =>
+    x != null && (corte == null || mes.dias[i] <= corte));
   if (!v.length) return null;
   // Lo que se acumula se suma; una tasa se promedia entre los días con dato.
   return ind.tipo === 'acumula'
@@ -5393,16 +5405,23 @@ function ejeDias() {
 // Serie diaria acumulada de un indicador, si el reporte la publica. Sin esto
 // no hay forma honesta de comparar trece días contra treinta.
 function ejeSerieDiaria(clave) {
-  // Ningún reporte publica hoy una serie diaria con su mes: las capturas de
-  // merma y producción agrupan por día pero el mes lo pone el filtro de
-  // página del visual. Sin mes no se puede comparar el mismo tramo de dos
-  // meses, así que no hay comparación por tramo y la app lo dice.
+  // merma y producción vienen de capturas que agrupan por día pero traen el
+  // mes puesto por el filtro de página del visual, reescrito mes a mes.
+  // facturacion viene de una consulta propia (dax_venta_diaria) que no
+  // depende de ningún filtro de página: trae Año/Mes/Día en cada fila, así
+  // que un solo fetch cubre todos los meses disponibles.
   //
-  // Donde sí existe esa comparación es en ventas: el reporte publica el
-  // presupuesto acumulado hasta ayer, y eso se usa en su propia tarjeta.
+  // Antes "Ventas del mes" solo tenía el presupuesto acumulado hasta ayer
+  // (comparación contra META, en su propia tarjeta) pero no contra el mes
+  // anterior: sin serie diaria de ventas, esa comparación caía en una
+  // proyección lineal del cierre contra el mes anterior YA CERRADO
+  // completo, lo que penalizaba a productos que venden más al final del
+  // mes. Con esta serie, ejeComparable() puede comparar el mismo tramo de
+  // días de los dos meses.
   const dim = (DATA && DATA.empresas && DATA.empresas.PAUNO &&
                DATA.empresas.PAUNO.dimensiones) || {};
-  const d = dim[({ merma: 'merma_dia', produccion: 'produccion_dia' })[clave]];
+  const d = dim[({ merma: 'merma_dia', produccion: 'produccion_dia',
+                   facturacion: 'venta_dia' })[clave]];
   return (d && d.por_mes && Object.keys(d.por_mes).length) ? d.por_mes : null;
 }
 
@@ -5452,20 +5471,38 @@ function ejeSemaforo(cumpl) {
 function ejeComparable(ind, dias) {
   const porMes = ejeSerieDiaria(ind.clave);
   if (!porMes || !dias) return null;
-  // El mismo tramo del MES ANTERIOR, que es contra lo que hay que comparar.
-  // La primera versión sumaba los días del mes en curso contra sí mismo y
-  // devolvía el valor actual disfrazado de comparación.
   const prev = porMes[mesCerrado()];
+  const act  = porMes[mesParcial()];
   if (!prev || !Array.isArray(prev.dias)) return null;
+
+  // Los DOS lados sobre los MISMOS días.
+  //
+  // Antes solo se calculaba el mes anterior y el actual venía del acumulado
+  // mensual, que incluye TODOS los días cargados. Con el corte en ayer, ese
+  // acumulado llevaba un día de ventaja y la comparación salía a favor del
+  // mes en curso sin que nada lo dijera. Se toma la intersección: los días
+  // que existen en los dos meses y no pasan del corte.
   const hasta = dias.dia;
-  const idx = prev.dias.filter(x => x <= hasta);
-  if (idx.length < 2) return null;
-  const vals = idx.map(x => prev.valor[prev.dias.indexOf(x)]).filter(v => v != null);
-  if (!vals.length) return null;
-  const v = ind.tipo === 'acumula'
-    ? vals.reduce((a, b) => a + b, 0)
-    : vals.reduce((a, b) => a + b, 0) / vals.length;
-  return { valor: v, dias: idx.length, mes: mesCerrado() };
+  const diasPrev = prev.dias.filter(x => x <= hasta);
+  const comunes = (act && Array.isArray(act.dias))
+    ? diasPrev.filter(x => act.dias.indexOf(x) >= 0)
+    : diasPrev;
+  if (comunes.length < 2) return null;
+
+  const suma = (mes, lista) => {
+    const v = lista.map(x => mes.valor[mes.dias.indexOf(x)]).filter(y => y != null);
+    if (!v.length) return null;
+    return ind.tipo === 'acumula'
+      ? v.reduce((a, b) => a + b, 0)
+      : v.reduce((a, b) => a + b, 0) / v.length;
+  };
+
+  const vPrev = suma(prev, comunes);
+  if (vPrev == null) return null;
+  // Si el mes en curso tiene su propia serie diaria, su valor sale de ahí:
+  // así los dos lados cubren exactamente el mismo tramo.
+  const vAct = (act && Array.isArray(act.dias)) ? suma(act, comunes) : null;
+  return { valor: vPrev, actual: vAct, dias: comunes.length, mes: mesCerrado() };
 }
 
 // Todo lo que la pantalla necesita saber de un indicador, calculado una vez.
@@ -5527,8 +5564,10 @@ function ejeMetrica(ind) {
   let variacion = null;
   if (ind.tipo === 'acumula') {
     if (comp && cerrado != null) {
-      variacion = { base: comp.valor, actual: curso,
-                    pie: `mismo tramo (${comp.dias} días) de ${nombreMesCerrado()}` };
+      variacion = { base: comp.valor,
+                    actual: comp.actual != null ? comp.actual : curso,
+                    pie: `mismo tramo (${comp.dias} días) de ${nombreMesCerrado()}` +
+                         (comp.actual == null ? ', contra el acumulado del mes' : '') };
     } else if (proy && cerrado != null) {
       variacion = { base: cerrado, actual: proy.valor,
                     pie: `proyección de cierre vs ${nombreMesCerrado()} cerrado`,
