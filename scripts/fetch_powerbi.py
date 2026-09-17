@@ -1443,6 +1443,61 @@ EVALUATE
     __SKU
 """
 
+
+def dax_venta_diaria():
+    """Ventas (S/.) por día, para toda la data disponible.
+
+    Mismo mecanismo que dax_sku_por_uen: los filtros se copian literalmente
+    de la captura "Margen Variable Dia" —la única del reporte de margen que
+    agrupa por día— y se cambia su medida (margen %) por la venta, la misma
+    que usa dax_sku_por_uen.
+
+    Sin una serie diaria de ventas, la tarjeta "Ventas del mes" no tenía con
+    qué comparar el mismo tramo de días del mes anterior: comparaba una
+    proyección lineal del cierre (lo que va del mes, dividido entre la
+    fracción de días transcurrida — que supone un ritmo diario parejo)
+    contra el mes anterior YA CERRADO completo. Si hay productos que se
+    venden más al final del mes, esa proyección sale baja a mitad de mes y
+    se compara contra un mes que sí tuvo esos últimos días — una
+    comparación injusta. Con esta serie, ejeComparable() en juanito.html
+    puede comparar el mismo número de días contra el mes anterior, igual
+    que ya hace con merma y producción.
+    """
+    copias = _catalogo_por_hash().get("441449c6a25c") or []
+    if not copias:
+        return None
+    dax = (copias[0].get("dax") or "")
+    corte = dax.find("VAR __DS0Core")
+    if corte < 0 or "DEFINE" not in dax:
+        return None
+    cabecera = dax[:corte].rstrip()
+
+    filtros = [m for m in re.findall(r"VAR (__DS0FilterTable\d*)", cabecera)]
+    if not filtros:
+        return None
+
+    m = re.search(r"'(LocalDateTable_[0-9a-f-]+)'", dax)
+    if not m:
+        return None
+    fecha = m.group(1)
+
+    cols = ",\n        ".join(f"{f}" for f in filtros)
+    return f"""{cabecera}
+
+    VAR __VENTA_DIA =
+        SUMMARIZECOLUMNS(
+        '{fecha}'[Año],
+        '{fecha}'[NroMes],
+        '{fecha}'[Día],
+        {cols},
+        "Venta", CALCULATE(SUM('Exl A Maestra de Facturas de Venta'[Monto_Neto_Factura TG 0]))
+        )
+
+EVALUATE
+    __VENTA_DIA
+"""
+
+
 def periodo_en_curso():
     """El mes que corre, como "2026-09". Es el período del tablero."""
     h = hoy_lima()
@@ -1626,6 +1681,24 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
             DIAGNOSTICO.append({"consulta": "__precio_canal", "http": 0,
                                 "error": repr(e)[:300]})
 
+    # Ventas por día: permite comparar el mismo tramo de días del mes en
+    # curso contra el mes anterior, en vez de una proyección lineal contra el
+    # mes cerrado completo. Ver el comentario de dax_venta_diaria.
+    q_vd = dax_venta_diaria()
+    if q_vd:
+        try:
+            filas = (_tablas_dax(token, ws_id, ids.get("margen"), q_vd,
+                                 "venta_diaria") or [[]])[0]
+            if filas:
+                bolsa["__venta_dia"] = filas
+                print(f"    ✓ Venta diaria: {len(filas)} filas")
+            else:
+                print("    · Venta diaria: sin filas")
+        except Exception as e:
+            print(f"    ✗ venta diaria: {e}")
+            DIAGNOSTICO.append({"consulta": "__venta_dia", "http": 0,
+                                "error": repr(e)[:300]})
+
     # Cartera por responsable. Es el único sitio del modelo donde aparece un
     # nombre de vendedor, y trae los cuatro tramos de antigüedad.
     _cap(ids.get("cuentas_por_cobrar"), "Matriz#38e3644b220b",
@@ -1772,6 +1845,29 @@ def build_dimensiones(found):
             if k.endswith(suf):
                 return v
         return None
+
+    # ── Serie diaria de ventas, un tramo por mes. A diferencia de merma y
+    # producción, dax_venta_diaria trae TODOS los meses en una sola consulta
+    # (sin ROLLUP ni subtotales), así que aquí solo se agrupa por período.
+    # ejeComparable() en juanito.html usa esta serie para comparar el mismo
+    # tramo de días del mes anterior, en vez de una proyección lineal contra
+    # el mes cerrado completo — ver el comentario de dax_venta_diaria.
+    venta_dia = {}
+    for f in (found.get("__venta_dia") or []):
+        a, m = to_float(_b(f, "[Año]")), to_float(_b(f, "[NroMes]"))
+        dia, v = to_float(_b(f, "[Día]")), to_float(_b(f, "[Venta]"))
+        if not a or not m or dia is None or v is None:
+            continue
+        periodo = f"{int(a)}-{int(m):02d}"
+        acum = venta_dia.setdefault(periodo, {})
+        acum[int(dia)] = acum.get(int(dia), 0) + v
+    if venta_dia:
+        por_mes = {periodo: {"dias": (dias := sorted(acum)), "valor": [acum[d] for d in dias]}
+                   for periodo, acum in venta_dia.items() if len(acum) >= 3}
+        if por_mes:
+            res["venta_dia"] = {"por_mes": por_mes}
+            tramos = ", ".join(f"{k}:{len(v['dias'])}d" for k, v in sorted(por_mes.items()))
+            print(f"    ✓ venta_dia: {tramos}")
 
     pc = {}
     for f in (found.get("__precio_canal") or []):

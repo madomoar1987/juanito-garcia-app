@@ -5341,16 +5341,23 @@ function ejeDias() {
 // Serie diaria acumulada de un indicador, si el reporte la publica. Sin esto
 // no hay forma honesta de comparar trece días contra treinta.
 function ejeSerieDiaria(clave) {
-  // Ningún reporte publica hoy una serie diaria con su mes: las capturas de
-  // merma y producción agrupan por día pero el mes lo pone el filtro de
-  // página del visual. Sin mes no se puede comparar el mismo tramo de dos
-  // meses, así que no hay comparación por tramo y la app lo dice.
+  // merma y producción vienen de capturas que agrupan por día pero traen el
+  // mes puesto por el filtro de página del visual, reescrito mes a mes.
+  // facturacion viene de una consulta propia (dax_venta_diaria) que no
+  // depende de ningún filtro de página: trae Año/Mes/Día en cada fila, así
+  // que un solo fetch cubre todos los meses disponibles.
   //
-  // Donde sí existe esa comparación es en ventas: el reporte publica el
-  // presupuesto acumulado hasta ayer, y eso se usa en su propia tarjeta.
+  // Antes "Ventas del mes" solo tenía el presupuesto acumulado hasta ayer
+  // (comparación contra META, en su propia tarjeta) pero no contra el mes
+  // anterior: sin serie diaria de ventas, esa comparación caía en una
+  // proyección lineal del cierre contra el mes anterior YA CERRADO
+  // completo, lo que penalizaba a productos que venden más al final del
+  // mes. Con esta serie, ejeComparable() puede comparar el mismo tramo de
+  // días de los dos meses.
   const dim = (DATA && DATA.empresas && DATA.empresas.PAUNO &&
                DATA.empresas.PAUNO.dimensiones) || {};
-  const d = dim[({ merma: 'merma_dia', produccion: 'produccion_dia' })[clave]];
+  const d = dim[({ merma: 'merma_dia', produccion: 'produccion_dia',
+                   facturacion: 'venta_dia' })[clave]];
   return (d && d.por_mes && Object.keys(d.por_mes).length) ? d.por_mes : null;
 }
 
