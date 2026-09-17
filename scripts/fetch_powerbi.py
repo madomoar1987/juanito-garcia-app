@@ -1375,6 +1375,32 @@ def dax_precio_producto_canal():
     )
 
 
+def dax_precio_producto_cliente():
+    """Precio por kilo de cada producto, por canal Y cliente, mes a mes.
+
+    Mismo mecanismo que dax_precio_producto_canal, con el cliente sumado a
+    la agrupación: 'Exl A Maestra de Facturas de Venta'[contacto_factura] —
+    la misma columna que usa la matriz PRECIO UNITARIO del reporte R. ORDEN
+    DE VENTA. Esa matriz sí baja a nivel cliente; esta consulta no lo hacía
+    porque se copió de una captura de la misma tabla hecha antes de que se
+    agregara esa fila.
+
+    Sin este nivel, un precio que cae en un canal no se puede distinguir de
+    una mezcla de clientes: en setiembre de 2026 el precio de B&D MOSTAZA
+    CAJA SACHET 252 X 8GR en HORECA "cayó" 12,6% sin que ningún cliente
+    cambiara de precio — entró un cliente nuevo grande en la lista más
+    barata. Confirmado a mano contra la matriz el 16/09/2026.
+    """
+    base = dax_precio_producto_canal()
+    if not base:
+        return None
+    return base.replace(
+        "'Exl Cliente x Vendedor'[Canal],",
+        "'Exl Cliente x Vendedor'[Canal],\n        "
+        "'Exl A Maestra de Facturas de Venta'[contacto_factura],"
+    )
+
+
 def dax_sku_por_uen():
     """Arma la consulta que cruza SKU con unidad de negocio.
 
@@ -1626,6 +1652,26 @@ def extraer_dimensiones(token, ws_id, ids, scanned):
             DIAGNOSTICO.append({"consulta": "__precio_canal", "http": 0,
                                 "error": repr(e)[:300]})
 
+    # Precio por producto, canal Y cliente: el nivel que falta para saber si
+    # una caída de precio por canal es una mezcla de clientes (uno nuevo
+    # entra a una lista más barata) o un precio que de verdad bajó. Ver el
+    # caso de B&D MOSTAZA CAJA SACHET 252 X 8GR en el comentario de
+    # dax_precio_producto_cliente.
+    q_pcl = dax_precio_producto_cliente()
+    if q_pcl:
+        try:
+            filas = (_tablas_dax(token, ws_id, ids.get("margen"), q_pcl,
+                                 "precio_producto_cliente") or [[]])[0]
+            if filas:
+                bolsa["__precio_cliente"] = filas
+                print(f"    ✓ Precio por producto, canal y cliente: {len(filas)} filas")
+            else:
+                print("    · Precio por producto, canal y cliente: sin filas")
+        except Exception as e:
+            print(f"    ✗ precio por cliente: {e}")
+            DIAGNOSTICO.append({"consulta": "__precio_cliente", "http": 0,
+                                "error": repr(e)[:300]})
+
     # Cartera por responsable. Es el único sitio del modelo donde aparece un
     # nombre de vendedor, y trae los cuatro tramos de antigüedad.
     _cap(ids.get("cuentas_por_cobrar"), "Matriz#38e3644b220b",
@@ -1801,6 +1847,39 @@ def build_dimensiones(found):
             })
         filas.sort(key=lambda x: (x["var_pct"] if x["var_pct"] is not None else 0))
         res["precio_canal"] = {"meses": [ant, act], "filas": filas}
+
+    # ── Precio unitario por producto, canal y cliente. Mismo cálculo que el
+    # bloque anterior, con el cliente sumado: separa una caída de precio real
+    # de una mezcla de clientes dentro del mismo canal (ver dax_precio_producto_cliente).
+    pcl = {}
+    for f in (found.get("__precio_cliente") or []):
+        prod = (_b(f, "[producto]") or "").strip()
+        canal = (_b(f, "[Canal]") or "").strip()
+        cliente = (_b(f, "[contacto_factura]") or "").strip()
+        v_, pe_ = to_float(_b(f, "[Venta]")), to_float(_b(f, "[Peso]"))
+        pr = (v_ / pe_) if (v_ is not None and pe_) else None
+        a, m = to_float(_b(f, "[Año]")), to_float(_b(f, "[NroMes]"))
+        if not prod or not canal or not cliente or pr is None or not a or not m:
+            continue
+        pcl.setdefault((prod, canal, cliente), {})[f"{int(a)}-{int(m):02d}"] = pr
+    if pcl:
+        meses = sorted({k for v in pcl.values() for k in v})
+        act = meses[-1]
+        ant = meses[-2] if len(meses) > 1 else None
+        filas = []
+        for (prod, canal, cliente), v in pcl.items():
+            p1, p0 = v.get(act), v.get(ant) if ant else None
+            if p1 is None:
+                continue
+            filas.append({
+                "producto": prod, "canal": canal, "cliente": cliente,
+                "precio": f"S/{p1:.2f}",
+                "precio_previo": f"S/{p0:.2f}" if p0 is not None else None,
+                "var_pct": (round((p1 - p0) / p0 * 100, 1)
+                            if p0 else None),
+            })
+        filas.sort(key=lambda x: (x["var_pct"] if x["var_pct"] is not None else 0))
+        res["precio_cliente"] = {"meses": [ant, act], "filas": filas}
 
     # ── Presupuesto al día: la comparación contra meta que respeta los días.
     ppto = []
