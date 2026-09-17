@@ -3192,13 +3192,33 @@ def build_margen(found):
                 prev[nom] = (to_float(c.get("venta")), to_float(c.get("margen")))
 
 
-        if found.get("__factura_cliente") and not fact:
-            DIAGNOSTICO.append({
-                "tipo": "aviso", "consulta": "factura_cliente", "http": 200,
-                "error": f"llegaron {len(found['__factura_cliente'])} filas de "
-                         f"facturación pero ninguna trae cliente, año, mes e "
-                         f"importe a la vez. Claves: "
-                         f"{list((found['__factura_cliente'][0] or {}).keys())}"})
+        # El aviso tiene que cubrir los DOS modos de fallar, no uno.
+        #
+        # Antes solo miraba si `fact` quedaba vacío. Pero la corrida del 17/09
+        # trajo filas, llenó `fact` y aun así las tres columnas salieron en
+        # blanco: los nombres no cruzan con los del pedido, o los meses de
+        # esta consulta no son los que se le piden. Como `fact` no estaba
+        # vacío, no saltó nada y la corrida pasó por correcta.
+        if found.get("__factura_cliente"):
+            crudas = found["__factura_cliente"]
+            if not fact:
+                DIAGNOSTICO.append({
+                    "tipo": "aviso", "consulta": "factura_cliente", "http": 200,
+                    "error": f"llegaron {len(crudas)} filas de facturación pero "
+                             f"ninguna trae cliente, año, mes e importe a la vez. "
+                             f"Claves: {list((crudas[0] or {}).keys())}"})
+            else:
+                pedidos = {nombre_canonico(t[0]) for t in limpios}
+                cruzan = len(pedidos & set(fact))
+                meses = sorted({k for v_ in fact.values() for k in v_})
+                if not cruzan or per_curso not in meses:
+                    DIAGNOSTICO.append({
+                        "tipo": "aviso", "consulta": "factura_cliente", "http": 200,
+                        "error": f"{len(crudas)} filas, {len(fact)} clientes, meses "
+                                 f"{meses}. Cruzan {cruzan} de {len(pedidos)} clientes "
+                                 f"del pedido, y se piden los meses {per_curso} y "
+                                 f"{per_cerr}. Muestra de facturación: "
+                                 f"{sorted(fact)[:3]} · del pedido: {sorted(pedidos)[:3]}"})
 
         def _pct(x):
             return None if x is None else (x * 100 if abs(x) <= 1 else x)
