@@ -1,7 +1,7 @@
 {
   "fecha": "16/09/2026",
   "fecha_actualizacion": "2026-09-16",
-  "hora_actualizacion": "22:37",
+  "hora_actualizacion": "22:53",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "green"
@@ -11534,7 +11534,14 @@
     "kpis_totales": 62,
     "pct": 96.8
   },
-  "diagnostico": [],
+  "diagnostico": [
+    {
+      "tipo": "aviso",
+      "consulta": "factura_cliente",
+      "http": 200,
+      "error": "40 filas, 7 clientes, meses ['2026-08']. Cruzan 4 de 116 clientes del pedido, y se piden los meses 2026-09 y 2026-08. Muestra de facturación: ['CENCOSUDRETAIL', 'HIPERMERCADOSTOTTUS', 'HIPERMERCADOSTOTTUSORIENTE'] · del pedido: ['ADCOADCOMARCOANTONIO', 'ADONAY', 'AJILESPERU']"
+    }
+  ],
   "derivados": [
     {
       "reporte": "cuentas_por_cobrar",
