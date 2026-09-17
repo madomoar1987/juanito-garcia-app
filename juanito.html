@@ -4809,13 +4809,16 @@ function avBloqueCifras(ind) {
   const delCurso = conPer.filter(k => k.periodo === curso).length;
   const delCerrado = conPer.filter(k => k.periodo === cerr).length;
   const sinPer = ks.length - conPer.length;
-  const lectura = [`<p class="av-an-lee">De las ${ks.length} cifras que publica este ` +
-    `reporte, <b>${conPer.length} se pudieron ubicar en un mes</b> cruzándolas contra ` +
-    `su serie: ${delCurso} de ${esc(nombreMes(curso))} y ${delCerrado} de ` +
-    `${esc(nombreMesCerrado())}.` +
-    (sinPer ? ` Las otras ${sinPer} no coinciden con ningún mes de la serie — son ` +
-              `saldos del día o acumulados del año, y por eso no se comparan contra ` +
-              `un mes.` : '') + `</p>`];
+  // Esto NO es una lectura: es información sobre el dato, no sobre el negocio.
+  //
+  // Medido sobre las 70 lecturas de la pantalla, doce eran de este tipo —el
+  // 17%—: ocupaban el sitio donde se busca qué hacer y no decían nada del
+  // negocio. Baja a la ficha del bloque, que es donde vive la procedencia del
+  // dato, y sigue estando para quien la necesite.
+  const procedencia = `${conPer.length} de ${ks.length} cifras ubicadas en un mes ` +
+    `(${delCurso} de ${esc(nombreMes(curso))}, ${delCerrado} de ${esc(nombreMesCerrado())})` +
+    (sinPer ? `; las otras ${sinPer} son saldos del día o acumulados del año` : '');
+  const lectura = [];
 
   return {
     periodo: undefined,
@@ -4823,7 +4826,8 @@ function avBloqueCifras(ind) {
     por: 'Todo lo que publica el reporte de origen, con el período de cada cifra. ' +
          'Sirve para validar contra Power BI lo que muestra el resto de la pantalla.',
     ficha: { compara: 'cada cifra trae su propio período en la última columna: no todas son de setiembre',
-             unidad: 'la del propio reporte', filtro: 'las cifras que publica el reporte' },
+             unidad: 'la del propio reporte',
+             filtro: `las cifras que publica el reporte · ${procedencia}` },
     cabecera: ['Cifra', 'Valor', 'Meta', 'Período'],
     cuerpo, lecturas: lectura,
   };
