@@ -94,7 +94,7 @@ jobs:
           # aunque haya funcionado (pasó en la corrida 63). Se reintenta
           # trayendo lo nuevo con rebase: los datos van en archivos propios,
           # así que no hay conflicto real con cambios de código.
-          REMOTO="https://x-access-token:${{ secrets.GH_PAT }}@github.com/rgarciaa78-svg/juanito-garcia-app.git"
+          REMOTO="https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git"
           for intento in 1 2 3; do
             if git push "$REMOTO" HEAD:main; then
               echo "publicado en el intento $intento"
@@ -139,7 +139,7 @@ jobs:
           git add -f data/latest/ultimo_error.txt
           git diff --staged --quiet && exit 0
           git commit -m "error: la corrida murio $(date -u +'%Y-%m-%d %H:%M UTC')"
-          REMOTO="https://x-access-token:${{ secrets.GH_PAT }}@github.com/rgarciaa78-svg/juanito-garcia-app.git"
+          REMOTO="https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git"
           for i in 1 2 3; do
             git push "$REMOTO" HEAD:main && exit 0
             git pull --rebase "$REMOTO" main || true
