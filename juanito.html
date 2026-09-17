@@ -3536,8 +3536,14 @@ function avanceDelMes() {
   const hoy = new Date();
   // Si el mes parcial no es el corriente (dato de ayer, fin de semana), el
   // día que vale es el último del que hay dato, no el de hoy.
+  //
+  // Y si sí es el corriente, el día que vale es AYER, no hoy: las facturas
+  // de hoy se siguen registrando mientras corre la Action, así que hoy
+  // siempre está incompleto. Comparar contra un día a medio llenar exagera
+  // cualquier caída — es la misma razón por la que "Presupuesto acumulado
+  // hasta ayer" no usa el día de hoy tampoco.
   const dia = (hoy.getFullYear() === a && hoy.getMonth() + 1 === m)
-    ? hoy.getDate() : dias;
+    ? Math.max(hoy.getDate() - 1, 1) : dias;
   return { periodo: per, anio: a, mes: m, dias, dia, fraccion: dia / dias };
 }
 
