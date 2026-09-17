@@ -4265,6 +4265,57 @@ function avNombreCorto(n) {
 // Es el nivel donde se puede poner foco de verdad. No sale de ningún visual
 // del reporte —ninguno cruza producto con unidad de negocio—; se arma con una
 // consulta propia que reusa los filtros del reporte sin tocarlos.
+// Cuántos puntos de margen se perdieron POR PRECIO y cuántos POR COSTO.
+//
+// No es una estimación: es una descomposición exacta. El margen es
+// 1 − costo/precio, así que su cambio se parte en dos efectos que suman
+// justo el total:
+//   · precio → costo del mes previo contra los dos precios
+//   · costo  → los dos costos contra el precio nuevo
+// Comprobado con casos de laboratorio y con el SKU real del 16/09: −17.60 pp,
+// de los cuales −14.99 por precio y −2.61 por costo, que suman el total.
+//
+// Es la pregunta que de verdad importa: un margen que cae por precio se
+// arregla con comercial y uno que cae por costo con compras o planta. Decir
+// solo "el margen cayó 17 puntos" deja al lector sin saber a quién llamar.
+function avDescomponerMargen(p0, m0, p1, m1) {
+  if ([p0, m0, p1, m1].some(x => x == null) || !p0 || !p1) return null;
+  const c0 = p0 * (1 - m0 / 100), c1 = p1 * (1 - m1 / 100);
+  const ppPrecio = (c0 / p0 - c0 / p1) * 100;
+  const ppCosto = ((c0 - c1) / p1) * 100;
+  const total = ppPrecio + ppCosto;
+  if (!isFinite(total)) return null;
+  // Cuál manda: el que explica más de dos tercios del movimiento.
+  const manda = Math.abs(ppPrecio) > Math.abs(ppCosto) * 2 ? 'precio'
+              : Math.abs(ppCosto) > Math.abs(ppPrecio) * 2 ? 'costo' : 'ambos';
+  return { precio: ppPrecio, costo: ppCosto, total, manda, c0, c1 };
+}
+
+// La frase estándar de causa: cuántos puntos por precio, cuántos por costo.
+function avCausaMargen(d, esMezcla) {
+  if (!d) return '';
+  const f = (x) => `${x >= 0 ? '+' : '−'}${Math.abs(x).toFixed(1)} pp`;
+  const cab = `De los ${Math.abs(d.total).toFixed(1)} puntos que se ` +
+    `${d.total < 0 ? 'perdieron' : 'ganaron'}, <b>${f(d.precio)} son por precio y ` +
+    `${f(d.costo)} por costo</b> (costo por kilo de S/${d.c0.toFixed(2)} a S/${d.c1.toFixed(2)}).`;
+  // Si el dato por cliente ya demostró que esa parte de "precio" es mezcla,
+  // NO se manda a comercial. La primera versión decía "manda el precio, la
+  // conversación empieza en comercial" y tres líneas después "es mezcla, no
+  // hay nada que negociar": dos conclusiones opuestas en el mismo párrafo.
+  if (esMezcla) {
+    return cab + (d.manda === 'costo'
+      ? ' Manda el costo: la conversación empieza en compras o en planta.'
+      : ' Pero ese movimiento de precio no es una rebaja —ver abajo—, así que ' +
+        'lo accionable es el costo.');
+  }
+  const quien = d.manda === 'precio'
+    ? ' Manda el precio: la conversación empieza en comercial.'
+    : d.manda === 'costo'
+      ? ' Manda el costo: la conversación empieza en compras o en planta.'
+      : ' Los dos pesan parecido: hay que mover precio y costo a la vez.';
+  return cab + quien;
+}
+
 // Precio por canal de un producto. Los nombres traen espacio duro (\u00a0)
 // del maestro, así que comparar con el espacio normal no cruzaba nunca.
 function avNombreLlano(x) {
@@ -4285,8 +4336,14 @@ function avPrecioClientes(producto) {
   const clave = avNombreLlano(producto);
   const suyas = pcl.filter(f => avNombreLlano(f.producto) === clave);
   if (!suyas.length) return null;
-  const nuevos  = suyas.filter(f => f.precio_previo == null);
-  const viejos  = suyas.filter(f => f.precio_previo != null);
+  // Un precio de S/0.00 no es un precio: es una bonificación, una devolución
+  // o una nota de crédito. Contarlo como "cliente que cambió de precio" hacía
+  // decir "de S/4.06 a S/0.00 (−100%)", que se lee como una rebaja brutal y
+  // no lo es.
+  const real = (x) => avNum(x) != null && avNum(x) > 0;
+  const validas = suyas.filter(f => real(f.precio));
+  const nuevos  = validas.filter(f => f.precio_previo == null);
+  const viejos  = validas.filter(f => real(f.precio_previo));
   const movidos = viejos.filter(f => Math.abs(f.var_pct || 0) >= 1);
   return { todos: suyas, nuevos, viejos, movidos };
 }
@@ -5916,43 +5973,38 @@ function ejeHallazgos() {
         accion: (() => {
           const p1 = avNum(f.precio_kg), p0 = avNum(f.precio_kg_previo);
           const m1 = avNum(f.margen), m0 = avNum(f.margen_previo);
-          const c1 = (p1 != null && m1 != null) ? p1 * (1 - m1 / 100) : null;
-          const c0 = (p0 != null && m0 != null) ? p0 * (1 - m0 / 100) : null;
-          if (p1 != null && p0 != null && p1 < p0) {
-            // NO se afirma "es precio".
-            //
-            // precio_kg es venta/kilos: un promedio PONDERADO entre clientes y
-            // canales. Baja por dos razones que piden conversaciones
-            // opuestas: alguien negoció más barato, o cambió la mezcla —un
-            // cliente grande de lista barata que crece, o uno nuevo que entra—
-            // sin que nadie tocara un precio.
-            //
-            // Comprobado en el reporte el 16/09/2026 sobre B&D MOSTAZA CAJA
-            // SACHET: en HORECA ningún cliente cambió de precio entre agosto y
-            // setiembre; entró Sokamica, el mayor del mes, a la lista más
-            // barata. La app decía "es precio, la conversación es comercial" y
-            // mandaba a negociar donde no había nada que negociar.
-            const porCanal = avPrecioCanales(f.producto);
-            const detalle = porCanal.length
-              ? ` Por canal: ${porCanal.map(c => `${c.canal} ${c.precio_previo || 's/d'}→${c.precio}`).join(', ')}.`
-              : '';
-            const veredicto = avVeredictoPrecio(f.producto);
-            return `El precio por kilo bajó de ${f.precio_kg_previo} a ${f.precio_kg} ` +
-              `(−${((p0 - p1) / p0 * 100).toFixed(1)}%), y el costo no subió.${detalle}` +
-              (veredicto || ` <b>Ojo: ese precio es un promedio ponderado</b>, así que ` +
-                `puede ser una rebaja negociada o un cambio de mezcla de clientes. ` +
-                `Sin el precio por cliente de este SKU no se puede saber cuál de las dos, ` +
-                `y son conversaciones opuestas.`);
+          const d = avDescomponerMargen(p0, m0, p1, m1);
+          if (!d) {
+            return `Margen de ${f.margen_previo} a ${f.margen}. Falta el precio por ` +
+              `kilo de uno de los dos meses, así que no se puede separar precio de costo.`;
           }
-          if (c1 != null && c0 != null && c1 > c0) {
-            return `El precio por kilo se mantuvo en ${f.precio_kg} y el costo subió de ` +
-              `S/${c0.toFixed(2)} a S/${c1.toFixed(2)} ` +
-              `(+${((c1 - c0) / c0 * 100).toFixed(1)}%): se perdió por costo. ` +
-              `La conversación es de planta o compras.`;
-          }
-          return `Margen de ${f.margen_previo} a ${f.margen} con el precio por kilo en ` +
-            `${f.precio_kg || 's/d'}: ni el precio ni el costo explican solos la caída, ` +
-            `revisar la mezcla de presentaciones de este producto.`;
+          // Lo que vale corregirlo, en la unidad que se decide: puntos de
+          // margen y su equivalente en soles sobre la venta del mes.
+          const valeSoles = (f.soles_mes != null && f.soles_mes < 0)
+            ? ` Volver al margen de ${nombreMesCerrado()} vale ` +
+              `<b>${avSoles0(Math.abs(f.soles_mes))}</b> sobre la venta de este SKU.`
+            : '';
+          // Si manda el precio, el dato por cliente dice si es rebaja o mezcla.
+          const veredicto = (d.manda === 'precio' || d.manda === 'ambos')
+            ? avVeredictoPrecio(f.producto) : '';
+          const falta = (d.manda === 'precio' && !veredicto)
+            ? ` Para saber si esa caída de precio es una rebaja negociada o un cambio ` +
+              `de mezcla de clientes hace falta el precio por cliente de este SKU: ` +
+              `son conversaciones opuestas.`
+            : '';
+          const seguir = ` <b>Seguir:</b> margen de este SKU contra ${f.margen_previo} ` +
+            `de ${nombreMesCerrado()}.`;
+          const esMezcla = /es mezcla/.test(veredicto);
+          // Si es mezcla, ese dinero NO se recupera negociando: se recupera
+          // vendiendo más de los clientes buenos, que es otra acción.
+          const vale = esMezcla
+            ? (f.soles_mes != null && f.soles_mes < 0
+                ? ` Son ${avSoles0(Math.abs(f.soles_mes))} de margen, y no se ` +
+                  `recuperan negociando: se recuperan creciendo en los clientes ` +
+                  `de mejor lista.`
+                : '')
+            : valeSoles;
+          return avCausaMargen(d, esMezcla) + vale + (veredicto || falta) + seguir;
         })(),
         orden: Math.abs(f.soles_mes),
       }));
