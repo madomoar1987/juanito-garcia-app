@@ -4253,6 +4253,56 @@ function avNombreCorto(n) {
 // Es el nivel donde se puede poner foco de verdad. No sale de ningún visual
 // del reporte —ninguno cruza producto con unidad de negocio—; se arma con una
 // consulta propia que reusa los filtros del reporte sin tocarlos.
+// Precio por canal de un producto. Los nombres traen espacio duro (\u00a0)
+// del maestro, así que comparar con el espacio normal no cruzaba nunca.
+function avNombreLlano(x) {
+  return String(x || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
+}
+
+function avPrecioCanales(producto) {
+  const pc = (avDim().precio_canal || {}).filas || [];
+  const clave = avNombreLlano(producto);
+  return pc.filter(f => avNombreLlano(f.producto) === clave);
+}
+
+// Precio por cliente de un producto: lo que separa una rebaja negociada de
+// un cambio de mezcla. Devuelve {mismos, cambiaron, nuevos} para poder decir
+// cuál de las dos cosas pasó, en vez de suponerlo.
+function avPrecioClientes(producto) {
+  const pcl = (avDim().precio_cliente || {}).filas || [];
+  const clave = avNombreLlano(producto);
+  const suyas = pcl.filter(f => avNombreLlano(f.producto) === clave);
+  if (!suyas.length) return null;
+  const nuevos  = suyas.filter(f => f.precio_previo == null);
+  const viejos  = suyas.filter(f => f.precio_previo != null);
+  const movidos = viejos.filter(f => Math.abs(f.var_pct || 0) >= 1);
+  return { todos: suyas, nuevos, viejos, movidos };
+}
+
+// La frase que explica la caída del precio promedio, con el dato por cliente
+// cuando existe. Es la diferencia entre "llamen a comercial" y "no hay nada
+// que negociar, cambió la mezcla".
+function avVeredictoPrecio(producto) {
+  const pc = avPrecioClientes(producto);
+  if (!pc) return '';
+  const { nuevos, viejos, movidos } = pc;
+  if (viejos.length && !movidos.length) {
+    return ` <b>No es precio: es mezcla.</b> Ninguno de los ${viejos.length} ` +
+      `clientes que ya compraban cambió de precio` +
+      (nuevos.length ? `, y entraron ${nuevos.length} nuevo${nuevos.length > 1 ? 's' : ''} ` +
+        `(${nuevos.slice(0, 2).map(x => esc(avNombreCorto(x.cliente)) + ' a ' + esc(x.precio)).join(', ')})` : '') +
+      `. El promedio baja por quién compra, no por cuánto se cobra: no hay nada que negociar.`;
+  }
+  if (movidos.length) {
+    const peor = movidos.slice().sort((a, b) => (a.var_pct || 0) - (b.var_pct || 0))[0];
+    return ` <b>Sí es precio</b>, y tiene nombre: ${movidos.length} cliente` +
+      `${movidos.length > 1 ? 's' : ''} cambió de precio. El mayor movimiento es ` +
+      `${esc(avNombreCorto(peor.cliente))} (${esc(peor.canal)}), de ` +
+      `${esc(peor.precio_previo)} a ${esc(peor.precio)} (${peor.var_pct}%).`;
+  }
+  return '';
+}
+
 function avBloqueSKU(uen) {
   const mv = avReporte('margen_variable');
   const todo = mv.sku_por_uen || {};
@@ -4347,11 +4397,13 @@ function avBloqueSKU(uen) {
     if (baja.length) {
       lecturas.push(`<p class="av-an-lee">De esos SKU, <b>${baja.length} bajaron su ` +
         `precio por kilo</b> y el resto perdió margen por costo o por mezcla. ` +
-        `La columna de precio dice cuál es cuál: si el precio cayó, la ` +
-        `conversación es comercial; si no, es de planta o de compras.</p>`);
+        `Cuidado con la lectura fácil: el precio por kilo es venta entre kilos, ` +
+        `un <b>promedio ponderado</b>. Baja igual si se negoció más barato que si ` +
+        `creció un cliente de lista barata. Para separarlos hace falta el precio ` +
+        `por cliente; con el precio por kilo solo, la caída queda sin explicar.</p>`);
     } else {
       lecturas.push(`<p class="av-an-lee">Ninguno de esos SKU bajó su precio por ` +
-        `kilo: el margen se perdió por costo, no por precio. La conversación ` +
+        `kilo, así que aquí sí: el margen se perdió por costo. La conversación ` +
         `empieza en planta y en compras, no en comercial.</p>`);
     }
   }
@@ -5814,15 +5866,40 @@ function ejeHallazgos() {
         // La acción trae siempre las dos cifras: el costo por kilo se deriva
         // del precio y el margen, porque el detalle no lo publica suelto y sin
         // él "se perdió por costo" no dice cuánto ni desde dónde.
+        // La acción de este hallazgo lleva negritas —el veredicto de precio vs
+        // mezcla— así que se marca para que no se escape. El resto siguen
+        // escapándose: un nombre de producto con < o & no debe pintar nada.
+        accionHtml: true,
         accion: (() => {
           const p1 = avNum(f.precio_kg), p0 = avNum(f.precio_kg_previo);
           const m1 = avNum(f.margen), m0 = avNum(f.margen_previo);
           const c1 = (p1 != null && m1 != null) ? p1 * (1 - m1 / 100) : null;
           const c0 = (p0 != null && m0 != null) ? p0 * (1 - m0 / 100) : null;
           if (p1 != null && p0 != null && p1 < p0) {
+            // NO se afirma "es precio".
+            //
+            // precio_kg es venta/kilos: un promedio PONDERADO entre clientes y
+            // canales. Baja por dos razones que piden conversaciones
+            // opuestas: alguien negoció más barato, o cambió la mezcla —un
+            // cliente grande de lista barata que crece, o uno nuevo que entra—
+            // sin que nadie tocara un precio.
+            //
+            // Comprobado en el reporte el 16/09/2026 sobre B&D MOSTAZA CAJA
+            // SACHET: en HORECA ningún cliente cambió de precio entre agosto y
+            // setiembre; entró Sokamica, el mayor del mes, a la lista más
+            // barata. La app decía "es precio, la conversación es comercial" y
+            // mandaba a negociar donde no había nada que negociar.
+            const porCanal = avPrecioCanales(f.producto);
+            const detalle = porCanal.length
+              ? ` Por canal: ${porCanal.map(c => `${c.canal} ${c.precio_previo || 's/d'}→${c.precio}`).join(', ')}.`
+              : '';
+            const veredicto = avVeredictoPrecio(f.producto);
             return `El precio por kilo bajó de ${f.precio_kg_previo} a ${f.precio_kg} ` +
-              `(−${((p0 - p1) / p0 * 100).toFixed(1)}%): es precio, no costo. ` +
-              `La conversación es comercial.`;
+              `(−${((p0 - p1) / p0 * 100).toFixed(1)}%), y el costo no subió.${detalle}` +
+              (veredicto || ` <b>Ojo: ese precio es un promedio ponderado</b>, así que ` +
+                `puede ser una rebaja negociada o un cambio de mezcla de clientes. ` +
+                `Sin el precio por cliente de este SKU no se puede saber cuál de las dos, ` +
+                `y son conversaciones opuestas.`);
           }
           if (c1 != null && c0 != null && c1 > c0) {
             return `El precio por kilo se mantuvo en ${f.precio_kg} y el costo subió de ` +
@@ -5980,7 +6057,7 @@ function ejeVista() {
             ${h.soles != null ? `<span class="eje-h-sol">${avSoles0(h.soles)}</span>` : ''}
           </div>
           ${h.tendencia ? `<div class="eje-h-ten">${esc(h.tendencia)}</div>` : ''}
-          <p class="eje-h-acc">${esc(h.accion)}</p>
+          <p class="eje-h-acc">${h.accionHtml ? h.accion : esc(h.accion)}</p>
         </article>`).join('')}
     </div>
   </section>` : ''}

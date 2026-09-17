@@ -1881,6 +1881,34 @@ def build_dimensiones(found):
         filas.sort(key=lambda x: (x["var_pct"] if x["var_pct"] is not None else 0))
         res["precio_cliente"] = {"meses": [ant, act], "filas": filas}
 
+        # ¿[contacto_factura] es de verdad el cliente?
+        #
+        # La captura de PRECIO UNITARIO que tenemos agrupa solo por canal: la
+        # fila de cliente se le añadió al visual DESPUÉS de exportarla, así que
+        # el nombre de esa columna es una deducción, no algo leído. La misma
+        # tabla tiene también [RAZON SOCIAL], y si la elegida fuese el contacto
+        # de facturación —una persona— esto traería nombres que no cruzan con
+        # ningún cliente y la tabla mentiría en silencio.
+        #
+        # Se comprueba contra los clientes que sí conocemos. Si casi ninguno
+        # cruza, la columna es otra y hay que cambiarla.
+        conocidos = {nombre_canonico((c.get("cliente") or ""))
+                     for c in (found.get("__por_cliente") or [])}
+        conocidos.discard("")
+        if conocidos:
+            vistos = {nombre_canonico(f["cliente"]) for f in filas}
+            cruzan = len(vistos & conocidos)
+            if cruzan < max(2, len(conocidos) // 4):
+                DIAGNOSTICO.append({
+                    "tipo": "aviso", "consulta": "precio_cliente", "http": 200,
+                    "error": f"solo {cruzan} de {len(conocidos)} clientes conocidos "
+                             f"aparecen en el precio por cliente: "
+                             f"[contacto_factura] no parece ser el cliente. "
+                             f"Muestra: {sorted(vistos)[:4]}"})
+            else:
+                print(f"    · precio por cliente: {cruzan}/{len(conocidos)} "
+                      f"clientes conocidos cruzan")
+
     # ── Presupuesto al día: la comparación contra meta que respeta los días.
     ppto = []
     for f in (found.get("__ppto_al_dia") or []):
