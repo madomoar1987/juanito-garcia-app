@@ -1,16 +1,16 @@
 {
-  "fecha": "16/09/2026",
-  "fecha_actualizacion": "2026-09-16",
-  "hora_actualizacion": "22:53",
+  "fecha": "17/09/2026",
+  "fecha_actualizacion": "2026-09-17",
+  "hora_actualizacion": "07:39",
   "generado_por": "JUANITO — Power BI Direct v3",
   "semaforos": {
     "PAUNO": "green"
   },
   "semaforo_razon": {
-    "PAUNO": "Morosidad 14.6% — OK"
+    "PAUNO": "Morosidad 14.4% — OK"
   },
-  "holding_ventas": "S/8.07M",
-  "holding_mora": "14.6%",
+  "holding_ventas": "S/8.23M",
+  "holding_mora": "14.4%",
   "agenda_ceo": {
     "decidir_hoy": [],
     "escalar_semana": [],
@@ -25,70 +25,70 @@
           "kpis": [
             {
               "label": "Morosidad · hoy",
-              "valor": "14.6%",
+              "valor": "14.4%",
               "meta": "15%",
               "estado": "green",
-              "fuente": "reporte",
+              "fuente": "sondeo",
               "nota_periodo": "saldo del día. El cierre de 2026-08 fue 21.9%.",
               "periodo": "2026-09",
               "periodo_fuente": "cxc/% Morosidad"
             },
             {
               "label": "CxC por vencer",
-              "valor": "S/4.18M",
+              "valor": "S/4.20M",
               "meta": "aging confirmado",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "CxC Total",
-              "valor": "S/4.89M",
+              "valor": "S/4.91M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "CxC Vencido",
-              "valor": "S/711,674",
-              "meta": "14.6% de cartera",
+              "valor": "S/706,768",
+              "meta": "14.4% de cartera",
               "estado": "yellow",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Clientes",
-              "valor": "216",
+              "valor": "219",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Ventas del mes",
-              "valor": "S/2.54M",
+              "valor": "S/2.56M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             }
           ],
           "tramos": [
             {
               "label": "Por Vencer",
-              "valor": "S/4.18M",
+              "valor": "S/4.20M",
               "estado": "green",
-              "pct": 85.4
+              "pct": 85.6
             },
             {
               "label": "0 a 15 días",
-              "valor": "S/151,679",
+              "valor": "S/146,296",
               "estado": "yellow",
-              "pct": 3.1
+              "pct": 3.0
             },
             {
               "label": "16 a 30 días",
-              "valor": "S/225,419",
+              "valor": "S/224,378",
               "estado": "yellow",
               "pct": 4.6
             },
             {
               "label": "Más de 30 días",
-              "valor": "S/334,576",
+              "valor": "S/336,094",
               "estado": "red",
               "pct": 6.8
             }
@@ -112,15 +112,15 @@
               "responsable": "MORI COLLAZOS MARTIN",
               "nivel": "jefe",
               "canal": "CANAL TRADICIONAL",
-              "total": "S/156,680",
-              "vencido": "S/113,779"
+              "total": "S/157,007",
+              "vencido": "S/114,106"
             },
             {
               "responsable": "JOSELYN ASTORAY",
               "nivel": "jefe",
               "canal": "HORECA",
-              "total": "S/403,465",
-              "vencido": "S/110,311"
+              "total": "S/406,619",
+              "vencido": "S/105,077"
             },
             {
               "responsable": "GIOVANI O'BRIEN",
@@ -147,7 +147,7 @@
               "responsable": "JUAN CANCHARIS",
               "nivel": "jefe",
               "canal": "CANAL MODERNO",
-              "total": "S/2.42M",
+              "total": "S/2.44M",
               "vencido": "S/10,159"
             },
             {
@@ -174,35 +174,35 @@
               "label": "CxP Total",
               "valor": "S/16.83M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Refinanciado",
               "valor": "S/6.45M",
               "estado": "yellow",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "# Proveedores",
               "valor": "186",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "CxP Vencido",
-              "valor": "S/3.37M",
-              "meta": "32.5% de la deuda viva",
+              "valor": "S/3.43M",
+              "meta": "33.1% de la deuda viva",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Deuda top 15 proveedores",
               "valor": "S/12.29M",
               "meta": "concentración",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Días CxP",
@@ -216,8 +216,8 @@
           "tramos": [
             {
               "label": "Vigente",
-              "valor": "S/7.00M",
-              "pct": 67.5,
+              "valor": "S/6.94M",
+              "pct": 66.9,
               "estado": "green"
             },
             {
@@ -233,15 +233,15 @@
               "estado": "yellow"
             },
             {
-              "label": "8 a 15 días",
-              "valor": "S/597,833",
-              "pct": 5.8,
+              "label": "0 a 7 días",
+              "valor": "S/656,575",
+              "pct": 6.3,
               "estado": "yellow"
             },
             {
-              "label": "0 a 7 días",
-              "valor": "S/596,360",
-              "pct": 5.7,
+              "label": "8 a 15 días",
+              "valor": "S/597,833",
+              "pct": 5.8,
               "estado": "yellow"
             },
             {
@@ -358,7 +358,7 @@
           "_no_cuadran": {
             "tramos": {
               "kpi": "CxP Total",
-              "suma": 10374605,
+              "suma": 10374820,
               "kpi_valor": 16830000,
               "motivo": "el aging son los vencimientos corrientes; el total incluye además la deuda refinanciada, que no vence por tramos"
             }
@@ -405,7 +405,7 @@
             {
               "cliente": "SUPERMERCADOS PERUANOS SOCIEDAD ANONIMA 'O ' S.P.S.A.",
               "venta": "S/2.55M",
-              "pct_venta": 51.7,
+              "pct_venta": 50.1,
               "margen": "48.1%",
               "margen_cerrado": "44.4%",
               "venta_cerrado": "S/4.23M",
@@ -418,50 +418,50 @@
             },
             {
               "cliente": "HIPERMERCADOS TOTTUS S.A",
-              "venta": "S/572,033",
-              "pct_venta": 11.6,
-              "margen": "44.1%",
+              "venta": "S/676,721",
+              "pct_venta": 13.3,
+              "margen": "44.2%",
               "margen_cerrado": "39.1%",
               "venta_cerrado": "S/1.01M",
               "facturado_cerrado": null,
               "facturado": null,
               "conversion": null,
-              "delta_pp": 5.04,
+              "delta_pp": 5.07,
               "caida": "0.0%",
               "costo": "S/430,841"
             },
             {
               "cliente": "AJILES PERU S.A.C.",
-              "venta": "S/230,502",
-              "pct_venta": 4.7,
-              "margen": "42.2%",
+              "venta": "S/270,320",
+              "pct_venta": 5.3,
+              "margen": "42.6%",
               "margen_cerrado": "41.4%",
               "venta_cerrado": "S/444,182",
               "facturado_cerrado": null,
               "facturado": null,
               "conversion": null,
-              "delta_pp": 0.87,
+              "delta_pp": 1.24,
               "caida": "0.0%",
               "costo": "S/218,212"
             },
             {
               "cliente": "CENCOSUD RETAIL PERU S.A.",
-              "venta": "S/186,222",
-              "pct_venta": 3.8,
-              "margen": "59.2%",
+              "venta": "S/200,995",
+              "pct_venta": 3.9,
+              "margen": "59.7%",
               "margen_cerrado": "51.5%",
               "venta_cerrado": "S/692,065",
               "facturado_cerrado": null,
               "facturado": null,
               "conversion": null,
-              "delta_pp": 7.62,
+              "delta_pp": 8.18,
               "caida": "0.0%",
               "costo": "S/303,021"
             },
             {
               "cliente": "SODALES DISTRIBUIDORES SOCIEDAD COMERCIAL DE RESPONSABILIDAD LIMITADA - SODALES DISTRIBUIDORES S.R.L",
               "venta": "S/174,561",
-              "pct_venta": 3.5,
+              "pct_venta": 3.4,
               "margen": "64.4%",
               "margen_cerrado": null,
               "venta_cerrado": null,
@@ -475,7 +475,7 @@
             {
               "cliente": "TIENDAS TAMBO S.A.C.",
               "venta": "S/152,557",
-              "pct_venta": 3.1,
+              "pct_venta": 3.0,
               "margen": "50.5%",
               "margen_cerrado": "47.8%",
               "venta_cerrado": "S/286,136",
@@ -503,7 +503,7 @@
             {
               "cliente": "J R DISTRIBUCIONES E I R LTDA",
               "venta": "S/104,332",
-              "pct_venta": 2.1,
+              "pct_venta": 2.0,
               "margen": "53.4%",
               "margen_cerrado": "60.3%",
               "venta_cerrado": "S/59,314",
@@ -531,7 +531,7 @@
             {
               "cliente": "COMERC.Y DISTRIBUID RACSER S.A.",
               "venta": "S/72,568",
-              "pct_venta": 1.5,
+              "pct_venta": 1.4,
               "margen": "61.3%",
               "margen_cerrado": "65.6%",
               "venta_cerrado": "S/157,250",
@@ -544,7 +544,7 @@
             {
               "cliente": "KL IMPORT EXPORT PERU SAC",
               "venta": "S/68,778",
-              "pct_venta": 1.4,
+              "pct_venta": 1.3,
               "margen": "66.6%",
               "margen_cerrado": null,
               "venta_cerrado": null,
@@ -557,15 +557,15 @@
             },
             {
               "cliente": "HIPERMERCADOS TOTTUS ORIENTE S.A.C.",
-              "venta": "S/51,856",
-              "pct_venta": 1.1,
-              "margen": "48.4%",
+              "venta": "S/52,774",
+              "pct_venta": 1.0,
+              "margen": "48.8%",
               "margen_cerrado": "40.3%",
               "venta_cerrado": "S/45,314",
               "facturado_cerrado": null,
               "facturado": null,
               "conversion": null,
-              "delta_pp": 8.08,
+              "delta_pp": 8.53,
               "caida": "0.0%",
               "costo": "S/25,649"
             }
@@ -584,16 +584,16 @@
               "nivel": "uen",
               "peso_de": "empresa",
               "venta": "S/1.60M",
-              "peso": 62.6,
-              "precio_kg": "S/5.19",
-              "costo_kg": "S/3.12",
+              "peso": 62.5,
+              "precio_kg": "S/5.20",
+              "costo_kg": "S/3.17",
               "margen_enero": "45.2%",
               "margen_previo": "36.9%",
-              "margen": "39.9%",
-              "delta_pp": 2.96,
-              "aporte_pp": 1.851,
-              "soles_mes": 47410,
-              "soles_enero": -85527
+              "margen": "39.0%",
+              "delta_pp": 2.05,
+              "aporte_pp": 1.282,
+              "soles_mes": 32810,
+              "soles_enero": -99949
             },
             {
               "categoria": "TIGO",
@@ -601,17 +601,17 @@
               "negocio": null,
               "nivel": "uen",
               "peso_de": "empresa",
-              "venta": "S/623,588",
-              "peso": 24.3,
+              "venta": "S/623,781",
+              "peso": 24.4,
               "precio_kg": "S/13.30",
-              "costo_kg": "S/6.11",
+              "costo_kg": "S/6.14",
               "margen_enero": "53.1%",
               "margen_previo": "50.0%",
-              "margen": "54.0%",
-              "delta_pp": 4.07,
-              "aporte_pp": 0.99,
-              "soles_mes": 25352,
-              "soles_enero": 5608
+              "margen": "53.8%",
+              "delta_pp": 3.86,
+              "aporte_pp": 0.941,
+              "soles_mes": 24083,
+              "soles_enero": 4333
             },
             {
               "categoria": "B&D",
@@ -619,17 +619,17 @@
               "negocio": null,
               "nivel": "uen",
               "peso_de": "empresa",
-              "venta": "S/335,057",
+              "venta": "S/335,066",
               "peso": 13.1,
               "precio_kg": "S/5.52",
-              "costo_kg": "S/2.28",
+              "costo_kg": "S/2.36",
               "margen_enero": "65.1%",
               "margen_previo": "62.3%",
-              "margen": "58.7%",
-              "delta_pp": -3.58,
-              "aporte_pp": -0.468,
-              "soles_mes": -11985,
-              "soles_enero": -21377
+              "margen": "57.2%",
+              "delta_pp": -5.12,
+              "aporte_pp": -0.67,
+              "soles_mes": -17140,
+              "soles_enero": -26531
             },
             {
               "categoria": "MAQUILA",
@@ -640,14 +640,14 @@
               "venta": "S/1.50M",
               "peso": 94.2,
               "precio_kg": "S/5.06",
-              "costo_kg": "S/2.87",
+              "costo_kg": "S/2.92",
               "margen_enero": "44.8%",
               "margen_previo": "36.5%",
-              "margen": "43.3%",
-              "delta_pp": 6.81,
-              "aporte_pp": 6.411,
-              "soles_mes": 101995,
-              "soles_enero": -23638
+              "margen": "42.3%",
+              "delta_pp": 5.84,
+              "aporte_pp": 5.5,
+              "soles_mes": 87385,
+              "soles_enero": -38069
             },
             {
               "categoria": "MAQUILA",
@@ -663,7 +663,7 @@
               "margen_previo": "56.1%",
               "margen": "50.5%",
               "delta_pp": -5.66,
-              "aporte_pp": -0.33,
+              "aporte_pp": -0.331,
               "soles_mes": -5254,
               "soles_enero": -4658
             },
@@ -673,17 +673,17 @@
               "negocio": "MAQUILA YOGURT",
               "nivel": "subcategoria",
               "peso_de": "MAQUILA YOGURT",
-              "venta": "S/872,643",
+              "venta": "S/870,501",
               "peso": 58.2,
               "precio_kg": "S/3.76",
-              "costo_kg": "S/2.12",
+              "costo_kg": "S/2.17",
               "margen_enero": "45.7%",
               "margen_previo": "34.5%",
-              "margen": "43.6%",
-              "delta_pp": 9.11,
-              "aporte_pp": 5.306,
-              "soles_mes": 79496,
-              "soles_enero": -18727
+              "margen": "42.3%",
+              "delta_pp": 7.77,
+              "aporte_pp": 4.523,
+              "soles_mes": 67663,
+              "soles_enero": -30320
             },
             {
               "categoria": "MAQUILA",
@@ -692,16 +692,16 @@
               "nivel": "subcategoria",
               "peso_de": "MAQUILA YOGURT",
               "venta": "S/334,442",
-              "peso": 22.3,
+              "peso": 22.4,
               "precio_kg": "S/8.20",
-              "costo_kg": "S/4.57",
+              "costo_kg": "S/4.64",
               "margen_enero": "44.0%",
               "margen_previo": "42.4%",
-              "margen": "44.3%",
-              "delta_pp": 1.87,
-              "aporte_pp": 0.418,
-              "soles_mes": 6257,
-              "soles_enero": 769
+              "margen": "43.5%",
+              "delta_pp": 1.07,
+              "aporte_pp": 0.239,
+              "soles_mes": 3582,
+              "soles_enero": -1906
             },
             {
               "categoria": "MAQUILA",
@@ -710,16 +710,16 @@
               "nivel": "subcategoria",
               "peso_de": "MAQUILA YOGURT",
               "venta": "S/255,421",
-              "peso": 17.0,
+              "peso": 17.1,
               "precio_kg": "S/14.36",
               "costo_kg": "S/8.57",
               "margen_enero": "40.4%",
               "margen_previo": "36.0%",
-              "margen": "40.4%",
-              "delta_pp": 4.31,
-              "aporte_pp": 0.735,
-              "soles_mes": 11014,
-              "soles_enero": -93
+              "margen": "40.3%",
+              "delta_pp": 4.26,
+              "aporte_pp": 0.727,
+              "soles_mes": 10869,
+              "soles_enero": -238
             },
             {
               "categoria": "MAQUILA",
@@ -765,19 +765,19 @@
               "venta": "S/2.71M",
               "peso": 105.8,
               "margen_previo": "46.9%",
-              "margen": "46.6%",
-              "delta_pp": -0.35,
-              "aporte_pp": -0.366
+              "margen": "45.8%",
+              "delta_pp": -1.11,
+              "aporte_pp": -1.175
             },
             {
               "producto": "BOLETA",
               "ajuste": null,
-              "venta": "S/22,261",
+              "venta": "S/22,462",
               "peso": 0.9,
               "margen_previo": "57.2%",
-              "margen": "52.9%",
-              "delta_pp": -4.32,
-              "aporte_pp": -0.038
+              "margen": "52.0%",
+              "delta_pp": -5.26,
+              "aporte_pp": -0.046
             },
             {
               "producto": "DESCUENTOS COM",
@@ -792,8 +792,8 @@
             {
               "producto": "NOTA DE CREDITO",
               "ajuste": true,
-              "venta": "S/-161,507",
-              "peso": -6.3,
+              "venta": "S/-163,649",
+              "peso": -6.4,
               "margen_previo": null,
               "margen": null,
               "delta_pp": null,
@@ -806,6 +806,24 @@
           ],
           "sku_por_uen": {
             "MAQUILA": [
+              {
+                "producto": "VILLA FRESCA YOGURT GRIEGO FRESA GRANOLA 120G",
+                "subcategoria": "GRIEGO",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/102,050",
+                "peso": 6.4,
+                "margen_enero": "40.2%",
+                "margen_previo": "39.9%",
+                "margen": "38.6%",
+                "precio_kg": "S/16.83",
+                "precio_kg_previo": "S/16.77",
+                "delta_pp": -1.32,
+                "aporte_pp": -0.085,
+                "soles_mes": -1349,
+                "soles_enero": -1626
+              },
               {
                 "producto": "DON CHEF MAYONESA 200GX12",
                 "subcategoria": "MAYONESA",
@@ -1179,28 +1197,28 @@
                 "margen": "43.0%",
                 "precio_kg": "S/15.13",
                 "precio_kg_previo": "S/15.13",
-                "delta_pp": 0.2,
-                "aporte_pp": 0.008,
-                "soles_mes": 132,
-                "soles_enero": 2223
+                "delta_pp": 0.17,
+                "aporte_pp": 0.007,
+                "soles_mes": 111,
+                "soles_enero": 2203
               },
               {
-                "producto": "VILLA FRESCA YOGURT GRIEGO FRESA GRANOLA 120G",
-                "subcategoria": "GRIEGO",
+                "producto": "VILLA FRESCA YOG BEBIBLE FRESA X170G",
+                "subcategoria": "BEBIBLE",
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/102,050",
-                "peso": 6.4,
-                "margen_enero": "40.2%",
-                "margen_previo": "39.9%",
-                "margen": "40.3%",
-                "precio_kg": "S/16.83",
-                "precio_kg_previo": "S/16.77",
-                "delta_pp": 0.37,
+                "venta": "S/31,221",
+                "peso": 2.0,
+                "margen_enero": "47.7%",
+                "margen_previo": "47.0%",
+                "margen": "48.3%",
+                "precio_kg": "S/6.59",
+                "precio_kg_previo": "S/6.59",
+                "delta_pp": 1.24,
                 "aporte_pp": 0.024,
-                "soles_mes": 377,
-                "soles_enero": 100
+                "soles_mes": 387,
+                "soles_enero": 160
               },
               {
                 "producto": "TOTTUS YOG BEB VAINILLA 1.6K",
@@ -1275,6 +1293,24 @@
                 "soles_enero": 347
               },
               {
+                "producto": "BELLS YOGURT FRESA BEBIBLE 0% AZUCAR X 1.7 KG",
+                "subcategoria": "BEBIBLE",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/14,539",
+                "peso": 0.9,
+                "margen_enero": "47.3%",
+                "margen_previo": "37.7%",
+                "margen": "41.0%",
+                "precio_kg": "S/3.35",
+                "precio_kg_previo": "S/3.26",
+                "delta_pp": 3.31,
+                "aporte_pp": 0.03,
+                "soles_mes": 481,
+                "soles_enero": -917
+              },
+              {
                 "producto": "PRECIO UNO YOG BEB FRUTOS DEL BOSQUE 900G",
                 "subcategoria": "BEBIBLE",
                 "sospechoso": null,
@@ -1293,6 +1329,24 @@
                 "soles_enero": 60
               },
               {
+                "producto": "BELLS YOG BEB VAINILLA 1.7K",
+                "subcategoria": "BEBIBLE",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/6,893",
+                "peso": 0.4,
+                "margen_enero": "45.1%",
+                "margen_previo": "32.9%",
+                "margen": "40.8%",
+                "precio_kg": "S/3.35",
+                "precio_kg_previo": "S/3.26",
+                "delta_pp": 7.9,
+                "aporte_pp": 0.034,
+                "soles_mes": 545,
+                "soles_enero": -300
+              },
+              {
                 "producto": "ARO YOG BEB VAINILLA 1.7K",
                 "subcategoria": "BEBIBLE",
                 "sospechoso": null,
@@ -1302,13 +1356,13 @@
                 "peso": 0.3,
                 "margen_enero": "46.2%",
                 "margen_previo": "32.0%",
-                "margen": "45.8%",
+                "margen": "45.3%",
                 "precio_kg": "S/3.53",
                 "precio_kg_previo": "S/3.36",
-                "delta_pp": 13.81,
-                "aporte_pp": 0.037,
-                "soles_mes": 587,
-                "soles_enero": -17
+                "delta_pp": 13.3,
+                "aporte_pp": 0.036,
+                "soles_mes": 565,
+                "soles_enero": -38
               },
               {
                 "producto": "BELLS YOGURT VAINILLA BEBIBLE 0% AZUCAR X 1.7 KG",
@@ -1327,42 +1381,6 @@
                 "aporte_pp": 0.037,
                 "soles_mes": 593,
                 "soles_enero": -896
-              },
-              {
-                "producto": "BELLS YOG BEB VAINILLA 1.7K",
-                "subcategoria": "BEBIBLE",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/6,893",
-                "peso": 0.4,
-                "margen_enero": "45.1%",
-                "margen_previo": "32.9%",
-                "margen": "41.7%",
-                "precio_kg": "S/3.35",
-                "precio_kg_previo": "S/3.26",
-                "delta_pp": 8.79,
-                "aporte_pp": 0.038,
-                "soles_mes": 606,
-                "soles_enero": -239
-              },
-              {
-                "producto": "BELLS YOGURT FRESA BEBIBLE 0% AZUCAR X 1.7 KG",
-                "subcategoria": "BEBIBLE",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/14,539",
-                "peso": 0.9,
-                "margen_enero": "47.3%",
-                "margen_previo": "37.7%",
-                "margen": "41.8%",
-                "precio_kg": "S/3.35",
-                "precio_kg_previo": "S/3.26",
-                "delta_pp": 4.12,
-                "aporte_pp": 0.038,
-                "soles_mes": 599,
-                "soles_enero": -799
               },
               {
                 "producto": "PRECIO UNO YOG BEB VAINILLA 900G",
@@ -1392,13 +1410,13 @@
                 "peso": 0.7,
                 "margen_enero": "47.8%",
                 "margen_previo": "36.5%",
-                "margen": "42.8%",
+                "margen": "42.5%",
                 "precio_kg": "S/3.53",
                 "precio_kg_previo": "S/3.33",
-                "delta_pp": 6.28,
-                "aporte_pp": 0.042,
-                "soles_mes": 672,
-                "soles_enero": -537
+                "delta_pp": 5.95,
+                "aporte_pp": 0.04,
+                "soles_mes": 637,
+                "soles_enero": -572
               },
               {
                 "producto": "TOTTUS YOG BEB DURAZNO 1.6K",
@@ -1491,22 +1509,22 @@
                 "soles_enero": 288
               },
               {
-                "producto": "VILLA FRESCA YOG BEBIBLE FRESA X170G",
+                "producto": "BIANCA YOG BEBIBLE FRESA 1.7K",
                 "subcategoria": "BEBIBLE",
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/31,221",
-                "peso": 2.0,
-                "margen_enero": "47.7%",
-                "margen_previo": "47.0%",
-                "margen": "50.2%",
-                "precio_kg": "S/6.59",
-                "precio_kg_previo": "S/6.59",
-                "delta_pp": 3.21,
+                "venta": "S/16,792",
+                "peso": 1.1,
+                "margen_enero": "51.9%",
+                "margen_previo": "37.5%",
+                "margen": "43.5%",
+                "precio_kg": "S/3.52",
+                "precio_kg_previo": "S/3.52",
+                "delta_pp": 5.94,
                 "aporte_pp": 0.063,
-                "soles_mes": 1003,
-                "soles_enero": 776
+                "soles_mes": 997,
+                "soles_enero": -1416
               },
               {
                 "producto": "TOTTUS YOG BEB FRESA 900G",
@@ -1581,24 +1599,6 @@
                 "soles_enero": 380
               },
               {
-                "producto": "BIANCA YOG BEBIBLE FRESA 1.7K",
-                "subcategoria": "BEBIBLE",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/16,792",
-                "peso": 1.1,
-                "margen_enero": "51.9%",
-                "margen_previo": "37.5%",
-                "margen": "45.4%",
-                "precio_kg": "S/3.52",
-                "precio_kg_previo": "S/3.52",
-                "delta_pp": 7.89,
-                "aporte_pp": 0.083,
-                "soles_mes": 1325,
-                "soles_enero": -1089
-              },
-              {
                 "producto": "TOTTUS YOG BEB DURAZNO 900G",
                 "subcategoria": "BEBIBLE",
                 "sospechoso": null,
@@ -1626,13 +1626,31 @@
                 "peso": 1.1,
                 "margen_enero": "48.7%",
                 "margen_previo": "29.8%",
-                "margen": "41.0%",
+                "margen": "39.6%",
                 "precio_kg": "S/3.38",
                 "precio_kg_previo": "S/3.26",
-                "delta_pp": 11.18,
-                "aporte_pp": 0.12,
-                "soles_mes": 1908,
-                "soles_enero": -1318
+                "delta_pp": 9.77,
+                "aporte_pp": 0.105,
+                "soles_mes": 1666,
+                "soles_enero": -1560
+              },
+              {
+                "producto": "VILLA FRESCA YOGURT GRIEGO NATURAL 120G",
+                "subcategoria": "GRIEGO",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/102,528",
+                "peso": 6.5,
+                "margen_enero": "47.4%",
+                "margen_previo": "48.6%",
+                "margen": "50.6%",
+                "precio_kg": "S/10.67",
+                "precio_kg_previo": "S/10.60",
+                "delta_pp": 2.05,
+                "aporte_pp": 0.132,
+                "soles_mes": 2103,
+                "soles_enero": 3248
               },
               {
                 "producto": "PRECIO UNO YOG BEB FRUTOS DEL BOSQUE 1.6K",
@@ -1648,7 +1666,7 @@
                 "precio_kg": "S/4.55",
                 "precio_kg_previo": "S/4.57",
                 "delta_pp": 9.97,
-                "aporte_pp": 0.131,
+                "aporte_pp": 0.132,
                 "soles_mes": 2090,
                 "soles_enero": 206
               },
@@ -1669,24 +1687,6 @@
                 "aporte_pp": 0.139,
                 "soles_mes": 2213,
                 "soles_enero": 1048
-              },
-              {
-                "producto": "VILLA FRESCA YOGURT GRIEGO NATURAL 120G",
-                "subcategoria": "GRIEGO",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/102,528",
-                "peso": 6.4,
-                "margen_enero": "47.4%",
-                "margen_previo": "48.6%",
-                "margen": "50.8%",
-                "precio_kg": "S/10.67",
-                "precio_kg_previo": "S/10.60",
-                "delta_pp": 2.2,
-                "aporte_pp": 0.142,
-                "soles_mes": 2254,
-                "soles_enero": 3399
               },
               {
                 "producto": "PRECIO UNO YOG BEB FRESA 1.6K",
@@ -1716,13 +1716,13 @@
                 "peso": 8.6,
                 "margen_enero": "40.8%",
                 "margen_previo": "35.7%",
-                "margen": "37.7%",
+                "margen": "37.6%",
                 "precio_kg": "S/13.91",
                 "precio_kg_previo": "S/13.88",
-                "delta_pp": 1.96,
-                "aporte_pp": 0.169,
-                "soles_mes": 2682,
-                "soles_enero": -4210
+                "delta_pp": 1.87,
+                "aporte_pp": 0.161,
+                "soles_mes": 2557,
+                "soles_enero": -4334
               },
               {
                 "producto": "VILLA FRESCA YOGURT GRIEGO FRUTOS ROJOS 800G BOLSA",
@@ -1734,13 +1734,13 @@
                 "peso": 8.2,
                 "margen_enero": "45.1%",
                 "margen_previo": "39.2%",
-                "margen": "42.2%",
+                "margen": "41.6%",
                 "precio_kg": "S/5.17",
                 "precio_kg_previo": "S/5.15",
-                "delta_pp": 3.05,
-                "aporte_pp": 0.249,
-                "soles_mes": 3964,
-                "soles_enero": -3794
+                "delta_pp": 2.44,
+                "aporte_pp": 0.199,
+                "soles_mes": 3167,
+                "soles_enero": -4591
               },
               {
                 "producto": "VILLA FRESCA YOG BEBIBLE VAINILLA X 900G",
@@ -1752,13 +1752,13 @@
                 "peso": 3.9,
                 "margen_enero": "55.9%",
                 "margen_previo": "40.3%",
-                "margen": "48.2%",
+                "margen": "45.9%",
                 "precio_kg": "S/3.79",
                 "precio_kg_previo": "S/3.76",
-                "delta_pp": 7.83,
-                "aporte_pp": 0.304,
-                "soles_mes": 4834,
-                "soles_enero": -4749
+                "delta_pp": 5.6,
+                "aporte_pp": 0.218,
+                "soles_mes": 3461,
+                "soles_enero": -6122
               },
               {
                 "producto": "VILLA FRESCA YOG BEBIBLE VAINILLA X 1.7 K",
@@ -1766,17 +1766,17 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/169,222",
-                "peso": 10.6,
+                "venta": "S/167,081",
+                "peso": 10.5,
                 "margen_enero": "49.6%",
                 "margen_previo": "36.8%",
-                "margen": "42.1%",
+                "margen": "41.1%",
                 "precio_kg": "S/3.42",
                 "precio_kg_previo": "S/3.40",
-                "delta_pp": 5.25,
-                "aporte_pp": 0.559,
-                "soles_mes": 8887,
-                "soles_enero": -12743
+                "delta_pp": 4.25,
+                "aporte_pp": 0.446,
+                "soles_mes": 7093,
+                "soles_enero": -14263
               },
               {
                 "producto": "VILLA FRESCA YOG BEBIBLE FRESA X 900G",
@@ -1788,13 +1788,13 @@
                 "peso": 4.9,
                 "margen_enero": "49.6%",
                 "margen_previo": "37.5%",
-                "margen": "49.2%",
+                "margen": "48.1%",
                 "precio_kg": "S/3.79",
                 "precio_kg_previo": "S/3.75",
-                "delta_pp": 11.7,
-                "aporte_pp": 0.568,
-                "soles_mes": 9043,
-                "soles_enero": -282
+                "delta_pp": 10.64,
+                "aporte_pp": 0.518,
+                "soles_mes": 8226,
+                "soles_enero": -1099
               },
               {
                 "producto": "VILLA FRESCA YOG BEBIBLE FRESA X 1.7K",
@@ -1803,16 +1803,16 @@
                 "motivo_sospecha": null,
                 "devolucion": null,
                 "venta": "S/269,676",
-                "peso": 16.9,
+                "peso": 17.0,
                 "margen_enero": "48.3%",
                 "margen_previo": "36.0%",
-                "margen": "42.7%",
+                "margen": "40.5%",
                 "precio_kg": "S/3.42",
                 "precio_kg_previo": "S/3.40",
-                "delta_pp": 6.7,
-                "aporte_pp": 1.136,
-                "soles_mes": 18074,
-                "soles_enero": -14984
+                "delta_pp": 4.47,
+                "aporte_pp": 0.758,
+                "soles_mes": 12044,
+                "soles_enero": -21014
               }
             ],
             "TIGO": [
@@ -1840,16 +1840,16 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/15,176",
+                "venta": "S/15,202",
                 "peso": 2.5,
                 "margen_enero": "40.2%",
                 "margen_previo": "34.3%",
                 "margen": "31.8%",
                 "precio_kg": "S/9.15",
                 "precio_kg_previo": "S/9.15",
-                "delta_pp": -2.47,
+                "delta_pp": -2.45,
                 "aporte_pp": -0.061,
-                "soles_mes": -375,
+                "soles_mes": -373,
                 "soles_enero": -1274
               },
               {
@@ -1876,17 +1876,53 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/6,557",
+                "venta": "S/6,572",
                 "peso": 1.1,
                 "margen_enero": "61.8%",
                 "margen_previo": "61.7%",
-                "margen": "59.3%",
-                "precio_kg": "S/17.56",
+                "margen": "58.9%",
+                "precio_kg": "S/17.55",
                 "precio_kg_previo": "S/18.85",
-                "delta_pp": -2.37,
-                "aporte_pp": -0.025,
-                "soles_mes": -155,
-                "soles_enero": -165
+                "delta_pp": -2.75,
+                "aporte_pp": -0.029,
+                "soles_mes": -180,
+                "soles_enero": -190
+              },
+              {
+                "producto": "TIGO GRIEGO BEBIBLE FRESA 1.6K",
+                "subcategoria": "BEBIBLE",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/2,917",
+                "peso": 0.5,
+                "margen_enero": "48.3%",
+                "margen_previo": "57.4%",
+                "margen": "54.8%",
+                "precio_kg": "S/7.12",
+                "precio_kg_previo": "S/7.81",
+                "delta_pp": -2.62,
+                "aporte_pp": -0.012,
+                "soles_mes": -76,
+                "soles_enero": 188
+              },
+              {
+                "producto": "TIGO YOG PREMIUM ARANDANO 160G",
+                "subcategoria": "PREMIUM",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/1,982",
+                "peso": 0.3,
+                "margen_enero": "56.4%",
+                "margen_previo": "46.2%",
+                "margen": "42.7%",
+                "precio_kg": "S/19.03",
+                "precio_kg_previo": "S/20.01",
+                "delta_pp": -3.43,
+                "aporte_pp": -0.011,
+                "soles_mes": -68,
+                "soles_enero": -271
               },
               {
                 "producto": "TIGO YOG PREMIUM NATURAL 160G",
@@ -1901,46 +1937,10 @@
                 "margen": "73.9%",
                 "precio_kg": "S/19.42",
                 "precio_kg_previo": "S/20.45",
-                "delta_pp": -1.54,
+                "delta_pp": -1.57,
                 "aporte_pp": -0.011,
-                "soles_mes": -69,
-                "soles_enero": 120
-              },
-              {
-                "producto": "TIGO YOG PREMIUM ARANDANO 160G",
-                "subcategoria": "PREMIUM",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/1,982",
-                "peso": 0.3,
-                "margen_enero": "56.4%",
-                "margen_previo": "46.2%",
-                "margen": "43.0%",
-                "precio_kg": "S/19.03",
-                "precio_kg_previo": "S/20.01",
-                "delta_pp": -3.13,
-                "aporte_pp": -0.01,
-                "soles_mes": -62,
-                "soles_enero": -265
-              },
-              {
-                "producto": "TIGO GRIEGO BEBIBLE FRESA 1.6K",
-                "subcategoria": "BEBIBLE",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/2,917",
-                "peso": 0.5,
-                "margen_enero": "48.3%",
-                "margen_previo": "57.4%",
-                "margen": "55.7%",
-                "precio_kg": "S/7.12",
-                "precio_kg_previo": "S/7.81",
-                "delta_pp": -1.66,
-                "aporte_pp": -0.008,
-                "soles_mes": -48,
-                "soles_enero": 216
+                "soles_mes": -70,
+                "soles_enero": 119
               },
               {
                 "producto": "TIGO GRIEGO BEBIBLE ARANDANO CON CHIA 1.6K",
@@ -2002,17 +2002,17 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/12,363",
+                "venta": "S/12,370",
                 "peso": 2.0,
                 "margen_enero": "56.1%",
                 "margen_previo": "56.6%",
-                "margen": "57.1%",
+                "margen": "57.0%",
                 "precio_kg": "S/21.64",
                 "precio_kg_previo": "S/21.20",
-                "delta_pp": 0.46,
+                "delta_pp": 0.43,
                 "aporte_pp": 0.009,
-                "soles_mes": 56,
-                "soles_enero": 118
+                "soles_mes": 53,
+                "soles_enero": 114
               },
               {
                 "producto": "TIGO YOG PREMIUM FRESA 160G",
@@ -2024,13 +2024,31 @@
                 "peso": 0.4,
                 "margen_enero": "63.6%",
                 "margen_previo": "61.7%",
-                "margen": "66.1%",
+                "margen": "65.4%",
                 "precio_kg": "S/18.95",
                 "precio_kg_previo": "S/19.82",
-                "delta_pp": 4.43,
-                "aporte_pp": 0.016,
-                "soles_mes": 97,
-                "soles_enero": 55
+                "delta_pp": 3.71,
+                "aporte_pp": 0.013,
+                "soles_mes": 82,
+                "soles_enero": 40
+              },
+              {
+                "producto": "TIGOMIX YOG BLACK 125G",
+                "subcategoria": "KIDS",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/6,406",
+                "peso": 1.0,
+                "margen_enero": "56.3%",
+                "margen_previo": "52.8%",
+                "margen": "56.3%",
+                "precio_kg": "S/18.15",
+                "precio_kg_previo": "S/19.28",
+                "delta_pp": 3.51,
+                "aporte_pp": 0.036,
+                "soles_mes": 225,
+                "soles_enero": 1
               },
               {
                 "producto": "TIGO QUESO CREMA PASTELERO 1KG",
@@ -2051,22 +2069,22 @@
                 "soles_enero": 396
               },
               {
-                "producto": "TIGOMIX YOG BLACK 125G",
-                "subcategoria": "KIDS",
+                "producto": "TIGO YOG PRE MANGO MARACUYA 1K (POTE)",
+                "subcategoria": "PREMIUM",
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/6,371",
-                "peso": 1.0,
-                "margen_enero": "56.3%",
-                "margen_previo": "52.8%",
-                "margen": "56.9%",
-                "precio_kg": "S/18.18",
-                "precio_kg_previo": "S/19.28",
-                "delta_pp": 4.14,
-                "aporte_pp": 0.043,
-                "soles_mes": 264,
-                "soles_enero": 41
+                "venta": "S/7,692",
+                "peso": 1.2,
+                "margen_enero": "53.5%",
+                "margen_previo": "45.9%",
+                "margen": "49.1%",
+                "precio_kg": "S/10.71",
+                "precio_kg_previo": "S/10.71",
+                "delta_pp": 3.24,
+                "aporte_pp": 0.04,
+                "soles_mes": 249,
+                "soles_enero": -339
               },
               {
                 "producto": "TIGO STRAAL PRO YOG ALTA PROTEINA NATURAL 150G",
@@ -2087,40 +2105,22 @@
                 "soles_enero": null
               },
               {
-                "producto": "TIGO YOG PRE MANGO MARACUYA 1K (POTE)",
-                "subcategoria": "PREMIUM",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/7,683",
-                "peso": 1.2,
-                "margen_enero": "53.5%",
-                "margen_previo": "45.9%",
-                "margen": "49.4%",
-                "precio_kg": "S/10.72",
-                "precio_kg_previo": "S/10.71",
-                "delta_pp": 3.52,
-                "aporte_pp": 0.044,
-                "soles_mes": 271,
-                "soles_enero": -316
-              },
-              {
                 "producto": "TIGO YOG GRANOLA FRESAS 155G",
                 "subcategoria": "GRANOLA",
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/91,700",
+                "venta": "S/91,704",
                 "peso": 14.9,
                 "margen_enero": "59.5%",
                 "margen_previo": "57.5%",
                 "margen": "58.0%",
                 "precio_kg": "S/21.22",
                 "precio_kg_previo": "S/21.47",
-                "delta_pp": 0.51,
-                "aporte_pp": 0.076,
-                "soles_mes": 465,
-                "soles_enero": -1371
+                "delta_pp": 0.48,
+                "aporte_pp": 0.071,
+                "soles_mes": 440,
+                "soles_enero": -1397
               },
               {
                 "producto": "TIGO STRAAL PRO YOG ALTA PROTEINA FRESA Y CHIA 150G",
@@ -2128,35 +2128,17 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/3,555",
+                "venta": "S/3,568",
                 "peso": 0.6,
                 "margen_enero": null,
                 "margen_previo": "-4.0%",
-                "margen": "13.7%",
+                "margen": "13.0%",
                 "precio_kg": null,
                 "precio_kg_previo": null,
-                "delta_pp": 17.73,
-                "aporte_pp": 0.102,
-                "soles_mes": 630,
+                "delta_pp": 17.05,
+                "aporte_pp": 0.099,
+                "soles_mes": 608,
                 "soles_enero": null
-              },
-              {
-                "producto": "TIGO YOG GRANOLA ARANDANO CON CHIA 175G",
-                "subcategoria": "GRANOLA",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/50,745",
-                "peso": 8.2,
-                "margen_enero": "54.0%",
-                "margen_previo": "50.9%",
-                "margen": "52.6%",
-                "precio_kg": "S/20.95",
-                "precio_kg_previo": "S/20.87",
-                "delta_pp": 1.75,
-                "aporte_pp": 0.144,
-                "soles_mes": 889,
-                "soles_enero": -714
               },
               {
                 "producto": "TIGO YOG GRIEGO VIDRIO 850G (ARANDANO)",
@@ -2164,35 +2146,35 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/27,145",
+                "venta": "S/27,155",
                 "peso": 4.4,
                 "margen_enero": "60.0%",
                 "margen_previo": "53.5%",
-                "margen": "57.0%",
+                "margen": "56.2%",
                 "precio_kg": "S/14.45",
                 "precio_kg_previo": "S/14.43",
-                "delta_pp": 3.44,
-                "aporte_pp": 0.152,
-                "soles_mes": 935,
-                "soles_enero": -825
+                "delta_pp": 2.63,
+                "aporte_pp": 0.116,
+                "soles_mes": 714,
+                "soles_enero": -1047
               },
               {
-                "producto": "TIGO YOG PREMIUM DURAZNO 160G",
-                "subcategoria": "PREMIUM",
+                "producto": "TIGO YOG GRANOLA ARANDANO CON CHIA 175G",
+                "subcategoria": "GRANOLA",
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/4,067",
-                "peso": 0.7,
-                "margen_enero": "59.4%",
-                "margen_previo": "19.9%",
-                "margen": "52.8%",
-                "precio_kg": "S/19.67",
-                "precio_kg_previo": "S/19.67",
-                "delta_pp": 32.87,
-                "aporte_pp": 0.217,
-                "soles_mes": 1337,
-                "soles_enero": -269
+                "venta": "S/50,747",
+                "peso": 8.2,
+                "margen_enero": "54.0%",
+                "margen_previo": "50.9%",
+                "margen": "52.5%",
+                "precio_kg": "S/20.95",
+                "precio_kg_previo": "S/20.87",
+                "delta_pp": 1.68,
+                "aporte_pp": 0.139,
+                "soles_mes": 855,
+                "soles_enero": -749
               },
               {
                 "producto": "TIGO YOG NATURAL SIN AZUCAR 1K (POTE)",
@@ -2204,13 +2186,49 @@
                 "peso": 9.5,
                 "margen_enero": "64.8%",
                 "margen_previo": "59.1%",
-                "margen": "61.4%",
+                "margen": "61.1%",
                 "precio_kg": "S/10.78",
                 "precio_kg_previo": "S/10.85",
-                "delta_pp": 2.3,
-                "aporte_pp": 0.219,
-                "soles_mes": 1348,
-                "soles_enero": -1989
+                "delta_pp": 1.96,
+                "aporte_pp": 0.187,
+                "soles_mes": 1150,
+                "soles_enero": -2187
+              },
+              {
+                "producto": "TIGO YOG PREMIUM DURAZNO 160G",
+                "subcategoria": "PREMIUM",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/4,067",
+                "peso": 0.7,
+                "margen_enero": "59.4%",
+                "margen_previo": "19.9%",
+                "margen": "52.6%",
+                "precio_kg": "S/19.67",
+                "precio_kg_previo": "S/19.67",
+                "delta_pp": 32.65,
+                "aporte_pp": 0.215,
+                "soles_mes": 1328,
+                "soles_enero": -278
+              },
+              {
+                "producto": "TIGO YOG PRE ARANDANO CON CHIA 1K (POTE)",
+                "subcategoria": "PREMIUM",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/40,808",
+                "peso": 6.6,
+                "margen_enero": "46.1%",
+                "margen_previo": "47.2%",
+                "margen": "50.5%",
+                "precio_kg": "S/10.86",
+                "precio_kg_previo": "S/10.85",
+                "delta_pp": 3.26,
+                "aporte_pp": 0.216,
+                "soles_mes": 1329,
+                "soles_enero": 1768
               },
               {
                 "producto": "TIGO YOG GRIEGO VIDRIO 850G (FRESA)",
@@ -2222,31 +2240,13 @@
                 "peso": 4.2,
                 "margen_enero": "61.3%",
                 "margen_previo": "51.9%",
-                "margen": "57.3%",
+                "margen": "57.2%",
                 "precio_kg": "S/14.44",
                 "precio_kg_previo": "S/14.42",
-                "delta_pp": 5.32,
-                "aporte_pp": 0.223,
-                "soles_mes": 1372,
-                "soles_enero": -1034
-              },
-              {
-                "producto": "TIGO YOG PRE ARANDANO CON CHIA 1K (POTE)",
-                "subcategoria": "PREMIUM",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/40,796",
-                "peso": 6.6,
-                "margen_enero": "46.1%",
-                "margen_previo": "47.2%",
-                "margen": "51.0%",
-                "precio_kg": "S/10.86",
-                "precio_kg_previo": "S/10.85",
-                "delta_pp": 3.77,
-                "aporte_pp": 0.249,
-                "soles_mes": 1537,
-                "soles_enero": 1976
+                "delta_pp": 5.22,
+                "aporte_pp": 0.218,
+                "soles_mes": 1346,
+                "soles_enero": -1059
               },
               {
                 "producto": "TIGO YOG FRUTADO VIDRIO 850G (ARANDANOS)",
@@ -2254,17 +2254,17 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/35,678",
+                "venta": "S/35,712",
                 "peso": 5.8,
                 "margen_enero": "37.4%",
                 "margen_previo": "33.6%",
-                "margen": "38.6%",
+                "margen": "38.4%",
                 "precio_kg": "S/9.28",
                 "precio_kg_previo": "S/8.80",
-                "delta_pp": 5.01,
-                "aporte_pp": 0.29,
-                "soles_mes": 1786,
-                "soles_enero": 441
+                "delta_pp": 4.84,
+                "aporte_pp": 0.28,
+                "soles_mes": 1729,
+                "soles_enero": 382
               },
               {
                 "producto": "TIGO YOG PRE LIGHT NATURAL 1K (POTE)",
@@ -2272,17 +2272,17 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/62,053",
+                "venta": "S/62,070",
                 "peso": 10.1,
                 "margen_enero": "63.0%",
                 "margen_previo": "59.6%",
-                "margen": "62.6%",
+                "margen": "62.4%",
                 "precio_kg": "S/10.99",
                 "precio_kg_previo": "S/10.95",
-                "delta_pp": 2.93,
-                "aporte_pp": 0.295,
-                "soles_mes": 1816,
-                "soles_enero": -274
+                "delta_pp": 2.81,
+                "aporte_pp": 0.283,
+                "soles_mes": 1745,
+                "soles_enero": -346
               },
               {
                 "producto": "TIGO GRIEGO BEBIBLE ARANDANO CON CHIA 285G",
@@ -2312,13 +2312,13 @@
                 "peso": 7.6,
                 "margen_enero": "62.8%",
                 "margen_previo": "55.3%",
-                "margen": "60.5%",
+                "margen": "60.4%",
                 "precio_kg": "S/14.46",
                 "precio_kg_previo": "S/14.46",
-                "delta_pp": 5.17,
-                "aporte_pp": 0.393,
-                "soles_mes": 2419,
-                "soles_enero": -1116
+                "delta_pp": 5.06,
+                "aporte_pp": 0.384,
+                "soles_mes": 2370,
+                "soles_enero": -1166
               },
               {
                 "producto": "TIGO YOG FRUTADO VIDRIO 850G (FRUTAS TROPICALES)",
@@ -2326,17 +2326,17 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/36,246",
+                "venta": "S/36,254",
                 "peso": 5.9,
                 "margen_enero": "37.6%",
                 "margen_previo": "32.4%",
-                "margen": "40.2%",
+                "margen": "39.7%",
                 "precio_kg": "S/9.22",
                 "precio_kg_previo": "S/8.92",
-                "delta_pp": 7.83,
-                "aporte_pp": 0.46,
-                "soles_mes": 2837,
-                "soles_enero": 952
+                "delta_pp": 7.28,
+                "aporte_pp": 0.428,
+                "soles_mes": 2641,
+                "soles_enero": 756
               }
             ],
             "B&D": [
@@ -2368,12 +2368,12 @@
                 "peso": 5.3,
                 "margen_enero": null,
                 "margen_previo": "64.1%",
-                "margen": "45.8%",
+                "margen": "44.8%",
                 "precio_kg": "S/5.58",
                 "precio_kg_previo": "S/7.91",
-                "delta_pp": -18.28,
-                "aporte_pp": -0.97,
-                "soles_mes": -3248,
+                "delta_pp": -19.3,
+                "aporte_pp": -1.024,
+                "soles_mes": -3430,
                 "soles_enero": null
               },
               {
@@ -2392,6 +2392,24 @@
                 "delta_pp": -14.37,
                 "aporte_pp": -0.56,
                 "soles_mes": -1877,
+                "soles_enero": null
+              },
+              {
+                "producto": "B&D KETCHUP CAJA 4K X 4  ND",
+                "subcategoria": "KETCHUP",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/43,886",
+                "peso": 13.1,
+                "margen_enero": null,
+                "margen_previo": "68.8%",
+                "margen": "64.8%",
+                "precio_kg": "S/3.69",
+                "precio_kg_previo": "S/4.12",
+                "delta_pp": -4.0,
+                "aporte_pp": -0.524,
+                "soles_mes": -1754,
                 "soles_enero": null
               },
               {
@@ -2467,6 +2485,42 @@
                 "soles_enero": 26
               },
               {
+                "producto": "B&D SALSA INGLESA 3K",
+                "subcategoria": "SALSA INGLESA",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/6,308",
+                "peso": 1.9,
+                "margen_enero": "61.8%",
+                "margen_previo": "59.2%",
+                "margen": "55.2%",
+                "precio_kg": "S/5.02",
+                "precio_kg_previo": "S/5.45",
+                "delta_pp": -4.03,
+                "aporte_pp": -0.076,
+                "soles_mes": -254,
+                "soles_enero": -418
+              },
+              {
+                "producto": "B&D MAYONESA CAJA 2 BOLSA 4KG   ND",
+                "subcategoria": "MAYONESA",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/3,052",
+                "peso": 0.9,
+                "margen_enero": null,
+                "margen_previo": "35.8%",
+                "margen": "28.7%",
+                "precio_kg": "S/6.94",
+                "precio_kg_previo": "S/7.68",
+                "delta_pp": -7.13,
+                "aporte_pp": -0.065,
+                "soles_mes": -218,
+                "soles_enero": null
+              },
+              {
                 "producto": "B&D MAYONESA CAJA 2 BOLSA 4KG X 4  ND",
                 "subcategoria": "MAYONESA",
                 "sospechoso": null,
@@ -2482,6 +2536,24 @@
                 "delta_pp": -1.58,
                 "aporte_pp": -0.061,
                 "soles_mes": -205,
+                "soles_enero": null
+              },
+              {
+                "producto": "B&D MOSTAZA BALDE 20K  ND",
+                "subcategoria": "MOSTAZA",
+                "sospechoso": null,
+                "motivo_sospecha": null,
+                "devolucion": null,
+                "venta": "S/6,635",
+                "peso": 2.0,
+                "margen_enero": null,
+                "margen_previo": "63.4%",
+                "margen": "60.7%",
+                "precio_kg": "S/3.53",
+                "precio_kg_previo": "S/3.80",
+                "delta_pp": -2.67,
+                "aporte_pp": -0.053,
+                "soles_mes": -177,
                 "soles_enero": null
               },
               {
@@ -2501,24 +2573,6 @@
                 "aporte_pp": -0.047,
                 "soles_mes": -157,
                 "soles_enero": -54
-              },
-              {
-                "producto": "B&D MOSTAZA BALDE 20K  ND",
-                "subcategoria": "MOSTAZA",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/6,635",
-                "peso": 2.0,
-                "margen_enero": null,
-                "margen_previo": "63.4%",
-                "margen": "61.0%",
-                "precio_kg": "S/3.53",
-                "precio_kg_previo": "S/3.80",
-                "delta_pp": -2.38,
-                "aporte_pp": -0.047,
-                "soles_mes": -158,
-                "soles_enero": null
               },
               {
                 "producto": "B&D MOSTAZA BALDE 20K X2  ND",
@@ -2850,16 +2904,16 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/44",
+                "venta": "S/49",
                 "peso": 0.0,
                 "margen_enero": null,
                 "margen_previo": "39.5%",
-                "margen": "41.0%",
+                "margen": "40.6%",
                 "precio_kg": null,
                 "precio_kg_previo": null,
-                "delta_pp": 1.49,
+                "delta_pp": 1.02,
                 "aporte_pp": 0.0,
-                "soles_mes": 1,
+                "soles_mes": 0,
                 "soles_enero": null
               },
               {
@@ -2886,14 +2940,14 @@
                 "sospechoso": null,
                 "motivo_sospecha": null,
                 "devolucion": null,
-                "venta": "S/10",
+                "venta": "S/14",
                 "peso": 0.0,
                 "margen_enero": null,
                 "margen_previo": "64.9%",
-                "margen": "63.6%",
+                "margen": "63.2%",
                 "precio_kg": null,
                 "precio_kg_previo": null,
-                "delta_pp": -1.28,
+                "delta_pp": -1.71,
                 "aporte_pp": -0.0,
                 "soles_mes": 0,
                 "soles_enero": null
@@ -3295,60 +3349,6 @@
                 "soles_enero": null
               },
               {
-                "producto": "B&D MAYONESA CAJA 2 BOLSA 4KG   ND",
-                "subcategoria": "MAYONESA",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/3,052",
-                "peso": 0.9,
-                "margen_enero": null,
-                "margen_previo": "35.8%",
-                "margen": "60.3%",
-                "precio_kg": "S/6.94",
-                "precio_kg_previo": "S/7.68",
-                "delta_pp": 24.55,
-                "aporte_pp": 0.224,
-                "soles_mes": 749,
-                "soles_enero": null
-              },
-              {
-                "producto": "B&D KETCHUP CAJA 4K X 4  ND",
-                "subcategoria": "KETCHUP",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/43,886",
-                "peso": 13.1,
-                "margen_enero": null,
-                "margen_previo": "68.8%",
-                "margen": "70.7%",
-                "precio_kg": "S/3.69",
-                "precio_kg_previo": "S/4.12",
-                "delta_pp": 1.93,
-                "aporte_pp": 0.253,
-                "soles_mes": 846,
-                "soles_enero": null
-              },
-              {
-                "producto": "B&D SALSA INGLESA 3K",
-                "subcategoria": "SALSA INGLESA",
-                "sospechoso": null,
-                "motivo_sospecha": null,
-                "devolucion": null,
-                "venta": "S/6,308",
-                "peso": 1.9,
-                "margen_enero": "61.8%",
-                "margen_previo": "59.2%",
-                "margen": "77.1%",
-                "precio_kg": "S/5.02",
-                "precio_kg_previo": "S/5.45",
-                "delta_pp": 17.92,
-                "aporte_pp": 0.337,
-                "soles_mes": 1130,
-                "soles_enero": 967
-              },
-              {
                 "producto": "B&D MOSTAZA BALDE 4K   ND",
                 "subcategoria": "MOSTAZA",
                 "sospechoso": true,
@@ -3383,7 +3383,7 @@
             },
             {
               "uen": "MAQUILA",
-              "margen": "40.1%",
+              "margen": "40.0%",
               "precio_kg": "S/4.74",
               "costo_kg": "S/2.84",
               "estado": "red",
@@ -3402,13 +3402,13 @@
           "_no_cuadran": {
             "por_cliente": {
               "kpi": "Ventas mes",
-              "suma": 4349388,
+              "suma": 4509585,
               "kpi_valor": 7690000,
               "motivo": "son ORDENES DE VENTA del mes en curso y el KPI es FACTURACION del mes cerrado: dos bases y dos periodos distintos"
             },
             "por_documento": {
               "kpi": "Ventas mes",
-              "suma": 2562534,
+              "suma": 2560593,
               "kpi_valor": 7690000,
               "motivo": "es la facturacion del mes EN CURSO a la fecha y el KPI es el mes cerrado completo"
             }
@@ -3428,7 +3428,7 @@
             },
             {
               "label": "Venta Neta (KG) · acumulado 2026",
-              "valor": "10,330,023 KG",
+              "valor": "10,332,034 KG",
               "validado": true,
               "fuente": "reporte",
               "nota_periodo": "la consulta filtra solo por año, sin mes"
@@ -3443,7 +3443,7 @@
             },
             {
               "label": "Producción Neta (KG) · acumulado 2026",
-              "valor": "10,344,635 kg",
+              "valor": "10,366,007 kg",
               "validado": true,
               "fuente": "reporte",
               "nota_periodo": "la consulta filtra solo por año, sin mes"
@@ -3453,7 +3453,7 @@
               "valor": "S/143",
               "validado": true,
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             }
           ],
           "no_validado_dax": false
@@ -3637,17 +3637,17 @@
           "por_uen": [
             {
               "uen": "B&D",
-              "merma": "1.47%",
+              "merma": "1.48%",
               "estado": "green"
             },
             {
               "uen": "TIGO",
-              "merma": "4.26%",
+              "merma": "4.25%",
               "estado": "red"
             },
             {
               "uen": "MAQUILA",
-              "merma": "2.93%",
+              "merma": "2.94%",
               "estado": "yellow"
             }
           ],
@@ -3660,7 +3660,7 @@
             },
             {
               "planta": "PACHACAMAC",
-              "merma": "1.80%",
+              "merma": "1.81%",
               "estado": "green"
             },
             {
@@ -3676,111 +3676,90 @@
           "kpis": [
             {
               "label": "Stock PP (Punto de Pedido)",
-              "valor": "4,411,778",
+              "valor": "4,182,347",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Stock Valorizado",
-              "valor": "S/6.94M",
+              "valor": "S/6.92M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Consumo Prom 3M",
-              "valor": "13,938,389",
+              "valor": "13,980,145",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Consumo Prom 6M",
-              "valor": "13,812,842",
+              "valor": "13,832,304",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Materiales en quiebre",
-              "valor": "31",
+              "valor": "33",
               "meta": "explosión de materiales",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Ítems con necesidad de compra",
-              "valor": "438",
+              "valor": "406",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             }
           ],
           "faltantes": [
             {
               "producto": "LECHE FRESCA",
               "categoria": "Lácteos base y derivados",
-              "faltante": "91,309",
-              "stock": "14,340",
+              "faltante": "89,344",
+              "stock": "5,000",
               "lead_time": null
             },
             {
               "producto": "BOTELLA 1.7KG (GALONERA)",
               "categoria": "Envases rígidos (botellas, frascos, potes, vasos)",
-              "faltante": "40,309",
-              "stock": "86,648",
+              "faltante": "40,214",
+              "stock": "76,568",
               "lead_time": null
             },
             {
               "producto": "LECHE DESCREMADA EN POLVO LH",
               "categoria": "Lácteos base y derivados",
-              "faltante": "20,399",
-              "stock": "9,200",
+              "faltante": "19,990",
+              "stock": "6,371",
               "lead_time": null
             },
             {
               "producto": "AZUCAR BLANCA",
               "categoria": "Azúcares y edulcorantes",
-              "faltante": "9,519",
-              "stock": "19,045",
+              "faltante": "9,304",
+              "stock": "16,150",
               "lead_time": null
             },
             {
               "producto": "SEPARADOR DE CARTON 27.6 CM X 17.2 CM",
               "categoria": "Cajas y embalaje secundario",
-              "faltante": "6,763",
+              "faltante": "6,011",
               "stock": "0",
               "lead_time": null
             },
             {
               "producto": "CAJA CORRUGADA GRANOLA (375X280X92MM)",
               "categoria": "Cajas y embalaje secundario",
-              "faltante": "4,381",
+              "faltante": "3,541",
               "stock": "1,500",
-              "lead_time": null
-            },
-            {
-              "producto": "FRASCO MOSTAZA 425GR",
-              "categoria": "Envases rígidos (botellas, frascos, potes, vasos)",
-              "faltante": "3,396",
-              "stock": "3,900",
               "lead_time": null
             },
             {
               "producto": "DOYPACK B&D CREMA DE AJI 95GR",
               "categoria": "Envases flexibles (doypacks, bolsas, láminas)",
               "faltante": "2,980",
-              "stock": "0",
-              "lead_time": null
-            },
-            {
-              "producto": "ETIQ B&D MOSTAZA 425G ND",
-              "categoria": "Etiquetas",
-              "faltante": "2,716",
-              "stock": "4,580",
-              "lead_time": null
-            },
-            {
-              "producto": "ETIQ PRE LIGHT NATURAL 1K (CURVO)(DESUSO 2909)",
-              "categoria": "Etiquetas",
-              "faltante": "2,270",
               "stock": "0",
               "lead_time": null
             },
@@ -3797,20 +3776,41 @@
               "faltante": "817",
               "stock": "0",
               "lead_time": null
+            },
+            {
+              "producto": "CAJA CORRUGADA BALDE 1K - 0.500 G (268X400X137MM)",
+              "categoria": "Cajas y embalaje secundario",
+              "faltante": "792",
+              "stock": "3,232",
+              "lead_time": null
+            },
+            {
+              "producto": "CAJA CORRUGADA DOYPACK 1KG (270X220X275MM)",
+              "categoria": "Cajas y embalaje secundario",
+              "faltante": "550",
+              "stock": "0",
+              "lead_time": null
+            },
+            {
+              "producto": "PULPA DE ARANDANOS / CHIA",
+              "categoria": "Pulpas y frutas procesadas",
+              "faltante": "481",
+              "stock": "1,300",
+              "lead_time": null
             }
           ],
           "necesidad_compra": [
             {
               "momento": "Comprar-( Oct 2026)",
-              "items": 192
+              "items": 191
             },
             {
               "momento": "Comprar-( Nov 2026)",
-              "items": 167
+              "items": 146
             },
             {
               "momento": "Comprar-( Set 2026)",
-              "items": 73
+              "items": 63
             },
             {
               "momento": "Revisar-( Set 2026)",
@@ -3820,111 +3820,111 @@
         },
         "sop_inventario": {
           "estado": "red",
-          "alerta": "Dead Stock 19.4% del inventario",
+          "alerta": "Dead Stock 18.5% del inventario",
           "kpis": [
             {
               "label": "Inventario Total",
-              "valor": "S/6.35M",
+              "valor": "S/6.73M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Dead Stock",
-              "valor": "S/1.23M",
+              "valor": "S/1.24M",
               "meta": "<S/500K",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "% Dead Stock",
-              "valor": "19.4%",
+              "valor": "18.5%",
               "meta": "<5%",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Working Stock",
-              "valor": "S/4.07M",
+              "valor": "S/4.44M",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Exceso 1 (2-5 meses)",
-              "valor": "S/645,987",
+              "valor": "S/650,592",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Exceso 2 (5-12 meses)",
-              "valor": "S/395,872",
+              "valor": "S/395,869",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             }
           ],
           "dead_por_categoria": [
             {
               "categoria": "ENVASES Y EMBALAJES",
               "valor": "S/923,165",
-              "pct": 74.9
+              "pct": 74.3
             },
             {
               "categoria": "PROD. EN PROCESO",
-              "valor": "S/95,616",
+              "valor": "S/97,152",
               "pct": 7.8
             },
             {
               "categoria": "MATERIA PRIMA",
-              "valor": "S/90,753",
-              "pct": 7.4
+              "valor": "S/90,752",
+              "pct": 7.3
             },
             {
               "categoria": "SUMINISTROS",
-              "valor": "S/55,425",
+              "valor": "S/55,365",
               "pct": 4.5
             },
             {
               "categoria": "REPUESTOS",
-              "valor": "S/32,628",
+              "valor": "S/32,520",
               "pct": 2.6
             },
             {
               "categoria": "PT SALSAS",
-              "valor": "S/20,290",
+              "valor": "S/20,491",
               "pct": 1.6
             }
           ],
           "working_por_categoria": [
             {
               "categoria": "ENVASES Y EMBALAJES",
-              "valor": "S/1.70M",
-              "pct": 41.6
+              "valor": "S/1.74M",
+              "pct": 39.1
             },
             {
               "categoria": "MATERIA PRIMA",
-              "valor": "S/1.19M",
-              "pct": 29.3
+              "valor": "S/1.33M",
+              "pct": 30.0
             },
             {
               "categoria": "PT SALSAS",
-              "valor": "S/457,229",
-              "pct": 11.2
+              "valor": "S/493,813",
+              "pct": 11.1
             },
             {
               "categoria": "PT YOGURTS",
-              "valor": "S/391,243",
-              "pct": 9.6
+              "valor": "S/467,307",
+              "pct": 10.5
             },
             {
               "categoria": "PROD. EN PROCESO",
-              "valor": "S/178,182",
-              "pct": 4.4
+              "valor": "S/240,687",
+              "pct": 5.4
             },
             {
               "categoria": "SUMINISTROS",
-              "valor": "S/74,213",
-              "pct": 1.8
+              "valor": "S/74,168",
+              "pct": 1.7
             }
           ]
         },
@@ -3938,27 +3938,27 @@
               "meta": "85%",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Puntos de Control evaluados",
               "valor": "311",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Satisfactorio",
               "valor": "139",
               "estado": "green",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Con Observaciones",
               "valor": "64",
               "estado": "yellow",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Crítico",
@@ -3966,7 +3966,7 @@
               "meta": "0",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "% Puntos en estado Crítico",
@@ -3974,20 +3974,20 @@
               "meta": "<10%",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Total Planes de Acción",
               "valor": "93",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Planes de Acción Cerrados",
               "valor": "62",
               "estado": "green",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Planes de Acción Atrasados",
@@ -3995,32 +3995,32 @@
               "meta": "0",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "% Avance Planes de Acción",
               "valor": "66.7%",
               "estado": "yellow",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Puntos Ejecutados",
               "valor": "314",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Calificación",
               "valor": "653",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Puntos Totales",
               "valor": "942",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             }
           ],
           "por_area": [
@@ -4201,7 +4201,7 @@
               "meta": "98%",
               "estado": "yellow",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Orden de Venta",
@@ -4223,20 +4223,20 @@
               "estado": "red",
               "fuente": "reporte",
               "meta": "orden de venta − facturación",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Venta del mes (tarjeta)",
               "valor": "1,720",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             },
             {
               "label": "Pedidos no atendidos (mes)",
               "valor": "199",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 16/09/2026."
+              "nota_periodo": "no corresponde a ningún mes del eje: es un saldo al corte o un acumulado. Dato al 17/09/2026."
             }
           ],
           "por_grupo": [
@@ -4323,21 +4323,21 @@
               "label": "Presupuesto del mes",
               "valor": "S/7.83M",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Facturado",
               "valor": "S/2.54M",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Avance vs presupuesto",
-              "valor": "32.5%",
+              "valor": "32.4%",
               "meta": "100%",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Cumplimiento producción (ayer)",
@@ -4345,38 +4345,38 @@
               "meta": "100% del programa del día",
               "estado": "red",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             },
             {
               "label": "Pendiente de facturar",
-              "valor": "S/469,027",
+              "valor": "S/632,488",
               "fuente": "reporte",
-              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 16/09/2026."
+              "nota_periodo": "este reporte no publica serie mensual, así que no hay con qué confirmar el mes. Dato al 17/09/2026."
             }
           ],
           "cumplimiento_produccion": [
             {
               "categoria": "MERCADERIAS SALSAS PACKS",
-              "programado": "3,995,665",
-              "producido": "2,949,932",
+              "programado": "3,998,991",
+              "producido": "2,952,378",
               "pct": 73.8
             },
             {
               "categoria": "PT DERIVADOS LACTEOS",
-              "programado": "101,787",
-              "producido": "63,735",
-              "pct": 62.6
+              "programado": "102,647",
+              "producido": "64,088",
+              "pct": 62.4
             },
             {
               "categoria": "PT SALSAS",
-              "programado": "10,115,480",
-              "producido": "5,563,815",
+              "programado": "10,131,480",
+              "producido": "5,573,984",
               "pct": 55.0
             },
             {
               "categoria": "PT YOGURTS",
-              "programado": "14,763,035",
-              "producido": "11,591,007",
+              "programado": "14,810,757",
+              "producido": "11,621,292",
               "pct": 78.5
             }
           ],
@@ -4385,22 +4385,22 @@
               "canal": "MODERNO",
               "ppto": "S/5.87M",
               "facturado": "S/2.27M",
-              "pendiente": "S/386,820",
+              "pendiente": "S/547,016",
               "avance": 38.6
             },
             {
               "canal": "TRADICIONAL",
               "ppto": "S/1.69M",
               "facturado": "S/152,541",
-              "pendiente": "S/52,293",
+              "pendiente": "S/55,558",
               "avance": 9.0
             },
             {
               "canal": "HORECA",
               "ppto": "S/270,000",
-              "facturado": "S/120,368",
+              "facturado": "S/120,569",
               "pendiente": "S/29,914",
-              "avance": 44.6
+              "avance": 44.7
             }
           ]
         }
@@ -4430,7 +4430,7 @@
                 "2026-06": 5742079.33,
                 "2026-07": 5724240.96,
                 "2026-08": 6148576.12,
-                "2026-09": 2268528.57
+                "2026-09": 2266386.81
               }
             },
             {
@@ -4458,7 +4458,7 @@
                 "2026-06": 239394.31,
                 "2026-07": 281769.36,
                 "2026-08": 267699.5,
-                "2026-09": 120367.95
+                "2026-09": 120569.14
               }
             }
           ]
@@ -4482,25 +4482,27 @@
                 13,
                 14,
                 15,
-                16
+                16,
+                17
               ],
               "valor": [
                 0.034963763797710753,
                 0.030953440194960234,
                 0.019204670757321855,
-                0.024650779974193307,
+                0.024650779974193314,
                 0.02383562813899761,
                 0.0465177690944017,
                 0.03379333508507999,
-                0.01825999862767385,
+                0.018259998627673846,
                 0.018526854650446588,
                 0.026446919685712215,
                 0.020121043318844088,
                 0.027970978720304806,
-                0.033792580270559286,
-                0.01972731551450834,
+                0.03379258027055928,
+                0.019727315514508348,
                 0.03561411127648048,
-                0.00042679348094731617
+                0.036693115643165686,
+                5.6318742371919684e-11
               ]
             },
             "2026-08": {
@@ -4543,7 +4545,7 @@
                 0.01264055837818892,
                 0.02065116579565291,
                 0.0210549631356511,
-                0.014599682869639431,
+                0.01459968286963943,
                 0.021136022415478177,
                 0.0,
                 0.012695686932539096,
@@ -4562,10 +4564,10 @@
                 0.0566062591318416,
                 0.05958515857828246,
                 0.03421056087872813,
-                0.030830571315827216,
-                0.02846255782188062,
+                0.03083057131582723,
+                0.028462557821880622,
                 0.021053398828406802,
-                0.03746842049198905,
+                0.03746842049198904,
                 0.04650047816403052,
                 0.019068043185547837,
                 0.04411681118458833
@@ -4592,7 +4594,8 @@
                 13,
                 14,
                 15,
-                16
+                16,
+                17
               ],
               "valor": [
                 52834.899999999994,
@@ -4610,7 +4613,8 @@
                 13589.565,
                 39559.295,
                 56227.842000000004,
-                2430.0
+                48239.041999999994,
+                4672.46
               ]
             },
             "2026-08": {
@@ -4892,7 +4896,7 @@
                 279929.59,
                 279743.52,
                 195583.57,
-                804.7
+                -1135.87
               ]
             },
             "2026-02": {
@@ -5228,17 +5232,17 @@
               "var_pct": -12.3
             },
             {
+              "producto": "TIGO YOG PRE MANGO MARACUYA 1K (POTE)",
+              "canal": "HORECA",
+              "precio": "S/9.29",
+              "precio_previo": "S/10.60",
+              "var_pct": -12.3
+            },
+            {
               "producto": "B&D KETCHUP 425G X 24 (CAJA )  ND",
               "canal": "MODERNO",
               "precio": "S/7.56",
               "precio_previo": "S/8.59",
-              "var_pct": -12.1
-            },
-            {
-              "producto": "TIGO YOG PRE MANGO MARACUYA 1K (POTE)",
-              "canal": "HORECA",
-              "precio": "S/9.31",
-              "precio_previo": "S/10.60",
               "var_pct": -12.1
             },
             {
@@ -5251,7 +5255,7 @@
             {
               "producto": "TIGOMIX YOG BLACK 125G",
               "canal": "HORECA",
-              "precio": "S/14.41",
+              "precio": "S/14.40",
               "precio_previo": "S/15.60",
               "var_pct": -7.6
             },
@@ -5293,7 +5297,7 @@
             {
               "producto": "TIGOMIX YOG GRAGEAS 125G",
               "canal": "HORECA",
-              "precio": "S/13.93",
+              "precio": "S/13.94",
               "precio_previo": "S/14.61",
               "var_pct": -4.6
             },
@@ -5377,7 +5381,7 @@
             {
               "producto": "TIGO YOG PRE ARANDANO CON CHIA 1K (POTE)",
               "canal": "HORECA",
-              "precio": "S/10.70",
+              "precio": "S/10.71",
               "precio_previo": "S/10.87",
               "var_pct": -1.5
             },
@@ -5452,13 +5456,6 @@
               "var_pct": -0.8
             },
             {
-              "producto": "TIGO YOG FRUTADO VIDRIO 850G (FRESA)",
-              "canal": "HORECA",
-              "precio": "S/8.90",
-              "precio_previo": "S/8.98",
-              "var_pct": -0.8
-            },
-            {
               "producto": "TIGO YOG GRANOLA ARANDANO CON CHIA 175G",
               "canal": "HORECA",
               "precio": "S/20.02",
@@ -5484,6 +5481,13 @@
               "canal": "TRADICIONAL",
               "precio": "S/3.71",
               "precio_previo": "S/3.73",
+              "var_pct": -0.6
+            },
+            {
+              "producto": "TIGO YOG FRUTADO VIDRIO 850G (FRESA)",
+              "canal": "HORECA",
+              "precio": "S/8.93",
+              "precio_previo": "S/8.98",
               "var_pct": -0.6
             },
             {
@@ -6006,6 +6010,13 @@
             },
             {
               "producto": "TIGO YOG PRE LIGHT NATURAL 1K (POTE)",
+              "canal": "HORECA",
+              "precio": "S/10.82",
+              "precio_previo": "S/10.79",
+              "var_pct": 0.3
+            },
+            {
+              "producto": "TIGO YOG PRE LIGHT NATURAL 1K (POTE)",
               "canal": "MODERNO",
               "precio": "S/10.99",
               "precio_previo": "S/10.95",
@@ -6031,13 +6042,6 @@
               "precio": "S/7.64",
               "precio_previo": "S/7.61",
               "var_pct": 0.4
-            },
-            {
-              "producto": "TIGO YOG PRE LIGHT NATURAL 1K (POTE)",
-              "canal": "HORECA",
-              "precio": "S/10.85",
-              "precio_previo": "S/10.79",
-              "var_pct": 0.5
             },
             {
               "producto": "B&D KETCHUP CAJA 4K  ND",
@@ -6103,13 +6107,6 @@
               "var_pct": 0.7
             },
             {
-              "producto": "TIGO YOG FRUTADO VIDRIO 850G (ARANDANOS)",
-              "canal": "HORECA",
-              "precio": "S/9.02",
-              "precio_previo": "S/8.96",
-              "var_pct": 0.7
-            },
-            {
               "producto": "B&D KETCHUP BALDE 20K X2  ND",
               "canal": "MODERNO",
               "precio": "S/4.69",
@@ -6163,6 +6160,13 @@
               "canal": "TRADICIONAL",
               "precio": "S/21.80",
               "precio_previo": "S/21.60",
+              "var_pct": 0.9
+            },
+            {
+              "producto": "TIGO YOG FRUTADO VIDRIO 850G (ARANDANOS)",
+              "canal": "HORECA",
+              "precio": "S/9.04",
+              "precio_previo": "S/8.96",
               "var_pct": 0.9
             },
             {
@@ -6516,6 +6520,13 @@
               "var_pct": 5.3
             },
             {
+              "producto": "TIGO YOG GRIEGO VIDRIO 850G (ARANDANO)",
+              "canal": "HORECA",
+              "precio": "S/13.89",
+              "precio_previo": "S/13.19",
+              "var_pct": 5.3
+            },
+            {
               "producto": "BELLS MIX GALLETAS CHOCO 125G",
               "canal": "MODERNO",
               "precio": "S/14.00",
@@ -6527,13 +6538,6 @@
               "canal": "TRADICIONAL",
               "precio": "S/17.74",
               "precio_previo": "S/16.83",
-              "var_pct": 5.4
-            },
-            {
-              "producto": "TIGO YOG GRIEGO VIDRIO 850G (ARANDANO)",
-              "canal": "HORECA",
-              "precio": "S/13.90",
-              "precio_previo": "S/13.19",
               "var_pct": 5.4
             },
             {
@@ -6765,17 +6769,9 @@
               "producto": "TIGO YOG PRE MANGO MARACUYA 1K (POTE)",
               "canal": "HORECA",
               "cliente": "CLIENTES VARIOS",
-              "precio": "S/8.89",
+              "precio": "S/8.88",
               "precio_previo": "S/9.74",
-              "var_pct": -8.7
-            },
-            {
-              "producto": "TIGO YOG PRE ARANDANO CON CHIA 1K (POTE)",
-              "canal": "HORECA",
-              "cliente": "CLIENTES VARIOS",
-              "precio": "S/8.98",
-              "precio_previo": "S/9.29",
-              "var_pct": -3.3
+              "var_pct": -8.8
             },
             {
               "producto": "TIGO QUESO CREMA PASTELERO 1KG",
@@ -6786,12 +6782,12 @@
               "var_pct": -2.4
             },
             {
-              "producto": "TIGOMIX YOG BLACK 125G",
+              "producto": "TIGO YOG PRE ARANDANO CON CHIA 1K (POTE)",
               "canal": "HORECA",
               "cliente": "CLIENTES VARIOS",
-              "precio": "S/13.15",
-              "precio_previo": "S/13.38",
-              "var_pct": -1.8
+              "precio": "S/9.09",
+              "precio_previo": "S/9.29",
+              "var_pct": -2.2
             },
             {
               "producto": "TIGO GRIEGO BEBIBLE FRESA 1.6K",
@@ -6805,25 +6801,33 @@
               "producto": "TIGO YOG GRANOLA ARANDANO CON CHIA 175G",
               "canal": "HORECA",
               "cliente": "CLIENTES VARIOS",
-              "precio": "S/17.62",
+              "precio": "S/17.61",
               "precio_previo": "S/17.90",
-              "var_pct": -1.6
+              "var_pct": -1.7
+            },
+            {
+              "producto": "TIGOMIX YOG BLACK 125G",
+              "canal": "HORECA",
+              "cliente": "CLIENTES VARIOS",
+              "precio": "S/13.20",
+              "precio_previo": "S/13.38",
+              "var_pct": -1.4
             },
             {
               "producto": "TIGO YOG GRANOLA ALBARI/DURAZNO 155G",
               "canal": "HORECA",
               "cliente": "CLIENTES VARIOS",
-              "precio": "S/17.50",
+              "precio": "S/17.52",
               "precio_previo": "S/17.69",
-              "var_pct": -1.1
+              "var_pct": -1.0
             },
             {
               "producto": "TIGOMIX YOG GRAGEAS 125G",
               "canal": "HORECA",
               "cliente": "CLIENTES VARIOS",
-              "precio": "S/12.63",
+              "precio": "S/12.67",
               "precio_previo": "S/12.69",
-              "var_pct": -0.5
+              "var_pct": -0.2
             },
             {
               "producto": "BELLS YOG BEB DURAZNO 1.7K",
@@ -11178,14 +11182,6 @@
               "var_pct": 2.6
             },
             {
-              "producto": "TIGO YOG GRANOLA FRESAS 155G",
-              "canal": "HORECA",
-              "cliente": "CLIENTES VARIOS",
-              "precio": "S/18.46",
-              "precio_previo": "S/17.99",
-              "var_pct": 2.6
-            },
-            {
               "producto": "BELLS YOG BEB VAINILLA 1.7K",
               "canal": "MODERNO",
               "cliente": "SUPERMERCADOS PERUANOS S.A.- SPSA MAKRO INDEPENDECIA",
@@ -11200,6 +11196,14 @@
               "precio": "S/13.92",
               "precio_previo": "S/13.55",
               "var_pct": 2.7
+            },
+            {
+              "producto": "TIGO YOG GRANOLA FRESAS 155G",
+              "canal": "HORECA",
+              "cliente": "CLIENTES VARIOS",
+              "precio": "S/18.49",
+              "precio_previo": "S/17.99",
+              "var_pct": 2.8
             },
             {
               "producto": "TIGO YOG PREMIUM ARANDANO 160G",
@@ -11426,20 +11430,20 @@
               "var_pct": 6.6
             },
             {
+              "producto": "TIGO YOG PRE LIGHT NATURAL 1K (POTE)",
+              "canal": "HORECA",
+              "cliente": "CLIENTES VARIOS",
+              "precio": "S/9.43",
+              "precio_previo": "S/8.42",
+              "var_pct": 12.0
+            },
+            {
               "producto": "TIGO GRIEGO BEBIBLE ARANDANO CON CHIA 1.6K",
               "canal": "HORECA",
               "cliente": "CLIENTES VARIOS",
               "precio": "S/6.11",
               "precio_previo": "S/5.43",
               "var_pct": 12.6
-            },
-            {
-              "producto": "TIGO YOG PRE LIGHT NATURAL 1K (POTE)",
-              "canal": "HORECA",
-              "cliente": "CLIENTES VARIOS",
-              "precio": "S/9.63",
-              "precio_previo": "S/8.42",
-              "var_pct": 14.3
             },
             {
               "producto": "TIGOMIX YOG BOLITAS C/CHOC 125G",
@@ -11526,20 +11530,20 @@
     "avance": 0.6295519287006067
   },
   "verificacion": {
-    "verificados": 60,
+    "verificados": 59,
     "total": 62
   },
   "cobertura": {
-    "kpis_del_reporte": 60,
+    "kpis_del_reporte": 59,
     "kpis_totales": 62,
-    "pct": 96.8
+    "pct": 95.2
   },
   "diagnostico": [
     {
       "tipo": "aviso",
       "consulta": "factura_cliente",
       "http": 200,
-      "error": "40 filas, 7 clientes, meses ['2026-08']. Cruzan 4 de 116 clientes del pedido, y se piden los meses 2026-09 y 2026-08. Muestra de facturación: ['CENCOSUDRETAIL', 'HIPERMERCADOSTOTTUS', 'HIPERMERCADOSTOTTUSORIENTE'] · del pedido: ['ADCOADCOMARCOANTONIO', 'ADONAY', 'AJILESPERU']"
+      "error": "40 filas, 7 clientes, meses ['2026-08']. Cruzan 4 de 118 clientes del pedido, y se piden los meses 2026-09 y 2026-08. Muestra de facturación: ['CENCOSUDRETAIL', 'HIPERMERCADOSTOTTUS', 'HIPERMERCADOSTOTTUSORIENTE'] · del pedido: ['ADCOADCOMARCOANTONIO', 'ADONAY', 'AJILESPERU']"
     }
   ],
   "derivados": [
