@@ -3163,10 +3163,33 @@ def build_margen(found):
         res["por_cliente_periodo"] = found.get("__por_cliente_periodo")
         res["por_cliente_cerrado_periodo"] = found.get("__por_cliente_cerrado_periodo")
 
-        # Venta FACTURADA por cliente, separada por mes. La Matriz agrupa
-        # también por documento, así que se suma por cliente.
+        # Venta FACTURADA por cliente y mes.
+        #
+        # Sale de __precio_cliente, la consulta de precio por producto, canal
+        # y cliente: sus filas ya traen la venta, el año y el mes, así que
+        # sumarlas por cliente da la facturación sin pedir nada más.
+        #
+        # Antes salía de la captura "Matriz#7ea810d041c1" y por eso la columna
+        # estaba vacía: esa matriz devuelve 40 filas, 7 clientes y UN SOLO MES
+        # —agosto—, así que setiembre no podía llenarse nunca y solo 4 de los
+        # 116 clientes del pedido cruzaban. Lo dijo el diagnóstico del 17/09.
+        # __precio_cliente trae los dos meses y 92 clientes.
         fact = {}
-        for f in (found.get("__factura_cliente") or []):
+        for f in (found.get("__precio_cliente") or []):
+            nom = (clave_por_sufijo(f, "contacto_factura") or "")
+            a = to_float(clave_por_sufijo(f, "Año"))
+            m = to_float(clave_por_sufijo(f, "NroMes"))
+            v_ = to_float(clave_por_sufijo(f, "Venta"))
+            if not str(nom).strip() or not a or not m or v_ is None:
+                continue
+            can = nombre_canonico(nom)
+            k = f"{int(a)}-{int(m):02d}"
+            fact.setdefault(can, {})
+            fact[can][k] = fact[can].get(k, 0.0) + v_
+
+        # La matriz vieja se mantiene como respaldo: si un día el precio por
+        # cliente no llega, al menos el mes cerrado sigue teniendo dato.
+        for f in ([] if fact else (found.get("__factura_cliente") or [])):
             nom = (f.get("cliente") or "").strip()
             a, m = to_float(f.get("anio")), to_float(f.get("mes"))
             v_ = to_float(f.get("facturado"))
@@ -3199,8 +3222,8 @@ def build_margen(found):
         # blanco: los nombres no cruzan con los del pedido, o los meses de
         # esta consulta no son los que se le piden. Como `fact` no estaba
         # vacío, no saltó nada y la corrida pasó por correcta.
-        if found.get("__factura_cliente"):
-            crudas = found["__factura_cliente"]
+        if found.get("__precio_cliente") or found.get("__factura_cliente"):
+            crudas = found.get("__precio_cliente") or found["__factura_cliente"]
             if not fact:
                 DIAGNOSTICO.append({
                     "tipo": "aviso", "consulta": "factura_cliente", "http": 200,
