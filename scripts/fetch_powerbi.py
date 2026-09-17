@@ -175,6 +175,10 @@ def _dax_consumo_filtro_kardex(token, ws_id, dataset_id, value_expr, label, anio
     'Calendario'[Año]). Por eso `anio` es parámetro: pasar PREV_YEAR (o el año
     que corresponda) para obtener el dato del año, u omitir para el histórico total.
     `value_expr` es la expresión DAX del valor (columna con SUM o [Medida]).
+
+    TIPO DE OPERACION se capturó con solo "Costo" seleccionado en el botón del
+    reporte. El usuario pidió activar Costo y Gasto —el costo de materiales por
+    tonelada debe contar los dos, no solo Costo— así que ahora lleva ambos.
     """
     # Se construye por concatenación simple (no f-string para todo el bloque) para
     # no arriesgar un error de escapado de llaves entre DAX y Python.
@@ -182,7 +186,7 @@ def _dax_consumo_filtro_kardex(token, ws_id, dataset_id, value_expr, label, anio
     q = (
         'EVALUATE\nROW(\n  "v",\n  CALCULATE(\n    ' + value_expr + ",\n    " +
         filtro_anio +
-        "TREATAS({\"Costo\"}, 'PLANTA POR CECOS'[TIPO DE OPERACION]),\n"
+        "TREATAS({\"Costo\",\"Gasto\"}, 'PLANTA POR CECOS'[TIPO DE OPERACION]),\n"
         "    FILTER(\n"
         "      KEEPFILTERS(VALUES('Maestra de Kardex (Total)'[categoria_hijo])),\n"
         "      NOT('Maestra de Kardex (Total)'[categoria_hijo] IN {\"ACUERDOS COMERCIALES\"})\n"

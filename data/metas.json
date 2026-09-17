@@ -283,11 +283,12 @@
         "MIP / TN Producida"
       ],
       "_nota_serie": "Antes esta fila leía MIP / TN Vendida. El usuario pidió que fuera por tonelada PRODUCIDA, que es la serie que de verdad compara contra la meta: la vendida mezcla el ritmo de despacho del mes con el costo de materiales, y no es el mismo tramo que promedia la meta. Cambiado el 17/09/2026.",
-      "meta": 132.19,
+      "_nota_tipo_operacion": "La serie y la meta cuentan Costo + Gasto (TIPO DE OPERACION en 'PLANTA POR CECOS'), no solo Costo: el reporte trae los dos como botones excluyentes en la UI, pero el usuario confirmó que el costo de materiales por tonelada debe sumar ambos. Antes de este cambio el promedio ago-dic 2025 salía 132.19 (solo Costo); con Costo+Gasto sale 173.21.",
+      "meta": 173.21,
       "direccion": "menor",
       "tipo": "tasa",
       "unidad": "soles",
-      "origen": "promedio de MIP / TN Producida de agosto a diciembre 2025 (5 meses), a pedido del usuario — así se compara el mes en curso contra ese período de referencia en vez de no tener meta."
+      "origen": "promedio de MIP / TN Producida (Costo + Gasto) de agosto a diciembre 2025 (5 meses: 165.38, 173.19, 160.76, 149.14, 217.57), a pedido del usuario — así se compara el mes en curso contra ese período de referencia en vez de no tener meta."
     },
     {
       "clave": "planilla_kg",

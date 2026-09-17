@@ -1287,10 +1287,12 @@ CONSUMO_LOCALDATE = "LocalDateTable_98d99889-e9ac-4e68-a26f-5b9fd4115987"
 # Filtros del visual "MIP / TN VENDIDA" del reporte '14. Consumo Materiales
 # indirectos de produccion' (Copiar consulta, 2026-09-06).
 #
-# El tercero es redundante tal como lo genera Power BI —pide TIPO DE OPERACION
-# en {"Costo"} Y ADEMÁS en {"Costo","Gasto"}, que equivale a solo "Costo"— pero
-# se deja textual: simplificarlo sería reescribir la consulta del reporte, y no
-# hay forma de comprobar desde aquí que el modelo lo interprete igual.
+# TIPO DE OPERACION se copió con solo "Costo" seleccionado en el segmentador
+# del reporte (el botón "Costo"/"Gasto" del visual, que son excluyentes entre
+# sí en la UI pero no en el dato): el primer IN{} es la selección, el segundo
+# el universo de valores válidos. El usuario pidió activar los dos —el
+# análisis correcto de costo de materiales por tonelada es Costo + Gasto, no
+# solo Costo— así que ambos IN{} llevan ahora los mismos dos valores.
 #
 # __ANIO__ es el único parámetro (el segmentador del reporte).
 _CONSUMO_FILTROS = """	VAR __DS0FilterTable =
@@ -1314,7 +1316,8 @@ _CONSUMO_FILTROS = """	VAR __DS0FilterTable =
 		FILTER(
 			KEEPFILTERS(VALUES('PLANTA POR CECOS'[TIPO DE OPERACION])),
 			AND(
-				'PLANTA POR CECOS'[TIPO DE OPERACION] IN {"Costo"},
+				'PLANTA POR CECOS'[TIPO DE OPERACION] IN {"Costo",
+					"Gasto"},
 				'PLANTA POR CECOS'[TIPO DE OPERACION] IN {"Costo",
 					"Gasto"}
 			)
@@ -1341,6 +1344,9 @@ _CONSUMO_FILTROS = """	VAR __DS0FilterTable =
 # allá va envuelto en un AND con un NOT(IN {BLANK()}) previo que no cambia
 # nada. Equivalen, pero cada bloque se escribe como lo genera su propio
 # visual en vez de reutilizar el otro.
+#
+# TIPO DE OPERACION con los dos valores en los dos IN{}: ver la nota en
+# _CONSUMO_FILTROS, es el mismo cambio (Costo + Gasto, no solo Costo).
 _CONSUMO_FILTROS_PROD = """	VAR __DS0FilterTable =
 		TREATAS({__ANIO__}, 'Calendario'[Año])
 
@@ -1348,7 +1354,8 @@ _CONSUMO_FILTROS_PROD = """	VAR __DS0FilterTable =
 		FILTER(
 			KEEPFILTERS(VALUES('PLANTA POR CECOS'[TIPO DE OPERACION])),
 			AND(
-				'PLANTA POR CECOS'[TIPO DE OPERACION] IN {"Costo"},
+				'PLANTA POR CECOS'[TIPO DE OPERACION] IN {"Costo",
+					"Gasto"},
 				'PLANTA POR CECOS'[TIPO DE OPERACION] IN {"Costo",
 					"Gasto"}
 			)
